@@ -1,10 +1,6 @@
 import React from "react";
 import { makeStyles } from "@material-ui/core/styles";
-import List from "@material-ui/core/List";
-import ListItem from "@material-ui/core/ListItem";
 import Typography from "@material-ui/core/Typography";
-import ListItemSecondaryAction from "@material-ui/core/ListItemSecondaryAction";
-import ListItemText from "@material-ui/core/ListItemText";
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
@@ -15,10 +11,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
-
-function createData(name, calories, fat, carbs, protein) {
-  return { name, calories, fat, carbs, protein };
-}
+import { VisibilityOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,6 +29,7 @@ export default function SimpleTable({
   colunmList,
   handleChangeContentDelete,
   handleChangeContentEdit,
+  visibleIcon,
 }) {
   const classes = useStyles();
   // const [checked, setChecked] = React.useState([0]);
@@ -56,6 +50,11 @@ export default function SimpleTable({
                 <Typography variant="h6">{e.name}</Typography>
               </TableCell>
             ))}
+            {visibleIcon && (
+              <TableCell align="center">
+                <Typography variant="h6">Visualizar</Typography>
+              </TableCell>
+            )}
             <TableCell align="right">
               <Typography variant="h6">Editar </Typography>
             </TableCell>
@@ -67,15 +66,25 @@ export default function SimpleTable({
         <TableBody>
           {list.map((item) => (
             <TableRow key={item.name}>
-              {colunmList.map( elem => (
-
-              <TableCell align="left" component="th" scope="row">
-                <Typography variant="subtitle1">{item[elem.key]}</Typography>
-              </TableCell>
+              {colunmList.map((elem) => (
+                <TableCell align="left" component="th" scope="row">
+                  <Typography variant="subtitle1">{item[elem.key]}</Typography>
+                </TableCell>
               ))}
               {/* <TableCell align="left">
                 <Typography variant="subtitle1">{item.accessCode}</Typography>
               </TableCell> */}
+              {visibleIcon && (
+                <TableCell align="center">
+                  <IconButton
+                    edge="end"
+                    aria-label="comments"
+                    onClick={() => handleChangeContentEdit(item.id)}
+                  >
+                    <VisibilityOutlined />
+                  </IconButton>
+                </TableCell>
+              )}
               <TableCell align="right">
                 <IconButton
                   edge="end"

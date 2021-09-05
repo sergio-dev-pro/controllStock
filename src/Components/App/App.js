@@ -3,6 +3,7 @@ import { BrowserRouter as Router } from "react-router-dom";
 
 import Routes from "../../Routes";
 import { UserContextProvider } from "../../Context/User/context";
+import ErrorContextProvider from "../../Context/Error/context";
 
 import "./App.css";
 
@@ -10,9 +11,11 @@ function App() {
   return (
     <div className="App">
       <UserContextProvider>
-        <Router>
-          <Routes />
-        </Router>
+        <ErrorContextProvider>
+          <Router>
+            <Routes />
+          </Router>
+        </ErrorContextProvider>
       </UserContextProvider>
     </div>
   );

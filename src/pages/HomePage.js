@@ -14,26 +14,31 @@ import ShoppingCartIcon from "@material-ui/icons/ShoppingCart";
 import PeopleIcon from "@material-ui/icons/People";
 import CategoryIcon from "@material-ui/icons/Category";
 import BusinessIcon from "@material-ui/icons/Business";
-import MenuOpenIcon from '@material-ui/icons/MenuOpen';
-import FormControl from "@material-ui/core/FormControl";
-import Select from "@material-ui/core/Select";
-import InputLabel from "@material-ui/core/InputLabel";
-import LinearProgress from '@material-ui/core/LinearProgress';
+import MenuOpenIcon from "@material-ui/icons/MenuOpen";
+import LinearProgress from "@material-ui/core/LinearProgress";
+import ShopIcon from '@material-ui/icons/Shop';
+import ShopTwoIcon from '@material-ui/icons/ShopTwo';
+import PostAddIcon from '@material-ui/icons/PostAdd';
 
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import UserContext from "../Context/User/context";
+import { ErrorContext } from "../Context/Error/context";
 import Branches from "../Components/Branche/Branche";
 import Category from "../Components/Category/Category";
 import Products from "../Components/Products/Products";
 import Users from "../Components/Users/Users";
+import CentralStock from "../Components/CentralStock/CentralStock";
+import Stock from "../Components/Stock/Stock";
+import Grades from "../Components/Grades/Grades";
 
 import "./HomePage.css";
 
 import { getToken, parseJwt } from "../services/auth";
 import { formatUserData } from "../services/format";
-import { ArrowRightRounded } from "@material-ui/icons";
+import { ArrowRightRounded, ListAlt } from "@material-ui/icons";
 import { IconButton, Typography } from "@material-ui/core";
+import { Alert } from "@material-ui/lab";
 
 const drawerWidth = 240;
 
@@ -219,15 +224,21 @@ function AppBarBranche({
                 ))}
               </Select>
             </FormControl> */}
-            <Typography variant='h5' color='secondary' style={{color: 'rgba(0, 0, 0, 0.87)'}}>
-            Brutos Controle de Estoque
-            </Typography >
+            <Typography
+              variant="h5"
+              color="secondary"
+              style={{ color: "rgba(0, 0, 0, 0.87)" }}
+            >
+              Brutos Controle de Estoque
+            </Typography>
           </div>
         </Toolbar>
 
         {buttonMenu && (
-          <IconButton size='medium' onClick={buttonMenuAction}>
-            <MenuOpenIcon style={{width: '40px', height: '40px'}}></MenuOpenIcon>
+          <IconButton size="medium" onClick={buttonMenuAction}>
+            <MenuOpenIcon
+              style={{ width: "40px", height: "40px" }}
+            ></MenuOpenIcon>
           </IconButton>
         )}
       </Container>
@@ -235,7 +246,14 @@ function AppBarBranche({
   );
 }
 
-const MENU_LIST = ["branches", "products", "users", "categorys"];
+const MENU_LIST = [
+  "branches",
+  "products",
+  "users",
+  "categorys",
+  "central_stock",
+  "stock",
+];
 
 export default function HomePage() {
   const classes = useStyles();
@@ -245,11 +263,13 @@ export default function HomePage() {
   const [loading, setLoading] = React.useState(false);
   const [openDrawerMobile, setOpenDrawerMobile] = React.useState(true);
   const [userConfig, setUserConfig] = React.useState(false);
+  const { state, handleChangeErrorState, onClose } =
+    React.useContext(ErrorContext);
   const {
     handleChangeState,
     handleChangeBranches: handleChangeBranchesContext,
   } = React.useContext(UserContext);
-  const [menu, setMenu] = React.useState(MENU_LIST[0]);
+  const [menu, setMenu] = React.useState(MENU_LIST[4]);
   const [category, setCategory] = React.useState([]);
 
   React.useEffect(() => {
@@ -305,6 +325,16 @@ export default function HomePage() {
       return <Products />;
     } else if (menu === MENU_LIST[2]) {
       return <Users />;
+    } else if (menu === MENU_LIST[4]) {
+      return <CentralStock />;
+    } else if (menu === MENU_LIST[5]) {
+      console.log("@@@ menu === MENU_LIST[5]")
+      return <Stock isAdmin={userConfig.isAdmin} Branchs={userConfig.Branchs} />;
+    } else if (menu === MENU_LIST[6]) {
+      console.log("@@@ menu === MENU_LIST[6]")
+      return (
+        <Grades />
+      )
     }
   };
 
@@ -356,7 +386,7 @@ export default function HomePage() {
           brancheList={userConfig.branches}
           setBranche={handleChangeBranche}
           buttonMenu={!openDrawerMobile && !matches}
-          buttonMenuAction={()=> setOpenDrawerMobile(true)}
+          buttonMenuAction={() => setOpenDrawerMobile(true)}
         />
         {loading && <LinearProgress />}
         <main className={classes.content} style={{ overflow: "auto" }}>
@@ -369,12 +399,33 @@ export default function HomePage() {
           </Container>
         </main>
       </div>
+      <SimpleAlerts values={state} onClose={onClose}  />
     </div>
   );
 }
 
 export const MainListItems = ({ selected, setSelected }) => (
   <div>
+    <ListItem
+      button
+      selected={selected === MENU_LIST[4]}
+      onClick={() => setSelected(MENU_LIST[4])}
+    >
+      <ListItemIcon>
+        <ShopTwoIcon />
+      </ListItemIcon>
+      <ListItemText primary="Estoque Central" />
+    </ListItem>
+    {/* <ListItem
+      button
+      selected={selected === MENU_LIST[5]}
+      onClick={() => setSelected(MENU_LIST[5])}
+    >
+      <ListItemIcon>
+        <ShopIcon />
+      </ListItemIcon>
+      <ListItemText primary="Estoque" />
+    </ListItem> */}
     <ListItem
       button
       selected={selected === MENU_LIST[0]}
@@ -415,5 +466,41 @@ export const MainListItems = ({ selected, setSelected }) => (
       </ListItemIcon>
       <ListItemText primary="Categorias" />
     </ListItem>
+
+    {/* <ListItem
+      button
+      selected={selected === MENU_LIST[6]}
+      onClick={() => setSelected(MENU_LIST[6])}
+    >
+      <ListItemIcon>
+        <PostAddIcon /> 
+      </ListItemIcon>
+      <ListItemText primary="Notas" />
+    </ListItem> */}
   </div>
 );
+
+const useStylesAlert = makeStyles((theme) => ({
+  root: {
+    position: "absolute",
+    maxWidth: "400px",
+    zIndex: "2000",
+    width: "100%",
+    "& > * + *": {
+      marginTop: theme.spacing(2),
+    },
+  },
+}));
+
+function SimpleAlerts({values, onClose}) {
+  const classes = useStylesAlert();
+
+  if (!values.error) return null;
+  return (
+    <div className={classes.root}>
+      <Alert severity={values.type} onClose={() => onClose()}>
+        {values.message}
+      </Alert>
+    </div>
+  );
+}

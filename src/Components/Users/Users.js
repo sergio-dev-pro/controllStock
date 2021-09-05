@@ -8,6 +8,7 @@ import TextField from "@material-ui/core/TextField";
 import UserContext from "../../Context/User/context";
 import UsersForm from "../UsersForm/UsersForm";
 import { Add, AddBox } from "@material-ui/icons";
+import { CircularProgress } from "@material-ui/core";
 
 function getPathApi(id) {
   return `/users`;
@@ -15,6 +16,7 @@ function getPathApi(id) {
 
 export default function Users() {
   const [usersList, setUsersList] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const [user, setUser] = useState({
     name: "",
@@ -26,14 +28,22 @@ export default function Users() {
   const pathApi = getPathApi(state.currentBranche.CompanyBranchId);
 
   useEffect(() => {
-    api.get("/users").then(({ data }) => setUsersList(data));
+    setLoading(true);
+    api
+      .get("/users")
+      .then(({ data }) => setUsersList(data))
+      .finally(() => setLoading(false));
     return () => {};
   }, []);
 
   const apiGet = () => {
-    api.get(pathApi).then(({ data }) => {
-      setUsersList(data);
-    });
+    setLoading(true);
+    api
+      .get(pathApi)
+      .then(({ data }) => {
+        setUsersList(data);
+      })
+      .finally(() => setLoading(false));
     handleChangeContent("list");
   };
   const handleChangeContent = (value) => {
@@ -47,9 +57,13 @@ export default function Users() {
   };
 
   const handleChangeUserSelected = (value) => {
-    api.get(`users/${value}`).then(({ data }) => {
-      setUser(data);
-    });
+    setLoading(true);
+    api
+      .get(`users/${value}`)
+      .then(({ data }) => {
+        setUser(data);
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleChangeContentEdit = (value) => {
@@ -69,7 +83,7 @@ export default function Users() {
 
   const apiCreate = (value) => {
     const dataIsValid = prodValidation(value);
-
+    setLoading(true);
     api
       .post(pathApi, {
         ...value,
@@ -77,22 +91,28 @@ export default function Users() {
         minQuantity: parseInt(value.minQuantity),
       })
       .then((res) => apiGet())
-      .catch(() => handleChangeContent("list"));
+      .catch(() => handleChangeContent("list"))
+      .finally(() => setLoading(false));
   };
 
   const apiEdit = (value) => {
     const dataIsValid = prodValidation(value);
-
+    setLoading(true);
     api
       .put(`users/${value.id}`, {
         name: value.name,
         branchs: value.branchs,
       })
-      .then((res) => apiGet());
+      .then((res) => apiGet())
+      .finally(() => setLoading(false));
   };
 
   const apiDelete = () => {
-    api.delete(`users/${user.id}`).then((res) => apiGet());
+    setLoading(true);
+    api
+      .delete(`users/${user.id}`)
+      .then((res) => apiGet())
+      .finally(() => setLoading(false));
   };
 
   const getContentComponent = (value) => {
@@ -109,6 +129,7 @@ export default function Users() {
                 { name: "Usuarios", key: "name" },
                 { name: "AcessCode", key: "accessCode" },
               ]}
+              visibleIcon={false}
             />
           </div>
         );
@@ -182,44 +203,75 @@ export default function Users() {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", width: "100%" }}>
-      <div
-        style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          padding: "24px",
-          margin: "24px",
-          overflow: "hidden",
-        }}
-      >
-        {!["create", "edit"].includes(content) && (
-          <Typography
-            variant="h5"
-            style={{
-              display: "flex",
-              width: "100%",
-              justifyContent: content == "list" ? "flex-end" : "space-between",
-              alignItems: "center",
-              height: "50px",
-            }}
-          >
-            {content !== "list" && "Usuarios"}
-            {content === "list" ? (
-              <Button
-                variant="contained"
-                color="primary"
-                href="#contained-buttons"
-                size="medium"
-                onClick={() => handleChangeContent("create")}
-                startIcon={<AddBox />}
-              >
-                Criar
-              </Button>
-            ) : null}
-          </Typography>
-        )}
-        {getContentComponent(content)}
-      </div>
+      {!loading ? (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            padding: "24px",
+            margin: "24px",
+            overflow: "hidden",
+          }}
+        >
+          {!["create", "edit"].includes(content) && (
+            <>
+              {content === "list" ? (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    width: "100%",
+                    justifyContent: usersList.length ? "flex-end" : "center",
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
+                    onClick={() => handleChangeContent("create")}
+                    startIcon={<AddBox />}
+                    style={{ width: usersList.length ? "fit-content" : "100%" }}
+                  >
+                    Criar usuario
+                  </Button>
+                </div>
+              ) : null}
+              {!usersList.length && (
+                <Typography
+                  variant="subtitle1"
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50px",
+                    marginBottom: "8px",
+                    color: "#ff844c",
+                  }}
+                >
+                  Adicione o primeiro usuário
+                </Typography>
+              )}
+              {/* {content !== "list" && "Usuarios"} */}
+            </>
+          )}
+          {getContentComponent(content)}
+        </div>
+      ) : (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            height: "200px",
+          }}
+        >
+          <CircularProgress />
+        </div>
+      )}
     </div>
   );
 }

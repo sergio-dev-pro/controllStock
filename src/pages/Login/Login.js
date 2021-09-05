@@ -17,12 +17,14 @@ import Alert from "@material-ui/lab/Alert";
 import UserContext from "../../Context/User/context";
 import api from "../../services/api";
 import { login, parseJwt } from "../../services/auth";
+import { Grid } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   paper: {
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
+    width: "100%",
   },
   avatar: {
     margin: theme.spacing(1),
@@ -33,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
   submit: {
-    margin: theme.spacing(3, 0, 2),
+    margin: "8px",
   },
   container: {
     display: "flex",
@@ -50,6 +52,10 @@ const DEFAULT_FIELDS_ERROR = {
     error: false,
     message: "",
   },
+  accessCode: {
+    error: false,
+    message: "",
+  },
 };
 
 export default function Login() {
@@ -60,6 +66,8 @@ export default function Login() {
   const [fieldError, setFieldError] = React.useState(DEFAULT_FIELDS_ERROR);
   const [loginError, setLoginError] = React.useState();
   const [isLoading, setIsLoading] = React.useState(false);
+  const [accessCodeLogin, setAccessCodeLogin] = React.useState(false);
+  const [accessCode, setAccessCode] = React.useState("");
 
   const { handleChangeState: setUserContextState } =
     React.useContext(UserContext);
@@ -76,6 +84,20 @@ export default function Login() {
     }
 
     setUserName(e.target.value);
+  };
+
+  const handleChangeAccessCode = (e) => {
+    const codeIsEmpty = accessCode.length === 0;
+    if (codeIsEmpty && fieldError.accessCode.error) {
+      setFieldError((currentState) => ({
+        ...currentState,
+        accessCode: {
+          error: false,
+        },
+      }));
+    }
+
+    setAccessCode(e.target.value);
   };
 
   const handleChangePassword = (e) => {
@@ -95,8 +117,36 @@ export default function Login() {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    if (accessCodeLogin) {
+      const codeIsEmpty = accessCode.length === 0;
+
+      if (codeIsEmpty) {
+        let newValueFieldError = {};
+        if (codeIsEmpty)
+          newValueFieldError["accessCode"] = {
+            error: true,
+            message: "Campo de código de acesso não pode estar vazio",
+          };
+        return setFieldError((prevState) => ({
+          ...prevState,
+          ...newValueFieldError,
+        }));
+      }
+      setIsLoading(true);
+      return api
+        .post("/auth", { accessCode })
+        .then(({ data }) => {
+          login(data);
+          setUserContextState(parseJwt(data));
+          history.push("/");
+        })
+        .catch((error) => setLoginError(true))
+        .finally(() => setIsLoading(false));
+    }
+
     const userNameIsEmpty = userName.length === 0;
     const passwordIsEmpty = password.length === 0;
+
     if (userNameIsEmpty || passwordIsEmpty) {
       let newValueFieldError = {};
       if (userNameIsEmpty)
@@ -116,8 +166,8 @@ export default function Login() {
     }
 
     setIsLoading(true);
-    api
-      .post("/auth", { nick: userName, password: password })
+    return api
+      .post("/auth", { nick: userName, password })
       .then(({ data }) => {
         login(data);
         setUserContextState(parseJwt(data));
@@ -138,50 +188,101 @@ export default function Login() {
           Login
         </Typography>
         <form className={classes.form} onSubmit={handleSubmit} noValidate>
-          <TextField
-            error={fieldError.userName.error}
-            helperText={fieldError.userName.message}
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            id="user-name"
-            label="Usuario"
-            name="userName"
-            autoComplete="nome"
-            onChange={handleChangeUserName}
-            value={userName}
-            autoFocus
-          />
-          <TextField
-            error={fieldError.password.error}
-            helperText={fieldError.password.message}
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-            onChange={handleChangePassword}
-            value={password}
-          />
+          {!accessCodeLogin ? (
+            <>
+              <TextField
+                error={fieldError.userName.error}
+                helperText={fieldError.userName.message}
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                id="user-name"
+                label="Usuario"
+                name="userName"
+                autoComplete="nome"
+                onChange={handleChangeUserName}
+                value={userName}
+                autoFocus
+              />
+              <TextField
+                error={fieldError.password.error}
+                helperText={fieldError.password.message}
+                variant="outlined"
+                margin="normal"
+                required
+                fullWidth
+                name="password"
+                label="Password"
+                type="password"
+                id="password"
+                autoComplete="current-password"
+                onChange={handleChangePassword}
+                value={password}
+              />
+            </>
+          ) : (
+            <TextField
+              error={fieldError.accessCode.error}
+              helperText={fieldError.accessCode.message}
+              variant="outlined"
+              margin="normal"
+              required
+              fullWidth
+              name="accessCode"
+              label="Código"
+              id="accessCode"
+              autoComplete="current-accessCode"
+              onChange={handleChangeAccessCode}
+              value={accessCode}
+            />
+          )}
+
           {/* <FormControlLabel
             control={<Checkbox value="remember" color="primary" />}
             label="Remember me"
           /> */}
           {!isLoading ? (
-            <Button
-              type="submit"
-              fullWidth
-              variant="contained"
-              color="primary"
-              className={classes.submit}
+            <div
+              style={{
+                width: "100%",
+                height: "auto",
+                display: "flex",
+                justifyContent: "center",
+              }}
             >
-              Entrar
-            </Button>
+              {!accessCodeLogin ? (
+                <Button
+                  style={{ cursor: "pointer", margin: 0 }}
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setAccessCodeLogin(true)}
+                  style={{ flex: 1 }}
+                >
+                  Código de acesso
+                </Button>
+              ) : (
+                <Button
+                  style={{ cursor: "pointer", margin: 0 }}
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => setAccessCodeLogin(false)}
+                  style={{ flex: 1 }}
+                >
+                  Voltar
+                </Button>
+              )}
+
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                style={{ flex: 1 }}
+              >
+                Entrar
+              </Button>
+            </div>
           ) : (
             <div
               style={{
@@ -195,18 +296,6 @@ export default function Login() {
               <CircularProgress />
             </div>
           )}
-          {/* <Grid container>
-            <Grid item xs>
-              <Link href="#" variant="body2">
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link href="#" variant="body2">
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid> */}
         </form>
         {loginError && (
           <Alert style={{ width: "100%" }} severity="error">

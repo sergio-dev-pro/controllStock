@@ -29,16 +29,22 @@ export default function Products() {
     api
       .get(pathApi)
       .then(({ data }) => setProductsList(data))
+      .catch((err) => console.error(err))
       .finally(() => setLoading(false));
     return () => {};
   }, []);
 
   const apiGet = () => {
-    api.get(pathApi).then(({ data }) => {
-      setProductsList(data);
-    });
+    setLoading(true);
+    api
+      .get(pathApi)
+      .then(({ data }) => {
+        setProductsList(data);
+      })
+      .finally(() => setLoading(false));
     handleChangeContent("list");
   };
+
   const handleChangeContent = (value) => {
     if (value === "list") {
       setProduct({
@@ -52,9 +58,13 @@ export default function Products() {
   };
 
   const handleChangeProductSelected = (value) => {
-    api.get(`products/${value}`).then(({ data }) => {
-      setProduct(data);
-    });
+    setLoading(true);
+    api
+      .get(`products/${value}`)
+      .then(({ data }) => {
+        setProduct(data);
+      })
+      .finally(() => setLoading(false));
   };
 
   const handleChangeContentEdit = (value) => {
@@ -74,31 +84,33 @@ export default function Products() {
 
   const apiCreate = (value) => {
     const dataIsValid = prodValidation(value);
-
+    setLoading(true);
     api
       .post(pathApi, {
         ...value,
-        companyBranchId: value.categoryId,
-        minQuantity: parseInt(value.minQuantity),
       })
       .then((res) => apiGet())
-      .catch(() => handleChangeContent("list"));
+      .catch(() => handleChangeContent("list"))
+      .finally(() => setLoading(false));
   };
 
   const apiEdit = (value) => {
     const dataIsValid = prodValidation(value);
-
+    setLoading(true);
     api
       .put(`products/${value.id}`, {
         ...value,
-        companyBranchId: value.categoryId,
-        minQuantity: parseInt(value.minQuantity),
       })
-      .then((res) => apiGet());
+      .then((res) => apiGet())
+      .finally(() => setLoading(false));
   };
 
   const apiDelete = () => {
-    api.delete(`products/${product.id}`).then((res) => apiGet());
+    setLoading(true);
+    api
+      .delete(`products/${product.id}`)
+      .then((res) => apiGet())
+      .finally(() => setLoading(false));
   };
 
   const getContentComponent = (value) => {
@@ -113,8 +125,8 @@ export default function Products() {
               handleChangeContentDelete={handleChangeContentDelete}
               colunmList={[
                 { name: "Produtos", key: "name" },
-                { name: "Quantidade minima", key: "minQuantity" },
               ]}
+              visibleIcon
             />
           </div>
         );
@@ -199,29 +211,48 @@ export default function Products() {
           }}
         >
           {!["create", "edit"].includes(content) && (
-            <Typography
-              variant="h5"
-              style={{
-                display: "flex",
-                width: "100%",
-                justifyContent: "flex-end",
-                alignItems: "center",
-                height: "50px",
-              }}
-            >
-              {content === "list" ? (
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href="#contained-buttons"
-                  size="medium"
-                  startIcon={<AddBox />}
-                  onClick={() => handleChangeContent("create")}
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  width: "100%",
+                  justifyContent: productsList.length ? "flex-end" : "center",
+                }}
+              >
+                {content === "list" ? (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
+                    startIcon={<AddBox />}
+                    onClick={() => handleChangeContent("create")}
+                    style={{
+                      width: productsList.length ? "fit-content" : "100%",
+                    }}
+                  >
+                    Criar PRODUTO
+                  </Button>
+                ) : null}
+              </div>
+              {!productsList.length && (
+                <Typography
+                  variant="subtitle1"
+                  style={{
+                    display: "flex",
+                    width: "100%",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "50px",
+                    marginBottom: "8px",
+                    color: "#ff844c",
+                  }}
                 >
-                  Criar
-                </Button>
-              ) : null}
-            </Typography>
+                  Adicione o primeiro produto
+                </Typography>
+              )}
+            </>
           )}
           {getContentComponent(content)}
         </div>
@@ -232,7 +263,7 @@ export default function Products() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            height: "100%",
+            height: "200px",
           }}
         >
           <CircularProgress />

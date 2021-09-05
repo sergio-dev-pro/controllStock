@@ -9,6 +9,13 @@ const api = axios.create({
   },
 });
 
+api.interceptors.response.use( undefined,
+  function axiosRetryinterceptor(err) {
+    if(err.response.status === 401)
+    window.location = '/login'
+  } 
+);
+
 api.interceptors.request.use(async (config) => {
   const token = getToken();
   if (token) {

@@ -340,6 +340,7 @@ export default function UsersForm({
                         target: { value: e.companyBranchId },
                       })
                     }
+                    style={{ display: "flex", flexWrap: 'wrap' }}
                   >
                     <ListItemText
                       primary={
@@ -348,13 +349,16 @@ export default function UsersForm({
                           .name
                       }
                     />
-                    {e.permissions.map((permission) => (
-                      <Chip
-                        label={
-                          PERMISSIONS.find((PER) => PER.id == permission).name
-                        }
-                      />
-                    ))}
+                    <div>
+                      {e.permissions.map((permission) => (
+                        <Chip 
+                        style={{marginBottom: '8px'}}
+                          label={
+                            PERMISSIONS.find((PER) => PER.id == permission).name
+                          }
+                        />
+                      ))}
+                    </div>
                   </ListItem>
                 ))}
               </List>

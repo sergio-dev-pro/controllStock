@@ -416,7 +416,7 @@ export const MainListItems = ({ selected, setSelected }) => (
       </ListItemIcon>
       <ListItemText primary="Estoque Central" />
     </ListItem>
-    {/* <ListItem
+    <ListItem
       button
       selected={selected === MENU_LIST[5]}
       onClick={() => setSelected(MENU_LIST[5])}
@@ -425,7 +425,7 @@ export const MainListItems = ({ selected, setSelected }) => (
         <ShopIcon />
       </ListItemIcon>
       <ListItemText primary="Estoque" />
-    </ListItem> */}
+    </ListItem>
     <ListItem
       button
       selected={selected === MENU_LIST[0]}
@@ -467,16 +467,16 @@ export const MainListItems = ({ selected, setSelected }) => (
       <ListItemText primary="Categorias" />
     </ListItem>
 
-    {/* <ListItem
+    <ListItem
       button
       selected={selected === MENU_LIST[6]}
       onClick={() => setSelected(MENU_LIST[6])}
     >
       <ListItemIcon>
-        <PostAddIcon /> 
+        <PostAddIcon />
       </ListItemIcon>
       <ListItemText primary="Notas" />
-    </ListItem> */}
+    </ListItem>
   </div>
 );
 

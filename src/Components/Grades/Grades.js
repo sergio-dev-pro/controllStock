@@ -132,6 +132,14 @@ export default function Grades() {
         products: []
       });
 
+      api
+      .get("products")
+      .then(({ data }) => {
+        setProductsList(data);
+        setProductId(data[0].id);
+      })
+      .catch((err) => console.log("@@@ err", err));
+
       const handleChangeStartDate = (e) => {
         // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
         setStartDate(e.target.value);
@@ -212,10 +220,6 @@ export default function Grades() {
             setLoading(false);
           });
 };
-    const handleAddNewNotProduct = () =>
-    {
-
-    }
 
       const getContentComponent = (value) => {
         let component;
@@ -279,7 +283,7 @@ export default function Grades() {
                     href="#contained-buttons"
                     size="medium"
                     startIcon={<AddBox />}
-                    onClick={() => handleAddNewNotProduct()}
+                    onClick={() => setShowAddNoteProductForm(true)}
                     style={{
                         width: "fit-content",
                     }}

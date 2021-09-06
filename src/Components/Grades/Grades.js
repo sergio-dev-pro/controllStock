@@ -132,13 +132,14 @@ export default function Grades() {
         products: []
       });
 
-      api
+      const loadProducts = () => api
       .get("products")
       .then(({ data }) => {
         setProductsList(data);
         setProductId(data[0].id);
       })
-      .catch((err) => console.log("@@@ err", err));
+      .catch((err) => console.log("@@@ err", err))
+      .finally(() => setLoading(false));
 
       const handleChangeStartDate = (e) => {
         // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
@@ -274,7 +275,7 @@ export default function Grades() {
                         />
                       </Grid>
                     <Grid item xs={6}>
-                    <h5>Produtos:</h5>
+                    <h4>Produtos:</h4>
                     </Grid>
                     <Grid item xs={6}>
                     <Button
@@ -283,7 +284,12 @@ export default function Grades() {
                     href="#contained-buttons"
                     size="medium"
                     startIcon={<AddBox />}
-                    onClick={() => setShowAddNoteProductForm(true)}
+                    onClick={() => 
+                      {
+                        setLoading(true);
+                        loadProducts();
+                        setShowAddNoteProductForm(true);
+                    }}
                     style={{
                         width: "fit-content",
                     }}
@@ -388,9 +394,9 @@ export default function Grades() {
                     Cancelar
                   </Button>
                   <Button
-                    onclick={() => 
+                    onClick={() => 
                         {
-                            addNoteProduct(productId, valueSpended, quantity);
+                            addNoteProduct();
                             setShowAddNoteProductForm(false);
                     }}
                     fullWidth
@@ -404,7 +410,7 @@ export default function Grades() {
                     </>
         }
                     </Grid>
-                    <div style={{ display: "flex", alignItems: "center" }}>
+                    <div style={{ display: showAddNoteProductForm ? "none" : "flex", alignItems: "center" }}>
                       <Button
                         type="button"
                         fullWidth
@@ -443,9 +449,9 @@ export default function Grades() {
         return component;
       };
 
-      const addNoteProduct = (productId, valueSended, quantity)=>
+      const addNoteProduct = () =>
         {
-            noteProductsList.push({productId, valueSended, quantity});
+            noteProductsList.push({productId, valueSpended, quantity});
             setNoteProductsList(noteProductsList);
         };
 

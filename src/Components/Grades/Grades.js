@@ -125,7 +125,6 @@ export default function Grades() {
     const [startDate, setStartDate] = useState(todayDate());
     const [endDate, setEndDate] = useState(todayDateSumeOne(todayDate()));
     const [noteDescription, setNoteDescription] = useState("");
-    const [description, setDescription] = useState("");
     const [content, setContent] = useState("list");
 
     const [note, setNote] = useState({
@@ -166,8 +165,8 @@ export default function Grades() {
         setLoading(true);
         api
           .post("/notes", {
-            noteDescription,
-            noteProductsList
+            description: noteDescription,
+            items: noteProductsList
           })
           .then(() => {
             handleChangeContent("list");
@@ -198,29 +197,26 @@ export default function Grades() {
       const loadNotes = () =>
 {
     api
-          .get("notes")
+          .get(`notes?StartDate=${todayDate()}&EndDate=${todayDateSumeOne(
+            todayDate()
+          )}`)
           .then(({ data }) => {
-            if (data.length) {
-              api
-                .get(
-                  `?StartDate=${todayDate()}&EndDate=${todayDateSumeOne(
-                    todayDate()
-                  )}`
-                )
-                .then((response) => {
-                  setNotesList(response.data);
-                })
-                .catch((err) => console.log("@@@ err", err))
-                .finally(() => setLoading(false));
-            }
-            setProductsList(data);
-            setProductId(data[0].id);
+            setNotesList(data);
           })
           .catch((err) => console.log("@@@ err", err))
           .finally(() => {
             setLoading(false);
           });
 };
+
+    const handleCreateNoteProduct = () =>
+    {
+      setLoading(true);
+      loadProducts();
+      setQuantity("");
+      setvalueSpended("");
+      setShowAddNoteProductForm(true);
+    }
 
       const getContentComponent = (value) => {
         let component;
@@ -284,12 +280,7 @@ export default function Grades() {
                     href="#contained-buttons"
                     size="medium"
                     startIcon={<AddBox />}
-                    onClick={() => 
-                      {
-                        setLoading(true);
-                        loadProducts();
-                        setShowAddNoteProductForm(true);
-                    }}
+                    onClick={() => handleCreateNoteProduct()}
                     style={{
                         width: "fit-content",
                     }}
@@ -299,7 +290,7 @@ export default function Grades() {
                     </Grid>
                     <SimpleTable
                         colunmList={[
-                        { name: "Nome", key: "name" },
+                        { name: "Nome", key: "productName" },
                         { name: "Quantidade", key: "quantity" },
                         { name: "Total gasto", key: "valueSpended" }
                         ]}
@@ -336,21 +327,6 @@ export default function Grades() {
                         ))}
                       </Select>
                     </FormControl>
-                  </Grid>
-
-                  <Grid item xs={12}>
-                    <TextField
-                      value={description}
-                      onChange={(e) => setDescription(e.target.value)}
-                      autoComplete="fname"
-                      name="description"
-                      variant="outlined"
-                      required
-                      fullWidth
-                      id="description"
-                      label="Descrição"
-                      autoFocus
-                    />
                   </Grid>
                   <Grid item xs={12} sm={6}>
                     <TextField
@@ -428,7 +404,7 @@ export default function Grades() {
                         color="primary"
                         style={{ marginTop: "16px" }}
                       >
-                        Criar mercadoria
+                        Criar Nota
                       </Button>
                     </div>
                   </form>
@@ -451,7 +427,8 @@ export default function Grades() {
 
       const addNoteProduct = () =>
         {
-            noteProductsList.push({productId, valueSpended, quantity});
+            const productName = productsList.find(p => p.id === productId).name; 
+            noteProductsList.push({productId, valueSpended, quantity, productName});
             setNoteProductsList(noteProductsList);
         };
 

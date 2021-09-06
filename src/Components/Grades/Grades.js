@@ -1,22 +1,453 @@
-import React from 'react';
+import React, { useState, useEffect } from "react";
+import { Container, Divider, Typography } from "@material-ui/core";
+import { CircularProgress } from "@material-ui/core";
+import Button from "@material-ui/core/Button";
+import { makeStyles } from "@material-ui/core/styles";
+import EditIcon from "@material-ui/icons/Edit";
+import IconButton from "@material-ui/core/IconButton";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import { AddBox, Search } from "@material-ui/icons";
+import TextField from "@material-ui/core/TextField";
+import Grid from "@material-ui/core/Grid";
+import Box from "@material-ui/core/Box";
+import CssBaseline from "@material-ui/core/CssBaseline";
+import Select from "@material-ui/core/Select";
+import InputLabel from "@material-ui/core/InputLabel";
+import MenuItem from "@material-ui/core/MenuItem";
+import FormControl from "@material-ui/core/FormControl";
+
+import api from "../../services/api";
+
+function todayDate() {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = today.getFullYear();
+
+  return (today = yyyy + "-" + mm + "-" + dd);
+}
+
+function todayDateSumeOne(value, operation) {
+  var date = new Date(value);
+  if (operation && operation === "sub") date.setDate(date.getDate() - 2);
+  else date.setDate(date.getDate() + 2);
+
+  var dd = String(date.getDate()).padStart(2, "0");
+  var mm = String(date.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = date.getFullYear();
+
+  return yyyy + "-" + mm + "-" + dd;
+}
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+      width: "100%",
+      // maxWidth: 360,
+      backgroundColor: theme.palette.background.paper,
+    },
+    table: {
+      width: "100%",
+    },
+  }));
+
+function SimpleTable({ list, colunmList }) {
+    const classes = useStyles();
+    // const [checked, setChecked] = React.useState([0]);
+    console.log("@@@ list", list);
+  
+    if (!list || !list.length) return null;
+    console.log("@@@ SimpleTable");
+    return (
+      <TableContainer
+        component={Paper}
+        style={{ width: "100%", paddingLeft: "0px", margin: "10px 0px" }}
+      >
+        <Table className={classes.table} aria-label="simple table">
+          <TableHead>
+            <TableRow>
+              {colunmList.map((e, i) => (
+                <TableCell
+                  align={
+                    i === 0
+                      ? "left"
+                      : i === colunmList.length - 1
+                      ? "right"
+                      : "center"
+                  }
+                >
+                  <Typography variant="subtitle1">{e.name}</Typography>
+                </TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {list.map((item) => (
+              <TableRow key={item.name}>
+                {colunmList.map((elem, i) => (
+                  <TableCell
+                    align={
+                      i === 0
+                        ? "left"
+                        : i === colunmList.length - 1
+                        ? "right"
+                        : "center"
+                    }
+                    component="th"
+                    scope="row"
+                  >
+                    <Typography variant="subtitle1">{item[elem.key]}</Typography>
+                  </TableCell>
+                ))}
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
+    );
+  }
 
 export default function Grades() {
-
+    const [loading, setLoading] = useState(false);
+    const [productsList, setProductsList] = useState([]);
+    const [noteProductsList, setNoteProductsList] = useState([]);
+    const [notesList, setNotesList] = useState([]);
+    const [productId, setProductId] = useState("");
+    const [valueSpended, setvalueSpended] = useState("");
+    const [quantity, setQuantity] = useState("");
+    const [startDate, setStartDate] = useState(todayDate());
+    const [endDate, setEndDate] = useState(todayDateSumeOne(todayDate()));
+    const [noteDescription, setNoteDescription] = useState("");
+    const [description, setDescription] = useState("");
+    const [content, setContent] = useState("list");
     React.useEffect(() =>
     {
-        // coloca aqui oq precisar renderizar apenas uma vez
-    })
+        loadNotes();
+    });
     
     React.useEffect(() =>
     {
         // coloca aqui oq precisar renderizar apenas uma vez.
         //  No segundo paramentro da função useEffect é passado uma array com os estados que ele vai monitorar se holver alteração
 
-    }, ["nomeDoEstadoAtualizado"])
+    }, ["nomeDoEstadoAtualizado"]);
 
-    return (
-        <div>
-            Rnderiza aqui
+    const [note, setNote] = useState({
+        products: []
+      });
+
+      useEffect(() => {
+        setLoading(true);
+        
+        return () => {};
+      }, []);
+
+      const handleChangeStartDate = (e) => {
+        // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
+        setStartDate(e.target.value);
+    
+        if (endDate && Date.parse(e.target.value) >= Date.parse(endDate))
+          return setEndDate(todayDateSumeOne(e.target.value));
+      };
+    
+      const handleChangeEndDate = (e) => {
+        // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
+        setEndDate(e.target.value);
+    
+        if (startDate && Date.parse(e.target.value) <= Date.parse(startDate))
+          return setStartDate(todayDateSumeOne(e.target.value, "sub"));
+      };
+
+      const searchNote = (_) => {
+        setLoading(true);
+        loadNotes();
+      };
+
+      const handleCreateNote = () => {
+        setLoading(true);
+        api
+          .post("/notes", {
+            noteDescription,
+            noteProductsList
+          })
+          .then(() => {
+            handleChangeContent("list");
+          })
+          .catch(() => {
+            handleChangeContent("list");
+          })
+          .finally(() => setLoading(false));
+      };
+
+      const handleChangeContent = (value) => {
+        if (value === "list") {
+          setNote({
+              descripton: "",
+              products: []
+          }
+          );
+    
+          setLoading(true);
+          loadNotes();
+        }
+    
+        setContent(value);
+      };
+
+      const loadNotes = () =>
+{
+    api
+          .get("notes")
+          .then(({ data }) => {
+            if (data.length) {
+              api
+                .get(
+                  `?StartDate=${todayDate()}&EndDate=${todayDateSumeOne(
+                    todayDate()
+                  )}`
+                )
+                .then((response) => {
+                  setNotesList(response.data);
+                })
+                .catch((err) => console.log("@@@ err", err))
+                .finally(() => setLoading(false));
+            }
+            setProductsList(data);
+            setProductId(data[0].id);
+          })
+          .catch((err) => console.log("@@@ err", err))
+          .finally(() => {
+            setLoading(false);
+          });
+};
+
+      const getContentComponent = (value) => {
+        let component;
+        switch (value) {
+          case "list":
+            component = (
+              <SimpleTable
+                colunmList={[
+                  { name: "Id", key: "id" },
+                  { name: "Descrição", key: "description" }
+                ]}
+                list={notesList}
+              />
+            );
+            break;
+          case "create":
+            component = (
+              <Container component="main" maxWidth="sm">
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography component="h1" variant="h5" style={{ width: "100%" }}>
+                    Criar Nota
+                  </Typography>
+                  <form
+                    style={{ width: "100%", marginTop: "24px" }}
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleCreateNote();
+                    }}
+                    noValidate
+                  >
+                    <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                          value={noteDescription}
+                          onChange={(e) => setNoteDescription(e.target.value)}
+                          autoComplete="fname"
+                          name="description"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="description"
+                          label="Descrição"
+                          autoFocus
+                        />
+                      </Grid>
+                    </Grid>
+                    <div style={{ display: "flex", alignItems: "center" }}>
+                      <Button
+                        type="button"
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        style={{ marginTop: "16px" }}
+                        onClick={() => handleChangeContent("list")}
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        type="submit"
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        style={{ marginTop: "16px" }}
+                      >
+                        Criar mercadoria
+                      </Button>
+                    </div>
+                  </form>
+                </div>
+                <Box mt={5}></Box>
+              </Container>
+            );
+            break;
+          case "edit":
+            component = {};
+            break;
+          case "delete":
+            component = {};
+            break;
+          default:
+            console.log("nada");
+        }
+        return component;
+      };
+
+      const addNoteProduct = (productId, valueSended, quantity)=>
+        {
+            noteProductsList.push({productId, valueSended, quantity});
+            setNoteProductsList(noteProductsList);
+        };
+
+      return (
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            padding: "24px",
+            margin: "24px 0",
+            overflow: "hidden",
+            alignItems: "center",
+          }}
+        >
+          {!loading ? (
+            <>
+              {content === "list" ? (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: "100%",
+                      justifyContent: "space-between",
+                      flexWrap: 'wrap'
+                    }}
+                  >
+                    {/* {!merchandiseList.length ? null : ( */}
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        // marginBottom: '8px',
+                        flexWrap: 'wrap'
+                      }}
+                    >
+                      <TextField
+                        value={startDate}
+                        onChange={handleChangeStartDate}
+                        variant="outlined"
+                        required
+                        id="date"
+                        label="Data Inicial"
+                        type="date"
+                        defaultValue="2017-05-24"
+                        // className={classes.textField}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        style={{ marginRight: "8px",  paddingBottom: "16px" }}
+                      />
+                      <TextField
+                        value={endDate}
+                        onChange={handleChangeEndDate}
+                        variant="outlined"
+                        required
+                        id="date"
+                        label="Data Final"
+                        type="date"
+                        defaultValue="2017-05-24"
+                        // className={classes.textField}
+                        InputLabelProps={{
+                          shrink: true,
+                        }}
+                        style={{ marginRight: "8px",  paddingBottom: "16px" }}
+                      />
+                      <Button
+                        type="button"
+                        variant="contained"
+                        color="primary"
+                        style={{ marginBottom: "16px" }}
+                        onClick={searchNote}
+                        startIcon={<Search />}
+                      >
+                        Buscar
+                      </Button>
+                    </div>
+                    {/* )} */}
+    
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      href="#contained-buttons"
+                      size="medium"
+                      startIcon={<AddBox />}
+                      onClick={() => handleChangeContent("create")}
+                      style={{
+                        width: "fit-content",
+                      }}
+                    >
+                      Add Nota
+                    </Button>
+                  </div>
+                  {/* {!merchandiseList.length && (
+                    <Typography
+                      variant="subtitle1"
+                      style={{
+                        display: "flex",
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "50px",
+                        marginBottom: "8px",
+                        color: "#ff844c",
+                      }}
+                    >
+                      Adicione a primeira mercadoria
+                    </Typography>
+                  )} */}
+                </>
+              ) : null}
+              {getContentComponent(content)}
+            </>
+          ) : (
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "200px",
+              }}
+            >
+              <CircularProgress />
+            </div>
+          )}
         </div>
-    )
-}
+      );
+};

@@ -117,6 +117,7 @@ export default function Grades() {
     const [loading, setLoading] = useState(false);
     const [productsList, setProductsList] = useState([]);
     const [noteProductsList, setNoteProductsList] = useState([]);
+    const [showAddNoteProductForm, setShowAddNoteProductForm] = useState(false);
     const [notesList, setNotesList] = useState([]);
     const [productId, setProductId] = useState("");
     const [valueSpended, setvalueSpended] = useState("");
@@ -126,27 +127,10 @@ export default function Grades() {
     const [noteDescription, setNoteDescription] = useState("");
     const [description, setDescription] = useState("");
     const [content, setContent] = useState("list");
-    React.useEffect(() =>
-    {
-        loadNotes();
-    });
-    
-    React.useEffect(() =>
-    {
-        // coloca aqui oq precisar renderizar apenas uma vez.
-        //  No segundo paramentro da função useEffect é passado uma array com os estados que ele vai monitorar se holver alteração
-
-    }, ["nomeDoEstadoAtualizado"]);
 
     const [note, setNote] = useState({
         products: []
       });
-
-      useEffect(() => {
-        setLoading(true);
-        
-        return () => {};
-      }, []);
 
       const handleChangeStartDate = (e) => {
         // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
@@ -178,6 +162,8 @@ export default function Grades() {
           })
           .then(() => {
             handleChangeContent("list");
+            setNoteProductsList([]);
+            setNoteDescription("");
           })
           .catch(() => {
             handleChangeContent("list");
@@ -226,6 +212,10 @@ export default function Grades() {
             setLoading(false);
           });
 };
+    const handleAddNewNotProduct = () =>
+    {
+
+    }
 
       const getContentComponent = (value) => {
         let component;
@@ -263,6 +253,8 @@ export default function Grades() {
                     noValidate
                   >
                     <Grid container spacing={2}>
+                    {!showAddNoteProductForm ?
+                    <div>
                     <Grid item xs={12}>
                         <TextField
                           value={noteDescription}
@@ -277,6 +269,136 @@ export default function Grades() {
                           autoFocus
                         />
                       </Grid>
+                    <Grid item xs={6}>
+                    <h5>Produtos:</h5>
+                    </Grid>
+                    <Grid item xs={6}>
+                    <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
+                    startIcon={<AddBox />}
+                    onClick={() => handleAddNewNotProduct()}
+                    style={{
+                        width: "fit-content",
+                    }}
+                >
+                  Add Mercadoria
+                </Button>
+                    </Grid>
+                    <SimpleTable
+                        colunmList={[
+                        { name: "Nome", key: "name" },
+                        { name: "Quantidade", key: "quantity" },
+                        { name: "Total gasto", key: "valueSpended" }
+                        ]}
+                        list={noteProductsList}
+                    />
+                    </div>
+                    : <>
+                    <Grid container spacing={2}>
+                  <Grid item xs={12}>
+                    <FormControl variant="outlined" fullWidth>
+                      <InputLabel id="demo-simple-select-outlined-label">
+                        Produto
+                      </InputLabel>
+                      <Select
+                        value={productId}
+                        name="productId"
+                        label="Produto"
+                        value={productId}
+                        onChange={(e) => {
+                          setProductId(e.target.value);
+                        }}
+                        name="product"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="productId"
+                        label="Produto"
+                        autoFocus
+                      >
+                        {productsList.map((e) => (
+                          <MenuItem key={e.id} value={e.id}>
+                            {e.name}
+                          </MenuItem>
+                        ))}
+                      </Select>
+                    </FormControl>
+                  </Grid>
+
+                  <Grid item xs={12}>
+                    <TextField
+                      value={description}
+                      onChange={(e) => setDescription(e.target.value)}
+                      autoComplete="fname"
+                      name="description"
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="description"
+                      label="Descrição"
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      type="number"
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      autoComplete="fname"
+                      name="quantity"
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="quantity"
+                      label="Quantidade"
+                      autoFocus
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <TextField
+                      type="number"
+                      value={valueSpended}
+                      onChange={(e) => setvalueSpended(e.target.value)}
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="valueSpended"
+                      label="Valor gasto"
+                      name="valueSpended"
+                      autoComplete="lname"
+                    />
+                  </Grid>
+                </Grid>
+                <div style={{ display: "flex", alignItems: "center" }}>
+                  <Button
+                    type="button"
+                    fullWidth
+                    variant="contained"
+                    color="secondary"
+                    style={{ marginTop: "16px" }}
+                    onClick={() => setShowAddNoteProductForm(false)}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button
+                    onclick={() => 
+                        {
+                            addNoteProduct(productId, valueSpended, quantity);
+                            setShowAddNoteProductForm(false);
+                    }}
+                    fullWidth
+                    variant="contained"
+                    color="primary"
+                    style={{ marginTop: "16px" }}
+                  >
+                    Adicionar mercadoria
+                  </Button>
+                </div>
+                    </>
+        }
                     </Grid>
                     <div style={{ display: "flex", alignItems: "center" }}>
                       <Button

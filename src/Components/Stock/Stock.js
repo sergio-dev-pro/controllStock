@@ -81,6 +81,15 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
     console.log("@@@ branchsPermissions", branchsPermissions);
   }, [isAdmin, branchsPermissions]);
 
+  //   const handleChangeItems = (e) => {
+  //     const itemsState  = items;
+  //     itemsState[e.target.id].finalQuantity = e.target.value;
+  //     console.log("@@@ onChange", itemsState)
+  //     // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
+  //     setItems(itemsState);
+  //     setContent('end_stock');
+  // };
+
   const getContent = (value) => {
     if (value === "end_stock") {
       setItems((prevState) =>
@@ -117,15 +126,8 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
       .finally((err) => setLoading(false));
   };
 
-  const handleChangeItems = (e) => {
-      const itemsState  = items; 
-      itemsState[e.target.id].finalQuantity = e.target.value;
-      console.log("@@@ onChange", itemsState)
-      // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
-      setItems(itemsState);
-  };
-
   const getContentComponent = (value) => {
+    // console.log("@@@ getContentComponent items[0].finalQuantity", items[0].finalQuantity)
     let component;
     switch (value) {
       case "list":
@@ -307,70 +309,272 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
         );
         break;
       case "end_stock":
-        component = (
-          <Container maxWidth="md">
-            <Typography style={{ width: "100%" }} variant="h6">
-              Finalizar Estoque
-            </Typography>
-            <Divider style={{ margin: "16px 0" }} />
-            {items.map((elem, i) => (
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: "24px",
-                  width: "100%",
-                  flexWrap: "wrap",
-                }}
-              >
-                <Typography
-                  variant="subtitle1"
-                  style={{ marginBottom: "16px" }}
+        component =
+          items && items.length ? (
+            <Container maxWidth="md" style={{ overflowY: "auto" }}>
+              <Typography style={{ width: "100%" }} variant="h6">
+                Finalizar Estoque
+              </Typography>
+              <Divider style={{ margin: "16px 0" }} />
+              <div>
+                {items.map((elem, i) => (
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                      marginBottom: "24px",
+                      width: "100%",
+                      flexWrap: "wrap",
+                    }}
+                  >
+                    <Typography
+                      variant="subtitle1"
+                      style={{ marginBottom: "16px" }}
+                    >
+                      {elem.productName}
+                    </Typography>
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <TextField
+                        id={i}
+                        error={elem.error}
+                        style={{ maxWidth: "200px" }}
+                        type="number"
+                        value={elem.finalQuantity}
+                        onChange={(e) =>
+                          setItems((prevState) => {
+                            let itemsState = [...prevState];
+
+                            itemsState[e.target.id].finalQuantity =
+                              e.target.value;
+                            console.log("@@@ onChange", itemsState);
+                            // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
+                            setItems(itemsState);
+                          })
+                        }
+                        autoComplete="fname"
+                        name="finalQuantity"
+                        variant="standard"
+                        required
+                        fullWidth
+                        // id="finalQuantity"
+                        label="Quantidade de final"
+                      />
+                      <FormControlLabel
+                        control={
+                          <Switch
+                            onChange={(e) =>
+                              setItems((prevState) => {
+                                let itemsState = [...prevState];
+
+                                itemsState[e.target.id].confirmEntryQuantity =
+                                  !prevState[e.target.id].confirmEntryQuantity;
+                                setItems(itemsState);
+                              })
+                            }
+                            checked={elem.confirmEntryQuantity}
+                            // onChange={handleChange}
+                            name="confirmEntryQuantity"
+                            id={i}
+                            color="primary"
+                          />
+                        }
+                        label="Confirmar quantidade de entrada"
+                      />
+                    </div>
+                  </div>
+                ))}
+
+                <div
+                  style={{ height: "calc(100% - 112px)", overflowY: "auto" }}
                 >
-                  {elem.productName}
-                </Typography>
+                  {items.map((elem, i) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: "24px",
+                        width: "100%",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        style={{ marginBottom: "16px" }}
+                      >
+                        {elem.productName}
+                      </Typography>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <TextField
+                          id={i}
+                          error={elem.error}
+                          style={{ maxWidth: "200px" }}
+                          type="number"
+                          value={elem.finalQuantity}
+                          onChange={(e) =>
+                            setItems((prevState) => {
+                              let itemsState = [...prevState];
+
+                              itemsState[e.target.id].finalQuantity =
+                                e.target.value;
+                              console.log("@@@ onChange", itemsState);
+                              // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
+                              setItems(itemsState);
+                            })
+                          }
+                          autoComplete="fname"
+                          name="finalQuantity"
+                          variant="standard"
+                          required
+                          fullWidth
+                          // id="finalQuantity"
+                          label="Quantidade de final"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              onChange={(e) =>
+                                setItems((prevState) => {
+                                  let itemsState = [...prevState];
+
+                                  itemsState[e.target.id].confirmEntryQuantity =
+                                    !prevState[e.target.id]
+                                      .confirmEntryQuantity;
+                                  setItems(itemsState);
+                                })
+                              }
+                              checked={elem.confirmEntryQuantity}
+                              // onChange={handleChange}
+                              name="confirmEntryQuantity"
+                              id={i}
+                              color="primary"
+                            />
+                          }
+                          label="Confirmar quantidade de entrada"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  {items.map((elem, i) => (
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        marginBottom: "24px",
+                        width: "100%",
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      <Typography
+                        variant="subtitle1"
+                        style={{ marginBottom: "16px" }}
+                      >
+                        {elem.productName}
+                      </Typography>
+                      <div
+                        style={{
+                          width: "100%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                          flexWrap: "wrap",
+                        }}
+                      >
+                        <TextField
+                          id={i}
+                          error={elem.error}
+                          style={{ maxWidth: "200px" }}
+                          type="number"
+                          value={elem.finalQuantity}
+                          onChange={(e) =>
+                            setItems((prevState) => {
+                              let itemsState = [...prevState];
+
+                              itemsState[e.target.id].finalQuantity =
+                                e.target.value;
+                              console.log("@@@ onChange", itemsState);
+                              // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
+                              setItems(itemsState);
+                            })
+                          }
+                          autoComplete="fname"
+                          name="finalQuantity"
+                          variant="standard"
+                          required
+                          fullWidth
+                          // id="finalQuantity"
+                          label="Quantidade de final"
+                        />
+                        <FormControlLabel
+                          control={
+                            <Switch
+                              onChange={(e) =>
+                                setItems((prevState) => {
+                                  let itemsState = [...prevState];
+
+                                  itemsState[e.target.id].confirmEntryQuantity =
+                                    !prevState[e.target.id]
+                                      .confirmEntryQuantity;
+                                  setItems(itemsState);
+                                })
+                              }
+                              checked={elem.confirmEntryQuantity}
+                              // onChange={handleChange}
+                              name="confirmEntryQuantity"
+                              id={i}
+                              color="primary"
+                            />
+                          }
+                          label="Confirmar quantidade de entrada"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
                 <div
                   style={{
                     width: "100%",
-                    display: "flex",
+                    justifyContent: "space-around",
                     alignItems: "center",
-                    justifyContent: "space-between",
-                    flexWrap: "wrap",
+                    position: "static"
                   }}
                 >
-                  <TextField
-                    key={i}
-                    id={i}
-                    error={elem.error}
-                    style={{ maxWidth: "200px" }}
-                    type="number"
-                    value={elem.finalQuantity}
-                    onChange={handleChangeItems}
-                    autoComplete="fname"
-                    name="finalQuantity"
-                    variant="standard"
-                    required
-                    fullWidth
-                    // id="finalQuantity"  
-                    label="Quantidade de final"
-                  />
-                  <FormControlLabel
-                    control={
-                      <Switch
-                        checked={elem.confirmEntryQuantity}
-                        // onChange={handleChange}
-                        name="confirmEntryQuantity"
-                        color="primary"
-                      />
-                    }
-                    label="Confirmar quantidade de entrada"
-                  />
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    style={{ marginRight: "8px" }}
+                  >
+                    Voltar
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginLeft: "8px" }}
+                  >
+                    Salvar
+                  </Button>
                 </div>
               </div>
-            ))}
-          </Container>
-        );
+            </Container>
+          ) : null;
         break;
       default:
         break;
@@ -411,8 +615,12 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
       }}
     >
       {!loading ? (
+        // content == "end_stock" ? (
+        //   <EndStock items={items} changeContent={() => getContent("list")} setItems={setItems} />
+        // ) : (
         getContentComponent(content)
       ) : (
+        // )
         <div
           style={{
             width: "100%",
@@ -426,6 +634,73 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
         </div>
       )}
     </div>
+  );
+}
+
+function EndStock({ items, setItems, changeContent }) {
+  // const classes = useStyles();
+
+  return (
+    <Container maxWidth="md">
+      <Typography style={{ width: "100%" }} variant="h6">
+        Finalizar Estoque
+      </Typography>
+      <Divider style={{ margin: "16px 0" }} />
+      {items.map((elem, i) => (
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "24px",
+            width: "100%",
+            flexWrap: "wrap",
+          }}
+          key={i}
+        >
+          <Typography variant="subtitle1" style={{ marginBottom: "16px" }}>
+            {elem.productName}
+          </Typography>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              flexWrap: "wrap",
+            }}
+          >
+            <TextField
+              key={i}
+              id={i}
+              error={elem.error}
+              style={{ maxWidth: "200px" }}
+              type="number"
+              value={elem.finalQuantity}
+              // onChange={handleChangeItems}
+              autoComplete="fname"
+              name="finalQuantity"
+              variant="standard"
+              required
+              fullWidth
+              // id="finalQuantity"
+              label="Quantidade de final"
+            />
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={elem.confirmEntryQuantity}
+                  // onChange={handleChange}
+                  name="confirmEntryQuantity"
+                  color="primary"
+                />
+              }
+              label="Confirmar quantidade de entrada"
+            />
+          </div>
+        </div>
+      ))}
+    </Container>
   );
 }
 

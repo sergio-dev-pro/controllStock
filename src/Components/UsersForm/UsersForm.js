@@ -28,7 +28,6 @@ import UserContext from "../../Context/User/context";
 const PERMISSIONS = [
   { id: "ShowProductsToDelivery", name: "Mostrar produtos para entrega" },
   { id: "UpdateFinalQuantity", name: "Atualizar a quantidade final" },
-  { id: "UpdateEntryQuantity", name: "Atualizar Quantidade de entrada" },
 ];
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

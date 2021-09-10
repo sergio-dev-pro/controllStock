@@ -16,9 +16,9 @@ import CategoryIcon from "@material-ui/icons/Category";
 import BusinessIcon from "@material-ui/icons/Business";
 import MenuOpenIcon from "@material-ui/icons/MenuOpen";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import ShopIcon from '@material-ui/icons/Shop';
-import ShopTwoIcon from '@material-ui/icons/ShopTwo';
-import PostAddIcon from '@material-ui/icons/PostAdd';
+import ShopIcon from "@material-ui/icons/Shop";
+import ShopTwoIcon from "@material-ui/icons/ShopTwo";
+import PostAddIcon from "@material-ui/icons/PostAdd";
 
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
@@ -328,13 +328,13 @@ export default function HomePage() {
     } else if (menu === MENU_LIST[4]) {
       return <CentralStock />;
     } else if (menu === MENU_LIST[5]) {
-      console.log("@@@ menu === MENU_LIST[5]")
-      return <Stock isAdmin={userConfig.isAdmin} Branchs={userConfig.Branchs} />;
-    } else if (menu === MENU_LIST[6]) {
-      console.log("@@@ menu === MENU_LIST[6]")
+      console.log("@@@ menu === MENU_LIST[5]");
       return (
-        <Grades />
-      )
+        <Stock isAdmin={userConfig.isAdmin} Branchs={userConfig.Branchs} />
+      );
+    } else if (menu === MENU_LIST[6]) {
+      console.log("@@@ menu === MENU_LIST[6]");
+      return <Grades />;
     }
   };
 
@@ -356,7 +356,7 @@ export default function HomePage() {
         >
           <div className={classes.toolbarIcon}></div>
           <Divider />
-          <List style={{ marginTop: "32px" }}>
+          <List style={{ marginTop: "32px", height: '100%' }}>
             <MainListItems selected={menu} setSelected={setMenu} />
           </List>
         </Drawer>
@@ -399,84 +399,95 @@ export default function HomePage() {
           </Container>
         </main>
       </div>
-      <SimpleAlerts values={state} onClose={onClose}  />
+      <SimpleAlerts values={state} onClose={onClose} />
     </div>
   );
 }
 
 export const MainListItems = ({ selected, setSelected }) => (
-  <div>
-    <ListItem
-      button
-      selected={selected === MENU_LIST[4]}
-      onClick={() => setSelected(MENU_LIST[4])}
-    >
-      <ListItemIcon>
-        <ShopTwoIcon />
-      </ListItemIcon>
-      <ListItemText primary="Estoque Central" />
-    </ListItem>
-    <ListItem
-      button
-      selected={selected === MENU_LIST[5]}
-      onClick={() => setSelected(MENU_LIST[5])}
-    >
-      <ListItemIcon>
-        <ShopIcon />
-      </ListItemIcon>
-      <ListItemText primary="Estoque" />
-    </ListItem>
-    <ListItem
-      button
-      selected={selected === MENU_LIST[0]}
-      onClick={() => setSelected(MENU_LIST[0])}
-    >
-      <ListItemIcon>
-        <BusinessIcon />
-      </ListItemIcon>
-      <ListItemText primary="Filiais" />
-    </ListItem>
-    <ListItem
-      button
-      selected={selected === MENU_LIST[1]}
-      onClick={() => setSelected(MENU_LIST[1])}
-    >
-      <ListItemIcon>
-        <ShoppingCartIcon />
-      </ListItemIcon>
-      <ListItemText primary="Produtos" />
-    </ListItem>
-    <ListItem
-      button
-      selected={selected === MENU_LIST[2]}
-      onClick={() => setSelected(MENU_LIST[2])}
-    >
-      <ListItemIcon>
-        <PeopleIcon />
-      </ListItemIcon>
-      <ListItemText primary="Usuários" />
-    </ListItem>
-    <ListItem
-      button
-      selected={selected === MENU_LIST[3]}
-      onClick={() => setSelected(MENU_LIST[3])}
-    >
-      <ListItemIcon>
-        <CategoryIcon />
-      </ListItemIcon>
-      <ListItemText primary="Categorias" />
-    </ListItem>
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "colunm",
+      justifyContent: "space-between",
+      height: "100%",
+    }}
+  >
+    <div>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[4]}
+        onClick={() => setSelected(MENU_LIST[4])}
+      >
+        <ListItemIcon>
+          <ShopTwoIcon />
+        </ListItemIcon>
+        <ListItemText primary="Estoque Central" />
+      </ListItem>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[5]}
+        onClick={() => setSelected(MENU_LIST[5])}
+      >
+        <ListItemIcon>
+          <ShopIcon />
+        </ListItemIcon>
+        <ListItemText primary="Estoque" />
+      </ListItem>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[0]}
+        onClick={() => setSelected(MENU_LIST[0])}
+      >
+        <ListItemIcon>
+          <BusinessIcon />
+        </ListItemIcon>
+        <ListItemText primary="Filiais" />
+      </ListItem>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[1]}
+        onClick={() => setSelected(MENU_LIST[1])}
+      >
+        <ListItemIcon>
+          <ShoppingCartIcon />
+        </ListItemIcon>
+        <ListItemText primary="Produtos" />
+      </ListItem>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[2]}
+        onClick={() => setSelected(MENU_LIST[2])}
+      >
+        <ListItemIcon>
+          <PeopleIcon />
+        </ListItemIcon>
+        <ListItemText primary="Usuários" />
+      </ListItem>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[3]}
+        onClick={() => setSelected(MENU_LIST[3])}
+      >
+        <ListItemIcon>
+          <CategoryIcon />
+        </ListItemIcon>
+        <ListItemText primary="Categorias" />
+      </ListItem>
 
-    <ListItem
-      button
-      selected={selected === MENU_LIST[6]}
-      onClick={() => setSelected(MENU_LIST[6])}
-    >
-      <ListItemIcon>
-        <PostAddIcon />
-      </ListItemIcon>
-      <ListItemText primary="Notas" />
-    </ListItem>
+      <ListItem
+        button
+        selected={selected === MENU_LIST[6]}
+        onClick={() => setSelected(MENU_LIST[6])}
+      >
+        <ListItemIcon>
+          <PostAddIcon />
+        </ListItemIcon>
+        <ListItemText primary="Notas" />
+      </ListItem>
+    </div>
+
+    <div>teste</div>
   </div>
 );
 
@@ -485,6 +496,7 @@ const useStylesAlert = makeStyles((theme) => ({
     position: "absolute",
     maxWidth: "400px",
     zIndex: "2000",
+    right: "0",
     width: "100%",
     "& > * + *": {
       marginTop: theme.spacing(2),
@@ -492,7 +504,7 @@ const useStylesAlert = makeStyles((theme) => ({
   },
 }));
 
-function SimpleAlerts({values, onClose}) {
+function SimpleAlerts({ values, onClose }) {
   const classes = useStylesAlert();
 
   if (!values.error) return null;

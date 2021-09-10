@@ -17,11 +17,14 @@ import { makeStyles } from "@material-ui/core/styles";
 import Table from "@material-ui/core/Table";
 import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
+import SaveIcon from "@material-ui/icons/Save";
+import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+
+import { ErrorContext } from "../../Context/Error/context";
 
 const useStyles = makeStyles({
   table: {
@@ -46,6 +49,8 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState("list");
   const [colunms, setColunms] = useState([]);
+
+  const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
     setLoading(true);
@@ -104,6 +109,17 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
     setContent(value);
   };
 
+  const handleChangeBranchId = (e) => {
+    const { value } = e.target;
+    setLoading(true);
+    api
+      .get(`products/stock-daily?day=${todayDate()}&branchId=${value}`)
+      .then(({ data }) => setItems(data))
+      .catch((err) => console.log("@@@", err))
+      .finally(() => setLoading(false));
+    setBranchId(value);
+  };
+
   const validData = (value) => {
     return true;
   };
@@ -118,6 +134,66 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
         entryQuantity: product.entryQuantity,
         finalQuantity: product.finalQuantity,
         previusQuantity: product.previusQuantity,
+      })
+      .then(({ data }) => {
+        getContent("list");
+      })
+      .catch((err) => console.log(err))
+      .finally((err) => setLoading(false));
+  };
+
+  const validDataFinalSock = () => {
+    // const errorList = items.map((e) => e.error);
+
+    console.log("@@@ validedatafinalstock items", items);
+    const listOfValidatedItems = items.map((item) => {
+      let error = false;
+      if (!item.finalQuantity.length || parseInt(item.finalQuantity) <= 0)
+        error = true;
+      return { ...item, error };
+    });
+
+    setItems(listOfValidatedItems);
+
+    const errorList = listOfValidatedItems.map((e) => e.error);
+    if (errorList.includes(true)) {
+      const firstItemOnTheListInError = listOfValidatedItems.find(
+        (item) => item.error
+      );
+      let messageError = "";
+      if (!firstItemOnTheListInError.finalQuantity.length)
+        messageError =
+          "ATENÇÂO: O campo de quantidade final nao pode estar vazio";
+      else if (parseInt(firstItemOnTheListInError.finalQuantity) <= 0)
+        messageError =
+          "ATENÇÂO: A campo de quantidade final deve ser maior que zero(0)";
+
+      handleChangeErrorState({
+        error: true,
+        message: messageError,
+        type: "error",
+      });
+      return false;
+    }
+
+    return true;
+  };
+
+  const handleSaveFinalStock = () => {
+    const isValid = validDataFinalSock();
+
+    if (!isValid) return;
+
+    setLoading(true);
+    api
+      .put(`products/stock-daily/close-day?branchId=${branchId}`, {
+        finalQuantities: items.map((e) => ({
+          id: e.id,
+          finalQuantity: parseInt(e.finalQuantity),
+          confirmEntryQuantity: e.confirmEntryQuantity
+            ? e.confirmEntryQuantity
+            : false,
+        })),
       })
       .then(({ data }) => {
         getContent("list");
@@ -157,9 +233,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                     name="branchId"
                     label="Produto"
                     value={branchId}
-                    onChange={(e) => {
-                      setBranchId(e.target.value);
-                    }}
+                    onChange={handleChangeBranchId}
                     name="product"
                     variant="outlined"
                     required
@@ -317,82 +391,34 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
               </Typography>
               <Divider style={{ margin: "16px 0" }} />
               <div>
-                {items.map((elem, i) => (
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      marginBottom: "24px",
-                      width: "100%",
-                      flexWrap: "wrap",
-                    }}
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-end",
+                    alignItems: "center",
+                    position: "static",
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    style={{ marginRight: "8px" }}
+                    startIcon={<KeyboardReturnIcon />}
+                    onClick={() => getContent("list")}
                   >
-                    <Typography
-                      variant="subtitle1"
-                      style={{ marginBottom: "16px" }}
-                    >
-                      {elem.productName}
-                    </Typography>
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <TextField
-                        id={i}
-                        error={elem.error}
-                        style={{ maxWidth: "200px" }}
-                        type="number"
-                        value={elem.finalQuantity}
-                        onChange={(e) =>
-                          setItems((prevState) => {
-                            let itemsState = [...prevState];
-
-                            itemsState[e.target.id].finalQuantity =
-                              e.target.value;
-                            console.log("@@@ onChange", itemsState);
-                            // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
-                            setItems(itemsState);
-                          })
-                        }
-                        autoComplete="fname"
-                        name="finalQuantity"
-                        variant="standard"
-                        required
-                        fullWidth
-                        // id="finalQuantity"
-                        label="Quantidade de final"
-                      />
-                      <FormControlLabel
-                        control={
-                          <Switch
-                            onChange={(e) =>
-                              setItems((prevState) => {
-                                let itemsState = [...prevState];
-
-                                itemsState[e.target.id].confirmEntryQuantity =
-                                  !prevState[e.target.id].confirmEntryQuantity;
-                                setItems(itemsState);
-                              })
-                            }
-                            checked={elem.confirmEntryQuantity}
-                            // onChange={handleChange}
-                            name="confirmEntryQuantity"
-                            id={i}
-                            color="primary"
-                          />
-                        }
-                        label="Confirmar quantidade de entrada"
-                      />
-                    </div>
-                  </div>
-                ))}
-
+                    Voltar
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    style={{ marginLeft: "8px" }}
+                    startIcon={<SaveIcon />}
+                    onClick={handleSaveFinalStock}
+                  >
+                    Salvar
+                  </Button>
+                </div>
                 <div
                   style={{ height: "calc(100% - 112px)", overflowY: "auto" }}
                 >
@@ -423,6 +449,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                         }}
                       >
                         <TextField
+                          type="number"
                           id={i}
                           error={elem.error}
                           style={{ maxWidth: "200px" }}
@@ -432,10 +459,17 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                             setItems((prevState) => {
                               let itemsState = [...prevState];
 
+                              let error = true;
+                              if (
+                                e.target.value.length &&
+                                parseInt(e.target.value) > 0
+                              )
+                                error = !error;
+
+                              itemsState[e.target.id].error = error;
                               itemsState[e.target.id].finalQuantity =
                                 e.target.value;
-                              console.log("@@@ onChange", itemsState);
-                              // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
+
                               setItems(itemsState);
                             })
                           }
@@ -472,105 +506,6 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                       </div>
                     </div>
                   ))}
-                  {items.map((elem, i) => (
-                    <div
-                      style={{
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "space-between",
-                        marginBottom: "24px",
-                        width: "100%",
-                        flexWrap: "wrap",
-                      }}
-                    >
-                      <Typography
-                        variant="subtitle1"
-                        style={{ marginBottom: "16px" }}
-                      >
-                        {elem.productName}
-                      </Typography>
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "space-between",
-                          flexWrap: "wrap",
-                        }}
-                      >
-                        <TextField
-                          id={i}
-                          error={elem.error}
-                          style={{ maxWidth: "200px" }}
-                          type="number"
-                          value={elem.finalQuantity}
-                          onChange={(e) =>
-                            setItems((prevState) => {
-                              let itemsState = [...prevState];
-
-                              itemsState[e.target.id].finalQuantity =
-                                e.target.value;
-                              console.log("@@@ onChange", itemsState);
-                              // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
-                              setItems(itemsState);
-                            })
-                          }
-                          autoComplete="fname"
-                          name="finalQuantity"
-                          variant="standard"
-                          required
-                          fullWidth
-                          // id="finalQuantity"
-                          label="Quantidade de final"
-                        />
-                        <FormControlLabel
-                          control={
-                            <Switch
-                              onChange={(e) =>
-                                setItems((prevState) => {
-                                  let itemsState = [...prevState];
-
-                                  itemsState[e.target.id].confirmEntryQuantity =
-                                    !prevState[e.target.id]
-                                      .confirmEntryQuantity;
-                                  setItems(itemsState);
-                                })
-                              }
-                              checked={elem.confirmEntryQuantity}
-                              // onChange={handleChange}
-                              name="confirmEntryQuantity"
-                              id={i}
-                              color="primary"
-                            />
-                          }
-                          label="Confirmar quantidade de entrada"
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div
-                  style={{
-                    width: "100%",
-                    justifyContent: "space-around",
-                    alignItems: "center",
-                    position: "static"
-                  }}
-                >
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    style={{ marginRight: "8px" }}
-                  >
-                    Voltar
-                  </Button>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    style={{ marginLeft: "8px" }}
-                  >
-                    Salvar
-                  </Button>
                 </div>
               </div>
             </Container>
@@ -634,73 +569,6 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
         </div>
       )}
     </div>
-  );
-}
-
-function EndStock({ items, setItems, changeContent }) {
-  // const classes = useStyles();
-
-  return (
-    <Container maxWidth="md">
-      <Typography style={{ width: "100%" }} variant="h6">
-        Finalizar Estoque
-      </Typography>
-      <Divider style={{ margin: "16px 0" }} />
-      {items.map((elem, i) => (
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginBottom: "24px",
-            width: "100%",
-            flexWrap: "wrap",
-          }}
-          key={i}
-        >
-          <Typography variant="subtitle1" style={{ marginBottom: "16px" }}>
-            {elem.productName}
-          </Typography>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              flexWrap: "wrap",
-            }}
-          >
-            <TextField
-              key={i}
-              id={i}
-              error={elem.error}
-              style={{ maxWidth: "200px" }}
-              type="number"
-              value={elem.finalQuantity}
-              // onChange={handleChangeItems}
-              autoComplete="fname"
-              name="finalQuantity"
-              variant="standard"
-              required
-              fullWidth
-              // id="finalQuantity"
-              label="Quantidade de final"
-            />
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={elem.confirmEntryQuantity}
-                  // onChange={handleChange}
-                  name="confirmEntryQuantity"
-                  color="primary"
-                />
-              }
-              label="Confirmar quantidade de entrada"
-            />
-          </div>
-        </div>
-      ))}
-    </Container>
   );
 }
 

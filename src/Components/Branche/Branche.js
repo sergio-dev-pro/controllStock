@@ -87,7 +87,11 @@ export default function Branches({ handleBrancheList }) {
     if (!name || !name.length) return null;
     setLoading(true);
     api
-      .put(`/branchs/${branche.id}`, { name: branche.name, startHour, endHour })
+      .put(`/branchs/${branche.id}`, {
+        name: branche.name,
+        startHour: startHour.length === 5 ? startHour + ":00" : startHour,
+        endHour: endHour.length === 5 ? endHour + ":00" : endHour,
+      })
       .then((res) => apiGet())
       .catch(() => handleChangeContent("list"))
       .finally(() => setLoading(false));
@@ -186,7 +190,7 @@ export default function Branches({ handleBrancheList }) {
                   onChange={(e) => setEndHour(e.target.value)}
                   fullWidth
                   id="time"
-                  label="Alarm clock"
+                  label="Horário Final"
                   type="time"
                   // className={classes.textField}
                   InputLabelProps={{

@@ -86,6 +86,7 @@ export default function UsersForm({
   handleOnClickActionCancel,
   title,
   actionSubmitText,
+  isAdmin,
 }) {
   const classes = useStyles();
   const { state } = React.useContext(UserContext);
@@ -117,12 +118,79 @@ export default function UsersForm({
     return () => {};
   }, []);
 
+  if (isAdmin)
+    return (
+      <Container component="main" maxWidth="sm">
+        <div className={classes.paper}>
+          <Typography
+            component="h1"
+            variant="h5"
+            style={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItem: "center",
+            }}
+          >
+            {title}
+          </Typography>
+          <form
+            className={classes.form}
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleOnClickActionSubmit(data);
+            }}
+            noValidate
+          >
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <TextField
+                  value={data.name}
+                  onChange={(e) => setData(e.target.value)}
+                  autoComplete="fname"
+                  name="name"
+                  variant="outlined"
+                  required
+                  fullWidth
+                  id="name"
+                  label="Name"
+                  autoFocus
+                />
+              </Grid>
+            </Grid>
+
+            <Divider style={{ margin: "16px 0px" }} />
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <Button
+                type="button"
+                fullWidth
+                variant="contained"
+                color="secondary"
+                className={classes.submit}
+                onClick={handleOnClickActionCancel}
+              >
+                Cancelar
+              </Button>
+              <Button
+                type="submit"
+                fullWidth
+                variant="contained"
+                color="primary"
+                className={classes.submit}
+              >
+                {actionSubmitText}
+              </Button>
+            </div>
+          </form>
+        </div>
+        <Box mt={5}></Box>
+      </Container>
+    );
+
   const handleChangeData = (e) => {
-    console.log("@@@users e.target", e.target);
     setData((prevState) => ({ ...prevState, [e.target.id]: e.target.value }));
   };
   const handleChangeBrancheId = (e) => {
-    console.log("@@@ handleChangeBrancheId e.target", e.target);
     // if (data.branchs.length) {
     //   setBrancheInvalidList(data.branchs.map((e) => e.companyBranchId));
     // }
@@ -134,7 +202,6 @@ export default function UsersForm({
       data.branchs.length != 0 &&
       data.branchs.map((e) => e.companyBranchId).includes(e.target.value)
     ) {
-      console.log("@@@ entrou");
       setPermissions(
         data.branchs.find((elem) => elem.companyBranchId == e.target.value)
           .permissions
@@ -143,7 +210,6 @@ export default function UsersForm({
   };
 
   const handleChangePermissions = (e) => {
-    console.log("@@@ handleChangePermissions e.target", e.target);
     if (
       !e.target.value.length &&
       data.branchs.map((elem) => elem.companyBranchId).includes(brancheId)
@@ -190,17 +256,22 @@ export default function UsersForm({
     );
     setPermissions([]);
     setBranche("0");
-    console.log("@@@ handleChangePermissionBranche e.target", e.target);
   };
 
-  console.log("@@@users", data);
-  console.log("@@@permissions", permissions);
-
   return (
-    <Container component="main" maxWidth="lg">
+    <Container component="main" maxWidth="sm">
       <CssBaseline />
       <div className={classes.paper}>
-        <Typography component="h1" variant="h5" style={{ width: "100%" }}>
+        <Typography
+          component="h1"
+          variant="h5"
+          style={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItem: "center",
+          }}
+        >
           {title}
         </Typography>
         <form
@@ -270,13 +341,11 @@ export default function UsersForm({
               >
                 <InputLabel id="demo-mutiple-chip-label">Permissões</InputLabel>
                 <Select
-                  labelId="demo-mutiple-chip-label"
-                  id="demo-mutiple-chip"
                   multiple
                   value={permissions}
                   onChange={handleChangePermissions}
                   name="permissions"
-                  input={<Input id="select-multiple-chip" />}
+                  input={<Input variant="outlined" id="select-multiple-chip" />}
                   renderValue={(selected) => (
                     <div className={classes.chips}>
                       {selected.map((value) => (
@@ -339,7 +408,7 @@ export default function UsersForm({
                         target: { value: e.companyBranchId },
                       })
                     }
-                    style={{ display: "flex", flexWrap: 'wrap' }}
+                    style={{ display: "flex", flexWrap: "wrap" }}
                   >
                     <ListItemText
                       primary={
@@ -350,8 +419,8 @@ export default function UsersForm({
                     />
                     <div>
                       {e.permissions.map((permission) => (
-                        <Chip 
-                        style={{marginBottom: '8px'}}
+                        <Chip
+                          style={{ marginBottom: "8px" }}
                           label={
                             PERMISSIONS.find((PER) => PER.id == permission).name
                           }

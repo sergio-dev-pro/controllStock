@@ -413,7 +413,7 @@ export const MainListItems = ({ selected, setSelected }) => (
   <div
     style={{
       display: "flex",
-      flexDirection: "colunm",
+      flexDirection: 'column',
       justifyContent: "space-between",
       height: "100%",
     }}

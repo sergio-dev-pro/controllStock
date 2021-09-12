@@ -95,6 +95,18 @@ export default function Users() {
       .finally(() => setLoading(false));
   };
 
+  const apiCreateAdmin = (value) => {
+    const dataIsValid = prodValidation(value);
+    setLoading(true);
+    api
+      .post('users/central-stock-admin', {
+        name: value,
+      })
+      .then((res) => apiGet())
+      .catch(() => handleChangeContent("list"))
+      .finally(() => setLoading(false));
+  };
+
   const apiEdit = (value) => {
     const dataIsValid = prodValidation(value);
     setLoading(true);
@@ -143,7 +155,23 @@ export default function Users() {
               user={null}
               handleOnClickActionSubmit={(value) => apiCreate(value)}
               handleOnClickActionCancel={() => handleChangeContent("list")}
-              title="Usuario"
+              title="Criar Usuario"
+              actionSubmitText="Criar"
+            />
+          </div>
+        );
+        break;
+      case "create_admin":
+        component = (
+          <div
+            style={{ width: "100%", display: "flex", flexDirection: "column" }}
+          >
+            <UsersForm
+              user={null}
+              isAdmin
+              handleOnClickActionSubmit={(value) => apiCreateAdmin(value)}
+              handleOnClickActionCancel={() => handleChangeContent("list")}
+              title="Criar Usuario Repositor"
               actionSubmitText="Criar"
             />
           </div>
@@ -158,7 +186,7 @@ export default function Users() {
               user={user}
               handleOnClickActionSubmit={(value) => apiEdit(value)}
               handleOnClickActionCancel={() => handleChangeContent("list")}
-              title="Usuario"
+              title="Editar Usuario"
               actionSubmitText="Editar"
             />
           </div>
@@ -223,6 +251,7 @@ export default function Users() {
                     alignItems: "center",
                     width: "100%",
                     justifyContent: usersList.length ? "flex-end" : "center",
+                    flexWrap: 'wrap'
                   }}
                 >
                   <Button
@@ -230,9 +259,20 @@ export default function Users() {
                     color="primary"
                     href="#contained-buttons"
                     size="medium"
+                    onClick={() => handleChangeContent("create_admin")}
+                    startIcon={<AddBox />}
+                    style={{ width: usersList.length ? "fit-content" : "45%" }}
+                  >
+                    Criar Usuario Repositor
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
                     onClick={() => handleChangeContent("create")}
                     startIcon={<AddBox />}
-                    style={{ width: usersList.length ? "fit-content" : "100%" }}
+                    style={{ width: usersList.length ? "fit-content" : "45%" }}
                   >
                     Criar usuario
                   </Button>

@@ -12,6 +12,8 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { VisibilityOutlined } from "@material-ui/icons";
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -55,6 +57,9 @@ export default function SimpleTable({
                 <Typography variant="h6">Visualizar</Typography>
               </TableCell>
             )}
+            <TableCell align="center">
+              <Typography variant="h6">Repositor </Typography>
+            </TableCell>
             <TableCell align="right">
               <Typography variant="h6">Editar </Typography>
             </TableCell>
@@ -85,25 +90,43 @@ export default function SimpleTable({
                   </IconButton>
                 </TableCell>
               )}
-              <TableCell align="right">
-                <IconButton
-                  edge="end"
-                  aria-label="comments"
-                  onClick={() => handleChangeContentEdit(item.id)}
-                >
-                  <EditIcon />
-                </IconButton>
+              <TableCell align="center">
+                <Typography variant="h6">
+                  {item.isCentralStockAdmin ? (
+                    <CheckIcon style={{ color: "green" }} color={"primary"} />
+                  ) : (
+                    <CloseIcon style={{ color: "red" }} />
+                  )}{" "}
+                </Typography>
               </TableCell>
-              <TableCell align="right">
-                {" "}
-                <IconButton
-                  onClick={() => handleChangeContentDelete(item.id)}
-                  edge="end"
-                  aria-label="comments"
-                >
-                  <DeleteOutlineIcon />
-                </IconButton>
-              </TableCell>
+              {!item.isCentralStockAdmin ? (
+                <>
+                  <TableCell align="right">
+                    <IconButton
+                      edge="end"
+                      aria-label="comments"
+                      onClick={() => handleChangeContentEdit(item.id)}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  </TableCell>
+                  <TableCell align="right">
+                    {" "}
+                    <IconButton
+                      onClick={() => handleChangeContentDelete(item.id)}
+                      edge="end"
+                      aria-label="comments"
+                    >
+                      <DeleteOutlineIcon />
+                    </IconButton>
+                  </TableCell>
+                </>
+              ) : (
+                <>
+                  <TableCell align="right"></TableCell>
+                  <TableCell align="right"></TableCell>
+                </>
+              )}
             </TableRow>
           ))}
         </TableBody>

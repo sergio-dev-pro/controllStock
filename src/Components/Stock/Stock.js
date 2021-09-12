@@ -130,7 +130,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
 
     setLoading(true);
     api
-      .put(`products/stock-daily?id=${product.id}&branchId=${branchId}`, {
+      .put(`products/stock-daily/${product.id}?branchId=${branchId}`, {
         entryQuantity: product.entryQuantity,
         finalQuantity: product.finalQuantity,
         previusQuantity: product.previusQuantity,
@@ -148,7 +148,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
     console.log("@@@ validedatafinalstock items", items);
     const listOfValidatedItems = items.map((item) => {
       let error = false;
-      if (!item.finalQuantity.length || parseInt(item.finalQuantity) <= 0)
+      if (!item.finalQuantity || parseInt(item.finalQuantity) <= 0)
         error = true;
       return { ...item, error };
     });
@@ -203,7 +203,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
   };
 
   const getContentComponent = (value) => {
-    // console.log("@@@ getContentComponent items[0].finalQuantity", items[0].finalQuantity)
+    console.log("@@@ items", items)
     let component;
     switch (value) {
       case "list":
@@ -482,7 +482,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                           label="Quantidade de final"
                         />
                         <FormControlLabel
-                          control={
+                 8         control={
                             <Switch
                               onChange={(e) =>
                                 setItems((prevState) => {
@@ -501,7 +501,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                               color="primary"
                             />
                           }
-                          label="Confirmar quantidade de entrada"
+                          label={`Confirmar quantidade entrada de ${elem.entryQuantity}`}
                         />
                       </div>
                     </div>

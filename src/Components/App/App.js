@@ -5,11 +5,17 @@ import Routes from "../../Routes";
 import { UserContextProvider } from "../../Context/User/context";
 import ErrorContextProvider from "../../Context/Error/context";
 
+import { MuiPickersUtilsProvider } from '@material-ui/pickers';
+
+// pick a date util library
+import DateFnsUtils from '@date-io/date-fns';
+
 import "./App.css";
 
 function App() {
   return (
-    <div className="App">
+    <MuiPickersUtilsProvider utils={DateFnsUtils}>
+      <div className="App">
       <UserContextProvider>
         <ErrorContextProvider>
           <Router>
@@ -17,7 +23,8 @@ function App() {
           </Router>
         </ErrorContextProvider>
       </UserContextProvider>
-    </div>
+      </div>
+    </MuiPickersUtilsProvider>
   );
 }
 

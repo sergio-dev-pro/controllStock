@@ -53,21 +53,23 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
-    setLoading(true);
-    api
-      .get("/branchs")
-      .then(({ data }) => {
-        setBranchList(data);
-        setBranchId(data[0].id);
-        api
-          .get(`products/stock-daily?day=${todayDate()}&branchId=${data[0].id}`)
-          .then(({ data }) => setItems(data))
-          .catch((err) => console.log("@@@", err))
-          .finally(() => setLoading(false));
-      })
-      .finally(() => setLoading(false));
-    // console.log("@@@ isAdmin && permissions", isAdmin, permissions);
-    setLoading(true);
+    console.log('@@@ branchsPermissions', branchsPermissions)
+    if(isAdmin){
+      setLoading(true);
+      api
+        .get("/branchs")
+        .then(({ data }) => {
+          setBranchList(data);
+          setBranchId(data[0].id);
+          api
+            .get(`products/stock-daily?day=${todayDate()}&branchId=${data[0].id}`)
+            .then(({ data }) => setItems(data))
+            .catch((err) => console.log("@@@", err))
+            .finally(() => setLoading(false));
+        })
+        .finally(() => setLoading(false));
+
+    }
     return () => {};
   }, []);
 

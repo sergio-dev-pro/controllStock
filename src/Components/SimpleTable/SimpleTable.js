@@ -47,8 +47,8 @@ export default function SimpleTable({
       <Table className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
-            {colunmList.map((e) => (
-              <TableCell align="left">
+            {colunmList.map((e, i) => (
+              <TableCell align={i === 0 ? "left" : "center"}>
                 <Typography variant="h6">{e.name}</Typography>
               </TableCell>
             ))}
@@ -57,9 +57,6 @@ export default function SimpleTable({
                 <Typography variant="h6">Visualizar</Typography>
               </TableCell>
             )}
-            <TableCell align="center">
-              <Typography variant="h6">Repositor </Typography>
-            </TableCell>
             <TableCell align="right">
               <Typography variant="h6">Editar </Typography>
             </TableCell>
@@ -71,14 +68,15 @@ export default function SimpleTable({
         <TableBody>
           {list.map((item) => (
             <TableRow key={item.name}>
-              {colunmList.map((elem) => (
-                <TableCell align="left" component="th" scope="row">
+              {colunmList.map((elem, i) => (
+                <TableCell
+                  align={i === 0 ? "left" : "center"}
+                  component="th"
+                  scope="row"
+                >
                   <Typography variant="subtitle1">{item[elem.key]}</Typography>
                 </TableCell>
               ))}
-              {/* <TableCell align="left">
-                <Typography variant="subtitle1">{item.accessCode}</Typography>
-              </TableCell> */}
               {visibleIcon && (
                 <TableCell align="center">
                   <IconButton
@@ -90,15 +88,6 @@ export default function SimpleTable({
                   </IconButton>
                 </TableCell>
               )}
-              <TableCell align="center">
-                <Typography variant="h6">
-                  {item.isCentralStockAdmin ? (
-                    <CheckIcon style={{ color: "green" }} color={"primary"} />
-                  ) : (
-                    <CloseIcon style={{ color: "red" }} />
-                  )}{" "}
-                </Typography>
-              </TableCell>
               {!item.isCentralStockAdmin ? (
                 <>
                   <TableCell align="right">
@@ -132,42 +121,5 @@ export default function SimpleTable({
         </TableBody>
       </Table>
     </TableContainer>
-    // <ListItem
-    //   key={id}
-    //   role={undefined}
-    //   style={{ width: "100%", paddingLeft: "0px" }}
-    // >
-    //   <Typography
-    //     variant="h5"
-    //     style={{
-    //       display: "flex",
-    //       width: "100%",
-    //       justifyContent: "space-between",
-    //       alignItems: "center",
-    //       height: "50px",
-    //     }}
-    //   >
-    //     <Typography variant="h6">{name}</Typography>
-    //   </Typography>
-    //   <ListItemSecondaryAction>
-    //     <IconButton
-    //       edge="end"
-    //       aria-label="comments"
-    //       onClick={() => handleChangeContentEdit(id)}
-    //     >
-    //       <EditIcon />
-    //     </IconButton>
-    //     <IconButton
-    //       onClick={() => handleChangeContentDelete(id)}
-    //       edge="end"
-    //       aria-label="comments"
-    //     >
-    //       <DeleteOutlineIcon />
-    //     </IconButton>
-    //   </ListItemSecondaryAction>
-    // </ListItem>
   );
-  //     })}
-  //   </List>
-  // );
 }

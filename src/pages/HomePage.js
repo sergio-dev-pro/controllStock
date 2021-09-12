@@ -35,7 +35,7 @@ import ProductsByBranch from "../Components/Reports/ProductsByBranch";
 
 import "./HomePage.css";
 
-import { getToken, parseJwt } from "../services/auth";
+import { getToken, parseJwt, logout } from "../services/auth";
 import { formatUserData } from "../services/format";
 import { ArrowRightRounded, ListAlt } from "@material-ui/icons";
 import { Button, IconButton, Typography } from "@material-ui/core";
@@ -199,7 +199,10 @@ function AppBarBranche({
           <Button
             // style={{ width: "100%" }}
             variant="outlined"
-            onClick={() => console.log("@@@")}
+            onClick={() => {
+              logout();
+              window.location = "/login";
+            }}
             color="primary"
           >
             Sair
@@ -225,7 +228,7 @@ const MENU_LIST = [
   "categorys",
   "central_stock",
   "stock",
-  "reports"
+  "reports",
 ];
 
 export default function HomePage() {
@@ -233,7 +236,7 @@ export default function HomePage() {
   const matches = useMediaQuery("(min-width:600px)");
 
   const [open, setOpen] = React.useState(true);
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const [openDrawerMobile, setOpenDrawerMobile] = React.useState(true);
   const [userConfig, setUserConfig] = React.useState(false);
   const { state, handleChangeErrorState, onClose } =
@@ -270,8 +273,9 @@ export default function HomePage() {
   };
 
   const handleChangeUserConfig = (value) => {
-    if (!value.isAdmin && !value.IsCentralStockAdmin) setMenu(MENU_LIST[5]);
+    if ((!value.isAdmin && !value.IsCentralStockAdmin) || value.IsCentralStockAdmin) setMenu(MENU_LIST[5]);
     setUserConfig(value);
+    setLoading(false);
     handleChangeState(value);
   };
 
@@ -296,6 +300,7 @@ export default function HomePage() {
   );
 
   const getContentComponent = () => {
+    console.log("@@@ userConfig", userConfig);
     if (menu === MENU_LIST[0]) {
       return <Branches handleBrancheList={handleChangeBranches} />;
     } else if (menu === MENU_LIST[3]) {
@@ -309,13 +314,16 @@ export default function HomePage() {
     } else if (menu === MENU_LIST[5]) {
       console.log("@@@ menu === MENU_LIST[5]");
       return (
-        <Stock isAdmin={userConfig.isAdmin} IsCentralStockAdmin={userConfig.IsCentralStockAdmin} Branchs={userConfig.Branchs} />
+        <Stock
+          isAdmin={userConfig.isAdmin}
+          IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
+          branchs={userConfig.branches}
+        />
       );
     } else if (menu === MENU_LIST[6]) {
       console.log("@@@ menu === MENU_LIST[6]");
       return <Grades />;
-    }
-    else if (menu === MENU_LIST[7]) {
+    } else if (menu === MENU_LIST[7]) {
       return <ProductsByBranch />;
     }
   };
@@ -386,16 +394,19 @@ export default function HomePage() {
             !userConfig.isAdmin && !userConfig.IsCentralStockAdmin
           }
         />
-        {loading && <LinearProgress />}
-        <main className={classes.content} style={{ overflow: "auto" }}>
-          <Container
-            maxWidth="lg"
-            className={classes.container}
-            style={{ padding: "8px", height: "calc(100% - 85px)" }}
-          >
-            {getContentComponent()}
-          </Container>
-        </main>
+        {loading ? (
+          <LinearProgress />
+        ) : (
+          <main className={classes.content} style={{ overflow: "auto" }}>
+            <Container
+              maxWidth="lg"
+              className={classes.container}
+              style={{ padding: "8px", height: "calc(100% - 85px)" }}
+            >
+              {getContentComponent()}
+            </Container>
+          </main>
+        )}
       </div>
       <SimpleAlerts values={state} onClose={onClose} />
     </div>
@@ -496,16 +507,6 @@ export const MainListItems = ({
       <div>
         <ListItem
           button
-          selected={selected === MENU_LIST[4]}
-          onClick={() => setSelected(MENU_LIST[4])}
-        >
-          <ListItemIcon>
-            <ShopTwoIcon />
-          </ListItemIcon>
-          <ListItemText primary="Estoque Central" />
-        </ListItem>
-        <ListItem
-          button
           selected={selected === MENU_LIST[5]}
           onClick={() => setSelected(MENU_LIST[5])}
         >
@@ -531,7 +532,10 @@ export const MainListItems = ({
     <Button
       style={{ width: "100%" }}
       variant="outlined"
-      onClick={() => console.log("@@@")}
+      onClick={() => {
+        logout();
+        window.location = "/login";
+      }}
       color="primary"
     >
       Sair

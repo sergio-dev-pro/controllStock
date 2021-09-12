@@ -4,6 +4,8 @@ import Button from "@material-ui/core/Button";
 import api from "../../services/api";
 import SimpleTable from "../SimpleTable/SimpleTable";
 import TextField from "@material-ui/core/TextField";
+import CheckIcon from "@material-ui/icons/Check";
+import CloseIcon from "@material-ui/icons/Close";
 
 import UserContext from "../../Context/User/context";
 import UsersForm from "../UsersForm/UsersForm";
@@ -25,6 +27,7 @@ export default function Users() {
   const { state } = useContext(UserContext);
   const [content, setContent] = useState("list");
 
+  console.log("@@@ state.currentBranche", state.currentBranche)
   const pathApi = getPathApi(state.currentBranche.CompanyBranchId);
 
   useEffect(() => {
@@ -99,7 +102,7 @@ export default function Users() {
     const dataIsValid = prodValidation(value);
     setLoading(true);
     api
-      .post('users/central-stock-admin', {
+      .post("users/central-stock-admin", {
         name: value,
       })
       .then((res) => apiGet())
@@ -134,12 +137,20 @@ export default function Users() {
         component = (
           <div style={{ marginBottom: "8px" }}>
             <SimpleTable
-              list={usersList}
+              list={usersList.map((e) => ({
+                ...e,
+                replenisher: e.isCentralStockAdmin ? (
+                  <CheckIcon style={{ color: "green" }} color={"primary"} />
+                ) : (
+                  <CloseIcon style={{ color: "red" }} />
+                ),
+              }))}
               handleChangeContentEdit={handleChangeContentEdit}
               handleChangeContentDelete={handleChangeContentDelete}
               colunmList={[
                 { name: "Usuarios", key: "name" },
                 { name: "AcessCode", key: "accessCode" },
+                { name: "Repositor", key: "replenisher" },
               ]}
               visibleIcon={false}
             />
@@ -251,7 +262,7 @@ export default function Users() {
                     alignItems: "center",
                     width: "100%",
                     justifyContent: usersList.length ? "flex-end" : "center",
-                    flexWrap: 'wrap'
+                    flexWrap: "wrap",
                   }}
                 >
                   <Button

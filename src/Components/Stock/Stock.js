@@ -482,7 +482,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                           label="Quantidade de final"
                         />
                         <FormControlLabel
-                 8         control={
+                          control={
                             <Switch
                               onChange={(e) =>
                                 setItems((prevState) => {

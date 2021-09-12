@@ -23,7 +23,7 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import { VisibilityOutlined } from "@material-ui/icons";
-
+import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 
 import api from "../../services/api";
 
@@ -128,6 +128,7 @@ export default function Grades() {
   const [endDate, setEndDate] = useState(todayDateSumeOne(todayDate()));
   const [noteDescription, setNoteDescription] = useState("");
   const [content, setContent] = useState("list");
+  const [noteId, setNoteId] = useState("list");
 
   const [note, setNote] = useState({
     products: [],
@@ -232,7 +233,7 @@ export default function Grades() {
           <SimpleTable
             colunmList={[
               { name: "Descrição", key: "description" },
-              { name: "Itens", key: "viewItems "},
+              { name: "Itens", key: "viewItems" },
               { name: "Total", key: "total" },
             ]}
             list={
@@ -244,8 +245,22 @@ export default function Grades() {
                       .reduce(
                         (previusValue, currentValue) =>
                           previusValue + currentValue
-                      ),
-                      viewItems: (<IconButton onClick={() => console.log("@@@")}> <VisibilityOutlined /> </IconButton>)
+                      )
+                      .toLocaleString("pt-br", {
+                        style: "currency",
+                        currency: "BRL",
+                      }),
+                    viewItems: (
+                      <IconButton
+                        onClick={() => {
+                          setNoteId(note.id);
+                          setContent("view_items");
+                        }}
+                      >
+                        {" "}
+                        <VisibilityOutlined />{" "}
+                      </IconButton>
+                    ),
                   }))
                 : []
             }
@@ -260,7 +275,7 @@ export default function Grades() {
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
-                width: '100%'
+                width: "100%",
               }}
             >
               <Typography component="h1" variant="h5" style={{ width: "100%" }}>
@@ -276,7 +291,7 @@ export default function Grades() {
               >
                 <Grid container spacing={2}>
                   {!showAddNoteProductForm ? (
-                    <div>
+                    <>
                       <Grid item xs={12}>
                         <TextField
                           value={noteDescription}
@@ -294,7 +309,7 @@ export default function Grades() {
                       <Grid item xs={6}>
                         <h4>Produtos:</h4>
                       </Grid>
-                      <Grid item xs={6}>
+                      <Grid item xs={6} style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
                         <Button
                           variant="contained"
                           color="primary"
@@ -317,7 +332,7 @@ export default function Grades() {
                         ]}
                         list={noteProductsList}
                       />
-                    </div>
+                    </>
                   ) : (
                     <>
                       <Grid container spacing={2}>
@@ -380,7 +395,7 @@ export default function Grades() {
                           />
                         </Grid>
                       </Grid>
-                      <div style={{ display: "flex", alignItems: "center" }}>
+                      <div style={{ display: "flex", width: '100%', alignItems: "center", justifyContent: "space-between" }}>
                         <Button
                           type="button"
                           fullWidth
@@ -439,8 +454,39 @@ export default function Grades() {
           </Container>
         );
         break;
-      case "edit":
-        component = {};
+      case "view_items":
+        component = (
+          <div
+            style={{ display: "flex", width: "100%", flexDirection: "column" }}
+          >
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
+                style={{ marginRight: "8px" }}
+                startIcon={<KeyboardReturnIcon />}
+                onClick={() => setContent("list")}
+              >
+                Voltar
+              </Button>
+            </div>
+            <SimpleTable
+              colunmList={[
+                { name: "Nome", key: "" },
+                { name: "Quantidade", key: "Quantity" },
+                { name: "Valor gasto", key: "ValueSpended" },
+              ]}
+              list={JSON.parse(notesList.find((e) => e.id === noteId).items)}
+            />
+          </div>
+        );
         break;
       case "delete":
         component = {};

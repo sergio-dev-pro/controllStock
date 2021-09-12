@@ -203,7 +203,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
   };
 
   const getContentComponent = (value) => {
-    console.log("@@@ items", items)
+    console.log("@@@ items", items);
     let component;
     switch (value) {
       case "list":
@@ -218,6 +218,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "space-between",
+                flexWrap: "wrap",
               }}
             >
               <div>
@@ -482,7 +483,7 @@ export default function Stock({ isAdmin, Branchs: branchsPermissions }) {
                           label="Quantidade de final"
                         />
                         <FormControlLabel
-                 8         control={
+                          control={
                             <Switch
                               onChange={(e) =>
                                 setItems((prevState) => {

@@ -37,7 +37,7 @@ import "./HomePage.css";
 import { getToken, parseJwt } from "../services/auth";
 import { formatUserData } from "../services/format";
 import { ArrowRightRounded, ListAlt } from "@material-ui/icons";
-import { IconButton, Typography } from "@material-ui/core";
+import { Button, IconButton, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
 
 const drawerWidth = 240;
@@ -154,6 +154,7 @@ function AppBarBranche({
   setBranche,
   buttonMenu,
   buttonMenuAction,
+  showLogoutButton,
 }) {
   const classes = useStylesHeader();
 
@@ -184,55 +185,25 @@ function AppBarBranche({
             justifyContent: "flex-start",
           }}
         >
-          {/* <Typography variant="h5" className={classes.title}>
-              <BusinessIcon
-                style={{
-                  marginLeft: "4px",
-                  marginRight: "4px",
-                  // color: "#ff844c",
-                  height: "30px",
-                  width: "40px",
-                }}
-              />
-              {branche.CompanyBranchName}
-            </Typography> */}
-          <div>
-            {/* <FormControl
-              variant="outlined"
-              className={classes.formControl}
-              style={{
-                width: "200px",
-                zIndex: "1000",
-                position: "absolut",
-              }}
-            >
-              <InputLabel>Selecione a filial</InputLabel>
-              <Select
-                value={branche.CompanyBranchId}
-                onChange={handleChangeBranche}
-                // style={{ color: "#ff844c" }}
-                label="Selecione a filial"
-                inputProps={{
-                  name: "age",
-                  id: "outlined-age-native-simple",
-                }}
-              >
-                {brancheList.map((b, i) => (
-                  <MenuItem key={i} value={b.CompanyBranchId}>
-                    {b.CompanyBranchName}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl> */}
-            <Typography
-              variant="h5"
-              color="secondary"
-              style={{ color: "rgba(0, 0, 0, 0.87)" }}
-            >
-              Brutos Controle de Estoque
-            </Typography>
-          </div>
+          <Typography
+            variant="h5"
+            color="secondary"
+            style={{ color: "rgba(0, 0, 0, 0.87)" }}
+          >
+            Brutos Controle de Estoque
+          </Typography>
         </Toolbar>
+
+        {showLogoutButton && (
+          <Button
+            // style={{ width: "100%" }}
+            variant="outlined"
+            onClick={() => console.log("@@@")}
+            color="primary"
+          >
+            Sair
+          </Button>
+        )}
 
         {buttonMenu && (
           <IconButton size="medium" onClick={buttonMenuAction}>
@@ -297,6 +268,7 @@ export default function HomePage() {
   };
 
   const handleChangeUserConfig = (value) => {
+    if (!value.isAdmin && !value.IsCentralStockAdmin) setMenu(MENU_LIST[5]);
     setUserConfig(value);
     handleChangeState(value);
   };
@@ -311,7 +283,12 @@ export default function HomePage() {
       onKeyDown={() => setOpenDrawerMobile(false)}
     >
       <List>
-        <MainListItems selected={menu} setSelected={setMenu} />
+        <MainListItems
+          isAdmin={userConfig.isAdmin}
+          IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
+          selected={menu}
+          setSelected={setMenu}
+        />
       </List>
     </div>
   );
@@ -338,43 +315,56 @@ export default function HomePage() {
     }
   };
 
-  if (!userConfig.isAdmin) return <div>User is not admin</div>;
+  // if (!userConfig.isAdmin) return <div>User is not admin</div>;
+  // console.log("@@@ userConfig", userConfig)
 
   return (
     <div className={classes.root}>
-      {matches ? (
-        <Drawer
-          variant="permanent"
-          classes={{
-            paper: clsx(
-              classes.drawerPaper,
-              !open && classes.drawerPaperClose,
-              classes.paper
-            ),
-          }}
-          open={matches}
-        >
-          <div className={classes.toolbarIcon}></div>
-          <Divider />
-          <List style={{ marginTop: "32px", height: '100%' }}>
-            <MainListItems selected={menu} setSelected={setMenu} />
-          </List>
-        </Drawer>
-      ) : null}
+      {userConfig.isAdmin || userConfig.IsCentralStockAdmin ? (
+        <>
+          {matches ? (
+            <Drawer
+              variant="permanent"
+              classes={{
+                paper: clsx(
+                  classes.drawerPaper,
+                  !open && classes.drawerPaperClose,
+                  classes.paper
+                ),
+              }}
+              open={matches}
+            >
+              <div className={classes.toolbarIcon}></div>
+              <Divider />
+              <List style={{ marginTop: "32px", height: "100%" }}>
+                <MainListItems
+                  selected={menu}
+                  setSelected={setMenu}
+                  isAdmin={userConfig.isAdmin}
+                  IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
+                />
+              </List>
+            </Drawer>
+          ) : null}
 
-      {!matches && openDrawerMobile ? (
-        <Drawer
-          open={openDrawerMobile}
-          onClose={() => setOpenDrawerMobile(false)}
-        >
-          {list("right")}
-        </Drawer>
+          {!matches && openDrawerMobile ? (
+            <Drawer
+              open={openDrawerMobile}
+              onClose={() => setOpenDrawerMobile(false)}
+            >
+              {list("right")}
+            </Drawer>
+          ) : null}
+        </>
       ) : null}
       <div
         style={{
           display: "flex",
           aignItems: "space-beetwen",
-          width: !matches ? "100%" : "calc(100% - 240px)",
+          width:
+            !matches || (!userConfig.isAdmin && !userConfig.IsCentralStockAdmin)
+              ? "100%"
+              : "calc(100% - 240px)",
           height: "100vh",
           boxSizing: "border-box",
           flexDirection: "column",
@@ -387,6 +377,9 @@ export default function HomePage() {
           setBranche={handleChangeBranche}
           buttonMenu={!openDrawerMobile && !matches}
           buttonMenuAction={() => setOpenDrawerMobile(true)}
+          showLogoutButton={
+            !userConfig.isAdmin && !userConfig.IsCentralStockAdmin
+          }
         />
         {loading && <LinearProgress />}
         <main className={classes.content} style={{ overflow: "auto" }}>
@@ -404,90 +397,140 @@ export default function HomePage() {
   );
 }
 
-export const MainListItems = ({ selected, setSelected }) => (
+export const MainListItems = ({
+  selected,
+  setSelected,
+  isAdmin,
+  IsCentralStockAdmin,
+}) => (
   <div
     style={{
       display: "flex",
-      flexDirection: 'column',
+      flexDirection: "column",
       justifyContent: "space-between",
       height: "100%",
     }}
   >
-    <div>
-      <ListItem
-        button
-        selected={selected === MENU_LIST[4]}
-        onClick={() => setSelected(MENU_LIST[4])}
-      >
-        <ListItemIcon>
-          <ShopTwoIcon />
-        </ListItemIcon>
-        <ListItemText primary="Estoque Central" />
-      </ListItem>
-      <ListItem
-        button
-        selected={selected === MENU_LIST[5]}
-        onClick={() => setSelected(MENU_LIST[5])}
-      >
-        <ListItemIcon>
-          <ShopIcon />
-        </ListItemIcon>
-        <ListItemText primary="Estoque" />
-      </ListItem>
-      <ListItem
-        button
-        selected={selected === MENU_LIST[0]}
-        onClick={() => setSelected(MENU_LIST[0])}
-      >
-        <ListItemIcon>
-          <BusinessIcon />
-        </ListItemIcon>
-        <ListItemText primary="Filiais" />
-      </ListItem>
-      <ListItem
-        button
-        selected={selected === MENU_LIST[1]}
-        onClick={() => setSelected(MENU_LIST[1])}
-      >
-        <ListItemIcon>
-          <ShoppingCartIcon />
-        </ListItemIcon>
-        <ListItemText primary="Produtos" />
-      </ListItem>
-      <ListItem
-        button
-        selected={selected === MENU_LIST[2]}
-        onClick={() => setSelected(MENU_LIST[2])}
-      >
-        <ListItemIcon>
-          <PeopleIcon />
-        </ListItemIcon>
-        <ListItemText primary="Usuários" />
-      </ListItem>
-      <ListItem
-        button
-        selected={selected === MENU_LIST[3]}
-        onClick={() => setSelected(MENU_LIST[3])}
-      >
-        <ListItemIcon>
-          <CategoryIcon />
-        </ListItemIcon>
-        <ListItemText primary="Categorias" />
-      </ListItem>
+    {isAdmin && (
+      <div>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[4]}
+          onClick={() => setSelected(MENU_LIST[4])}
+        >
+          <ListItemIcon>
+            <ShopTwoIcon />
+          </ListItemIcon>
+          <ListItemText primary="Estoque Central" />
+        </ListItem>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[5]}
+          onClick={() => setSelected(MENU_LIST[5])}
+        >
+          <ListItemIcon>
+            <ShopIcon />
+          </ListItemIcon>
+          <ListItemText primary="Estoque" />
+        </ListItem>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[0]}
+          onClick={() => setSelected(MENU_LIST[0])}
+        >
+          <ListItemIcon>
+            <BusinessIcon />
+          </ListItemIcon>
+          <ListItemText primary="Filiais" />
+        </ListItem>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[1]}
+          onClick={() => setSelected(MENU_LIST[1])}
+        >
+          <ListItemIcon>
+            <ShoppingCartIcon />
+          </ListItemIcon>
+          <ListItemText primary="Produtos" />
+        </ListItem>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[2]}
+          onClick={() => setSelected(MENU_LIST[2])}
+        >
+          <ListItemIcon>
+            <PeopleIcon />
+          </ListItemIcon>
+          <ListItemText primary="Usuários" />
+        </ListItem>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[3]}
+          onClick={() => setSelected(MENU_LIST[3])}
+        >
+          <ListItemIcon>
+            <CategoryIcon />
+          </ListItemIcon>
+          <ListItemText primary="Categorias" />
+        </ListItem>
 
-      <ListItem
-        button
-        selected={selected === MENU_LIST[6]}
-        onClick={() => setSelected(MENU_LIST[6])}
-      >
-        <ListItemIcon>
-          <PostAddIcon />
-        </ListItemIcon>
-        <ListItemText primary="Notas" />
-      </ListItem>
-    </div>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[6]}
+          onClick={() => setSelected(MENU_LIST[6])}
+        >
+          <ListItemIcon>
+            <PostAddIcon />
+          </ListItemIcon>
+          <ListItemText primary="Notas" />
+        </ListItem>
+      </div>
+    )}
 
-    <div>teste</div>
+    {IsCentralStockAdmin && (
+      <div>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[4]}
+          onClick={() => setSelected(MENU_LIST[4])}
+        >
+          <ListItemIcon>
+            <ShopTwoIcon />
+          </ListItemIcon>
+          <ListItemText primary="Estoque Central" />
+        </ListItem>
+        <ListItem
+          button
+          selected={selected === MENU_LIST[5]}
+          onClick={() => setSelected(MENU_LIST[5])}
+        >
+          <ListItemIcon>
+            <ShopIcon />
+          </ListItemIcon>
+          <ListItemText primary="Estoque" />
+        </ListItem>
+
+        <ListItem
+          button
+          selected={selected === MENU_LIST[6]}
+          onClick={() => setSelected(MENU_LIST[6])}
+        >
+          <ListItemIcon>
+            <PostAddIcon />
+          </ListItemIcon>
+          <ListItemText primary="Notas" />
+        </ListItem>
+      </div>
+    )}
+
+    <Button
+      style={{ width: "100%" }}
+      variant="outlined"
+      onClick={() => console.log("@@@")}
+      color="primary"
+    >
+      Sair
+    </Button>
   </div>
 );
 

@@ -19,7 +19,7 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import ShopIcon from "@material-ui/icons/Shop";
 import ShopTwoIcon from "@material-ui/icons/ShopTwo";
 import PostAddIcon from "@material-ui/icons/PostAdd";
-
+import Reorder from "@material-ui/icons/Reorder";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import UserContext from "../Context/User/context";
@@ -31,6 +31,7 @@ import Users from "../Components/Users/Users";
 import CentralStock from "../Components/CentralStock/CentralStock";
 import Stock from "../Components/Stock/Stock";
 import Grades from "../Components/Grades/Grades";
+import ProductsByBranch from "../Components/Reports/ProductsByBranch";
 
 import "./HomePage.css";
 
@@ -224,6 +225,7 @@ const MENU_LIST = [
   "categorys",
   "central_stock",
   "stock",
+  "reports"
 ];
 
 export default function HomePage() {
@@ -307,11 +309,14 @@ export default function HomePage() {
     } else if (menu === MENU_LIST[5]) {
       console.log("@@@ menu === MENU_LIST[5]");
       return (
-        <Stock isAdmin={userConfig.isAdmin} Branchs={userConfig.Branchs} />
+        <Stock isAdmin={userConfig.isAdmin} IsCentralStockAdmin={userConfig.IsCentralStockAdmin} Branchs={userConfig.Branchs} />
       );
     } else if (menu === MENU_LIST[6]) {
       console.log("@@@ menu === MENU_LIST[6]");
       return <Grades />;
+    }
+    else if (menu === MENU_LIST[7]) {
+      return <ProductsByBranch />;
     }
   };
 

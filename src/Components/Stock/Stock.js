@@ -663,6 +663,7 @@ export default function Stock({
 
     return component;
   };
+  console.log("@@@ acaboou")
 
   const setRowSelected = (id) => {
     console.log("@@@ id", id);

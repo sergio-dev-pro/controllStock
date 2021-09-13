@@ -479,7 +479,7 @@ export default function Grades() {
             </div>
             <SimpleTable
               colunmList={[
-                { name: "Nome", key: "" },
+                { name: "Nome", key: "ProductName" },
                 { name: "Quantidade", key: "Quantity" },
                 { name: "Valor gasto", key: "ValueSpended" },
               ]}

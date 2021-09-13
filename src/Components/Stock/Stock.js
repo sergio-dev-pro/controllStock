@@ -153,6 +153,20 @@ export default function Stock({
       );
     }
 
+    if(value === "list")
+    {
+      setLoading(true);
+      api
+        .get(
+          `products/stock-daily?day=${todayDate()}&branchId=${
+            branchId
+          }`
+        )
+        .then(({ data }) => setItems(data))
+        .catch((err) => console.log("@@@", err))
+        .finally(() => setLoading(false));
+    }
+
     setContent(value);
   };
 

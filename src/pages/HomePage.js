@@ -19,6 +19,8 @@ import LinearProgress from "@material-ui/core/LinearProgress";
 import ShopIcon from "@material-ui/icons/Shop";
 import ShopTwoIcon from "@material-ui/icons/ShopTwo";
 import PostAddIcon from "@material-ui/icons/PostAdd";
+import Assessment from "@material-ui/icons/Assessment";
+import CheckBox from "@material-ui/icons/CheckBox";
 import Reorder from "@material-ui/icons/Reorder";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
@@ -511,7 +513,7 @@ export const MainListItems = ({
           onClick={() => setSelected(MENU_LIST[7])}
         >
           <ListItemIcon>
-            <PostAddIcon />
+            <Assessment />
           </ListItemIcon>
           <ListItemText primary="Reports" />
         </ListItem>
@@ -522,7 +524,7 @@ export const MainListItems = ({
           onClick={() => setSelected(MENU_LIST[8])}
         >
           <ListItemIcon>
-            <PostAddIcon />
+            <CheckBox />
           </ListItemIcon>
           <ListItemText primary="Checklist" />
         </ListItem>

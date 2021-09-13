@@ -32,7 +32,6 @@ import CentralStock from "../Components/CentralStock/CentralStock";
 import Stock from "../Components/Stock/Stock";
 import Grades from "../Components/Grades/Grades";
 import ProductsByBranch from "../Components/Reports/ProductsByBranch";
-import Checklist from "../Components/Branche/Checklist";
 
 import "./HomePage.css";
 
@@ -230,7 +229,6 @@ const MENU_LIST = [
   "central_stock",
   "stock",
   "reports",
-  "checklist"
 ];
 
 export default function HomePage() {
@@ -327,8 +325,6 @@ export default function HomePage() {
       return <Grades />;
     } else if (menu === MENU_LIST[7]) {
       return <ProductsByBranch />;
-    } else if (menu === MENU_LIST[8]) {
-      return <Checklist />;
     }
   };
 
@@ -503,28 +499,6 @@ export const MainListItems = ({
             <PostAddIcon />
           </ListItemIcon>
           <ListItemText primary="Notas" />
-        </ListItem>
-
-        <ListItem
-          button
-          selected={selected === MENU_LIST[7]}
-          onClick={() => setSelected(MENU_LIST[7])}
-        >
-          <ListItemIcon>
-            <PostAddIcon />
-          </ListItemIcon>
-          <ListItemText primary="Reports" />
-        </ListItem>
-
-        <ListItem
-          button
-          selected={selected === MENU_LIST[8]}
-          onClick={() => setSelected(MENU_LIST[8])}
-        >
-          <ListItemIcon>
-            <PostAddIcon />
-          </ListItemIcon>
-          <ListItemText primary="Checklist" />
         </ListItem>
       </div>
     )}

@@ -57,7 +57,9 @@ export default function Stock({
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
-    console.log("@@@ branchsPermissions", branchsPermissions);
+    // console.log("@@@ branchsPermissions", branchsPermissions);
+    // console.log("@@@ isAdmin", isAdmin);
+
     if (isAdmin) {
       setLoading(true);
       api
@@ -75,7 +77,7 @@ export default function Stock({
         })
         .finally(() => setLoading(false));
     } else {
-      console.log("@@@ else", branchsPermissions, "branchId", branchId);
+      console.log("@@@ ***", branchsPermissions);
       setBranchList(
         branchsPermissions.map((e) => ({
           name: e.CompanyBranchName,
@@ -108,7 +110,14 @@ export default function Stock({
     ];
     // const existingPermissions = ['ShowProductsToDelivery', 'UpdateFinalQuantity', 'UpdateEntryQuantity']
     if (isAdmin) return setColunms(colunmsAdmin);
-    else if (IsCentralStockAdmin) console.log("");
+    else if (IsCentralStockAdmin) {
+      const colunms = [
+        { name: "Produto", key: "productName" },
+        { name: "Quantidade de Entrada", key: "entryQuantity" },
+        { name: "Quantidade Final", key: "finalQuantity" },
+      ];
+      setColunms(colunms);
+    }
     else {
       const colunms = [
         { name: "Produto", key: "productName" },
@@ -116,7 +125,7 @@ export default function Stock({
       ];
       const colunmsMin = [{ name: "Produto", key: "productName" }];
 
-      if (branchsPermissions[0].Permissions.includes("ShowProductsToDelivery"))
+      if (branchsPermissions[0].Permissions && branchsPermissions[0].Permissions.includes("ShowProductsToDelivery"))
         setColunms(colunms);
       else setColunms(colunmsMin);
     }
@@ -157,6 +166,10 @@ export default function Stock({
       ];
       const colunmsMin = [{ name: "Produto", key: "productName" }];
       if (
+        branchsPermissions
+          .find((e) => e.CompanyBranchId == value)
+          .Permissions
+          &&
         branchsPermissions
           .find((e) => e.CompanyBranchId == value)
           .Permissions.includes("ShowProductsToDelivery")
@@ -640,19 +653,25 @@ export default function Stock({
   const setRowSelected = (id) => {
     console.log("@@@ id", id);
     const format = (value) => (value == 0 ? "" : value);
-    setLoading(true);
-    api
-      .get(`products/stock-daily/${id}?branchId=${branchId}`)
-      .then(({ data }) =>
-        setProduct({
-          ...data,
-          previusQuantity: format(data.previusQuantity),
-          finalQuantity: format(data.finalQuantity),
-          entryQuantity: format(data.entryQuantity),
-        })
-      )
-      .catch((err) => console.log(err))
-      .finally(() => setLoading(false));
+    if(isAdmin){
+      setLoading(true);
+      api
+        .get(`products/stock-daily/${id}?branchId=${branchId}`)
+        .then(({ data }) =>
+          setProduct({
+            ...data,
+            previusQuantity: format(data.previusQuantity),
+            finalQuantity: format(data.finalQuantity),
+            entryQuantity: format(data.entryQuantity),
+          })
+        )
+        .catch((err) => console.log(err))
+        .finally(() => setLoading(false));
+
+    }
+    else {
+      setProduct(items.find(e => e.id == id))
+    }
 
     getContent("edit");
   };
@@ -693,7 +712,7 @@ export default function Stock({
 
 function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
   const classes = useStyles();
-  console.log("@@@ lineButton", lineButton, lineButton);
+  console.log("@@@ columns items", colunms, rows);
   return (
     <Container masWidth="lg" style={{ padding: "0", marginTop: "24px" }}>
       <Table className={classes.table} size="small" aria-label="a dense table">

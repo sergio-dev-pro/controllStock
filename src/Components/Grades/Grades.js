@@ -59,7 +59,12 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-function SimpleTable({ list, colunmList }) {
+function SimpleTable({
+  list,
+  colunmList,
+  hasDeletebutton,
+  handleOnClickButtonDelete,
+}) {
   const classes = useStyles();
   // const [checked, setChecked] = React.useState([0]);
   console.log("@@@ list", list);
@@ -87,10 +92,15 @@ function SimpleTable({ list, colunmList }) {
                 <Typography variant="subtitle1">{e.name}</Typography>
               </TableCell>
             ))}
+            {hasDeletebutton && (
+              <TableCell align="right">
+                <Typography variant="subtitle1">Deletar</Typography>
+              </TableCell>
+            )}
           </TableRow>
         </TableHead>
         <TableBody>
-          {list.map((item) => (
+          {list.map((item, i) => (
             <TableRow key={item.name}>
               {colunmList.map((elem, i) => (
                 <TableCell
@@ -107,6 +117,17 @@ function SimpleTable({ list, colunmList }) {
                   <Typography variant="subtitle1">{item[elem.key]}</Typography>
                 </TableCell>
               ))}
+              {hasDeletebutton && (
+                <TableCell align="right" component="th" scope="row">
+                  <IconButton
+                    onClick={() => handleOnClickButtonDelete(i)}
+                    edge="end"
+                    aria-label="comments"
+                  >
+                    <DeleteOutlineIcon />
+                  </IconButton>
+                </TableCell>
+              )}
             </TableRow>
           ))}
         </TableBody>
@@ -309,7 +330,15 @@ export default function Grades() {
                       <Grid item xs={6}>
                         <h4>Produtos:</h4>
                       </Grid>
-                      <Grid item xs={6} style={{display: 'flex', justifyContent: 'flex-end', alignItems: 'center'}}>
+                      <Grid
+                        item
+                        xs={6}
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          alignItems: "center",
+                        }}
+                      >
                         <Button
                           variant="contained"
                           color="primary"
@@ -331,6 +360,12 @@ export default function Grades() {
                           { name: "Total gasto", key: "valueSpended" },
                         ]}
                         list={noteProductsList}
+                        hasDeletebutton
+                        handleOnClickButtonDelete={(index) =>
+                          setNoteProductsList((prevState) =>
+                            prevState.filter((_, i) => i != index)
+                          )
+                        }
                       />
                     </>
                   ) : (
@@ -395,7 +430,14 @@ export default function Grades() {
                           />
                         </Grid>
                       </Grid>
-                      <div style={{ display: "flex", width: '100%', alignItems: "center", justifyContent: "space-between" }}>
+                      <div
+                        style={{
+                          display: "flex",
+                          width: "100%",
+                          alignItems: "center",
+                          justifyContent: "space-between",
+                        }}
+                      >
                         <Button
                           type="button"
                           fullWidth

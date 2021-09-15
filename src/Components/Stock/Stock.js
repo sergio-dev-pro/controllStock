@@ -26,6 +26,8 @@ import TextField from "@material-ui/core/TextField";
 
 import { ErrorContext } from "../../Context/Error/context";
 
+import { getToken } from "../../services/auth";
+
 const useStyles = makeStyles({
   table: {
     minWidth: 650,
@@ -117,15 +119,21 @@ export default function Stock({
         { name: "Quantidade Final", key: "finalQuantity" },
       ];
       setColunms(colunms);
-    }
-    else {
+    } else {
       const colunms = [
         { name: "Produto", key: "productName" },
         { name: "Quantidade Final", key: "finalQuantity" },
+        { name: "Quantidade de Entrada", key: "entryQuantity" },
       ];
-      const colunmsMin = [{ name: "Produto", key: "productName" }];
+      const colunmsMin = [
+        { name: "Produto", key: "productName" },
+        { name: "Quantidade de Entrada", key: "entryQuantity" },
+      ];
 
-      if (branchsPermissions[0].Permissions && branchsPermissions[0].Permissions.includes("ShowProductsToDelivery"))
+      if (
+        branchsPermissions[0].Permissions &&
+        branchsPermissions[0].Permissions.includes("ShowProductsToDelivery")
+      )
         setColunms(colunms);
       else setColunms(colunmsMin);
     }
@@ -153,15 +161,10 @@ export default function Stock({
       );
     }
 
-    if(value === "list")
-    {
+    if (value === "list") {
       setLoading(true);
       api
-        .get(
-          `products/stock-daily?day=${todayDate()}&branchId=${
-            branchId
-          }`
-        )
+        .get(`products/stock-daily?day=${todayDate()}&branchId=${branchId}`)
         .then(({ data }) => setItems(data))
         .catch((err) => console.log("@@@", err))
         .finally(() => setLoading(false));
@@ -180,10 +183,8 @@ export default function Stock({
       ];
       const colunmsMin = [{ name: "Produto", key: "productName" }];
       if (
-        branchsPermissions
-          .find((e) => e.CompanyBranchId == value)
-          .Permissions
-          &&
+        branchsPermissions.find((e) => e.CompanyBranchId == value)
+          .Permissions &&
         branchsPermissions
           .find((e) => e.CompanyBranchId == value)
           .Permissions.includes("ShowProductsToDelivery")
@@ -222,12 +223,34 @@ export default function Stock({
     //     previusQuantity: product.previusQuantity,
     //   };
     // }
-    api
-      .put(`products/stock-daily/${product.id}?branchId=${branchId}`, data)
-      .then(({ data }) => {
+
+    const requestOptions = {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*",
+        Authorization: `Bearer ${getToken()}`,
+      },
+      body: JSON.stringify(data),
+    };
+
+    fetch(
+      `https://mistock-ms.herokuapp.com/api/products/stock-daily/${product.id}?branchId=${branchId}`,
+      requestOptions
+    )
+      .then(async (response) => {
+        if (response.status === 400) {
+          const { errors: message } = await response.json();
+          return handleChangeErrorState({
+            error: true,
+            message,
+            type: "error",
+          });
+        }
+
         getContent("list");
       })
-      .catch((err) => console.log(err))
+      .catch((err) => console.log("@@@ err", err))
       .finally((err) => setLoading(false));
   };
 
@@ -663,12 +686,12 @@ export default function Stock({
 
     return component;
   };
-  console.log("@@@ acaboou")
+  console.log("@@@ acaboou");
 
   const setRowSelected = (id) => {
     console.log("@@@ id", id);
     const format = (value) => (value == 0 ? "" : value);
-    if(isAdmin){
+    if (isAdmin) {
       setLoading(true);
       api
         .get(`products/stock-daily/${id}?branchId=${branchId}`)
@@ -682,10 +705,8 @@ export default function Stock({
         )
         .catch((err) => console.log(err))
         .finally(() => setLoading(false));
-
-    }
-    else {
-      setProduct(items.find(e => e.id == id))
+    } else {
+      setProduct(items.find((e) => e.id == id));
     }
 
     getContent("edit");
@@ -759,7 +780,7 @@ function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
             >
               {colunms.map((e, i) => (
                 <TableCell
-                  key={row[e.key]}
+                  key={i}
                   component="th"
                   scope="row"
                   align={

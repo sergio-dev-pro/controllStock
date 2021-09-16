@@ -24,7 +24,6 @@ export default function Branches({ handleBrancheList }) {
     return () => {};
   }, []);
 
-  console.log("@@@@", startHour, endHour);
 
   const apiGet = () => {
     setLoading(true);

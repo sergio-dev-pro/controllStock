@@ -155,7 +155,6 @@ export default function CentralStock() {
   };
 
   const handleChangeStartDate = (e) => {
-    // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
     setStartDate(e.target.value);
 
     if (endDate && Date.parse(e.target.value) >= Date.parse(endDate))
@@ -163,7 +162,6 @@ export default function CentralStock() {
   };
 
   const handleChangeEndDate = (e) => {
-    // console.log("@@@ todayDateSumeOne", todayDateSumeOne(e.target.value));console.log("@@@ endDate", endDate);
     setEndDate(e.target.value);
 
     if (startDate && Date.parse(e.target.value) <= Date.parse(startDate))

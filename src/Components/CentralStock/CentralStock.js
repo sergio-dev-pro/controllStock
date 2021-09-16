@@ -14,6 +14,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Paper from "@material-ui/core/Paper";
 import { AddBox, Search } from "@material-ui/icons";
+import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
@@ -22,6 +23,8 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
+
+import VisibilityIcon from "@material-ui/icons/Visibility";
 
 import api from "../../services/api";
 
@@ -56,6 +59,7 @@ export default function CentralStock() {
   const [startDate, setStartDate] = useState(todayDate());
   const [endDate, setEndDate] = useState(todayDateSumeOne(todayDate()));
   const [description, setDescription] = useState("");
+  const [available, setAvailable] = useState("");
   const [total, setTotal] = useState("");
   const [merchandise, setMerchandise] = useState({
     productId: "",
@@ -110,6 +114,23 @@ export default function CentralStock() {
         .then((response) => {
           setMerchandiseList(response.data.items);
           setTotal(response.data.total);
+        })
+        .catch((err) => console.log("@@@ err", err))
+        .finally(() => setLoading(false));
+    } else if (value === "see_all") {
+      setLoading(true);
+      api
+        .get(`/products/central-stock/available`)
+        .then((response) => {
+          setAvailable(
+            response.data.map((e) => ({
+              ...e,
+              total: e.total.toLocaleString("pt-br", {
+                style: "currency",
+                currency: "BRL",
+              }),
+            }))
+          );
         })
         .catch((err) => console.log("@@@ err", err))
         .finally(() => setLoading(false));
@@ -320,8 +341,37 @@ export default function CentralStock() {
           </Container>
         );
         break;
-      case "edit":
-        component = {};
+      case "see_all":
+        component = (
+          <>
+            <div
+              style={{
+                display: "flex",
+                width: "100%",
+                justifyContent: "flex-end",
+                alignItems: "center",
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
+                style={{ marginRight: "8px" }}
+                startIcon={<KeyboardReturnIcon />}
+                onClick={() => handleChangeContent("list")}
+              >
+                Voltar
+              </Button>
+            </div>
+
+            <SimpleTable
+              colunmList={[
+                { name: "Produto", key: "productName" },
+                { name: "Total", key: "total" },
+              ]}
+              list={available}
+            />
+          </>
+        );
         break;
       case "delete":
         component = {};
@@ -354,7 +404,7 @@ export default function CentralStock() {
                   alignItems: "center",
                   width: "100%",
                   justifyContent: "space-between",
-                  flexWrap: 'wrap'
+                  flexWrap: "wrap",
                 }}
               >
                 {/* {!merchandiseList.length ? null : ( */}
@@ -364,12 +414,16 @@ export default function CentralStock() {
                     justifyContent: "space-between",
                     alignItems: "center",
                     // marginBottom: '8px',
-                    flexWrap: 'wrap'
+                    flexWrap: "wrap",
                   }}
                 >
                   <FormControl
                     variant="outlined"
-                    style={{ minWidth: "250px", marginRight: "8px", paddingBottom: "16px",}}
+                    style={{
+                      minWidth: "250px",
+                      marginRight: "8px",
+                      paddingBottom: "16px",
+                    }}
                   >
                     <InputLabel id="demo-simple-select-outlined-label">
                       Produto
@@ -410,7 +464,7 @@ export default function CentralStock() {
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    style={{ marginRight: "8px",  paddingBottom: "16px" }}
+                    style={{ marginRight: "8px", paddingBottom: "16px" }}
                   />
                   <TextField
                     value={endDate}
@@ -425,7 +479,7 @@ export default function CentralStock() {
                     InputLabelProps={{
                       shrink: true,
                     }}
-                    style={{ marginRight: "8px",  paddingBottom: "16px" }}
+                    style={{ marginRight: "8px", paddingBottom: "16px" }}
                   />
                   <Button
                     type="button"
@@ -440,6 +494,19 @@ export default function CentralStock() {
                 </div>
                 {/* )} */}
 
+                <Button
+                  variant="contained"
+                  color="primary"
+                  href="#contained-buttons"
+                  size="medium"
+                  startIcon={<VisibilityIcon />}
+                  onClick={() => handleChangeContent("see_all")}
+                  style={{
+                    width: "fit-content",
+                  }}
+                >
+                  Ver todos
+                </Button>
                 <Button
                   variant="contained"
                   color="primary"

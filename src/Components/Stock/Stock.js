@@ -180,8 +180,12 @@ export default function Stock({
       const colunms = [
         { name: "Produto", key: "productName" },
         { name: "Quantidade Final", key: "finalQuantity" },
+        { name: "Quantidade de Entrada", key: "entryQuantity" },
       ];
-      const colunmsMin = [{ name: "Produto", key: "productName" }];
+      const colunmsMin = [
+        { name: "Produto", key: "productName" },
+        { name: "Quantidade de Entrada", key: "entryQuantity" },
+      ];
       if (
         branchsPermissions.find((e) => e.CompanyBranchId == value)
           .Permissions &&

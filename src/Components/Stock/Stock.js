@@ -267,7 +267,7 @@ export default function Stock({
     const listOfValidatedItems = items.map((item) => {
       let error = false;
       if (
-        !item.finalQuantity.toString().length ||
+        (!item.finalQuantity && item.finalQuantity != 0) ||
         parseInt(item.finalQuantity) < 0
       )
         error = true;
@@ -283,7 +283,7 @@ export default function Stock({
       );
 
       let messageError = "";
-      if (!firstItemOnTheListInError.finalQuantity.length)
+      if (!firstItemOnTheListInError.finalQuantity && firstItemOnTheListInError.finalQuantity != 0)
         messageError =
           "ATENÇÂO: O campo de quantidade final nao pode estar vazio";
       else if (parseInt(firstItemOnTheListInError.finalQuantity) < 0)
@@ -603,7 +603,13 @@ export default function Stock({
                     color="primary"
                     style={{ marginLeft: "8px" }}
                     endIcon={<SaveIcon />}
-                    onClick={() => getContent("checklist")}
+                    onClick={() => {
+                      const isValid = validDataFinalSock();
+
+                      if (!isValid) return;
+
+                      getContent("checklist");
+                    }}
                   >
                     Salvar
                   </Button>

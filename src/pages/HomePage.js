@@ -339,7 +339,7 @@ export default function HomePage() {
       );
     } else if (menu === MENU_LIST[6]) {
       console.log("@@@ menu === MENU_LIST[6]");
-      return <Grades />;
+      return <Grades isAdmin={userConfig.isAdmin} />;
     } else if (menu === MENU_LIST[7]) {
       return <ProductsByBranch />;
     } else if (menu === MENU_LIST[8]) {

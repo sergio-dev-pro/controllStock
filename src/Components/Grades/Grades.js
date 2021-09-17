@@ -136,7 +136,7 @@ function SimpleTable({
   );
 }
 
-export default function Grades() {
+export default function Grades({isAdmin}) {
   const [loading, setLoading] = useState(false);
   const [productsList, setProductsList] = useState([]);
   const [noteProductsList, setNoteProductsList] = useState([]);
@@ -298,7 +298,7 @@ export default function Grades() {
                   }))
                 : []
             }
-            hasDeletebutton
+            hasDeletebutton={isAdmin}
             handleOnClickButtonDelete={handleDeleteNote}
           />
         );

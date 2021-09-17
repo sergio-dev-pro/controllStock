@@ -32,7 +32,7 @@ import { getToken } from "../../services/auth";
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650,
+    minWidth: 200,
   },
 });
 
@@ -58,6 +58,7 @@ export default function Stock({
   const [content, setContent] = useState("list");
   const [colunms, setColunms] = useState([]);
   const [checklist, setChecklist] = useState([]);
+  const [date, setDate] = useState(todayDate());
 
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
@@ -283,7 +284,10 @@ export default function Stock({
       );
 
       let messageError = "";
-      if (!firstItemOnTheListInError.finalQuantity && firstItemOnTheListInError.finalQuantity != 0)
+      if (
+        !firstItemOnTheListInError.finalQuantity &&
+        firstItemOnTheListInError.finalQuantity != 0
+      )
         messageError =
           "ATENÇÂO: O campo de quantidade final nao pode estar vazio";
       else if (parseInt(firstItemOnTheListInError.finalQuantity) < 0)
@@ -371,10 +375,16 @@ export default function Stock({
                 flexWrap: "wrap",
               }}
             >
-              <div>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  flexWrap: "wrap",
+                }}
+              >
                 <FormControl
                   variant="outlined"
-                  style={{ minWidth: "250px", marginRight: "8px" }}
+                  style={{ minWidth: "250px", padding: "8px" }}
                 >
                   <InputLabel id="demo-simple-select-outlined-label">
                     Filial
@@ -400,6 +410,30 @@ export default function Stock({
                     ))}
                   </Select>
                 </FormControl>
+
+                <TextField
+                  value={date}
+                  onChange={(e) => {
+                    api
+                      .get(
+                        `products/stock-daily?day=${e.target.value}&branchId=${branchId}`
+                      )
+                      .then(({ data }) => setItems(data))
+                      .catch((err) => console.log("@@@", err))
+                      .finally(() => setLoading(false));
+                    setDate(e.target.value);
+                  }}
+                  variant="outlined"
+                  required
+                  id="date"
+                  label="Data"
+                  type="date"
+                  // className={classes.textField}
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                  style={{ padding: "9px" }}
+                />
               </div>
               {/* branchsPermissions
                     .find((e) => e.CompanyBranchId == branchId)

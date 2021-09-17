@@ -99,23 +99,22 @@ export default function SimpleTable({
                       <EditIcon />
                     </IconButton>
                   </TableCell>
-                  <TableCell align="right">
-                    {" "}
-                    <IconButton
-                      onClick={() => handleChangeContentDelete(item.id)}
-                      edge="end"
-                      aria-label="comments"
-                    >
-                      <DeleteOutlineIcon />
-                    </IconButton>
-                  </TableCell>
                 </>
               ) : (
                 <>
                   <TableCell align="right"></TableCell>
-                  <TableCell align="right"></TableCell>
                 </>
               )}
+              <TableCell align="right">
+                {" "}
+                <IconButton
+                  onClick={() => handleChangeContentDelete(item.id)}
+                  edge="end"
+                  aria-label="comments"
+                >
+                  <DeleteOutlineIcon />
+                </IconButton>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

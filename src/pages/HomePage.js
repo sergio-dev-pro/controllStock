@@ -21,7 +21,6 @@ import ShopTwoIcon from "@material-ui/icons/ShopTwo";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import Assessment from "@material-ui/icons/Assessment";
 import CheckBox from "@material-ui/icons/CheckBox";
-import Reorder from "@material-ui/icons/Reorder";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import UserContext from "../Context/User/context";
@@ -34,6 +33,7 @@ import CentralStock from "../Components/CentralStock/CentralStock";
 import Stock from "../Components/Stock/Stock";
 import Grades from "../Components/Grades/Grades";
 import ProductsByBranch from "../Components/Reports/ProductsByBranch";
+import BasicModal from "../Components/Modal/Modal";
 import Checklist from "../Components/Branche/Checklist";
 
 import "./HomePage.css";
@@ -161,6 +161,7 @@ function AppBarBranche({
   showLogoutButton,
 }) {
   const classes = useStylesHeader();
+  const [openModal, setOpenModal] = React.useState(false);
 
   const handleChangeBranche = (e) => {
     setBranche(brancheList.find((b) => b.CompanyBranchId === e.target.value));
@@ -203,8 +204,7 @@ function AppBarBranche({
             // style={{ width: "100%" }}
             variant="outlined"
             onClick={() => {
-              logout();
-              window.location = "/login";
+              setOpenModal(true)
             }}
             color="primary"
           >
@@ -219,7 +219,16 @@ function AppBarBranche({
             ></MenuOpenIcon>
           </IconButton>
         )}
+
       </Container>
+        <BasicModal
+          open={openModal}
+          handleClose={() => setOpenModal(false)}
+          handleOnClickAction={() => {
+            logout();
+            window.location = "/login";
+          }}
+        />
     </AppBar>
   );
 }
@@ -232,7 +241,7 @@ const MENU_LIST = [
   "central_stock",
   "stock",
   "reports",
-  "checklist"
+  "checklist",
 ];
 
 export default function HomePage() {
@@ -277,7 +286,11 @@ export default function HomePage() {
   };
 
   const handleChangeUserConfig = (value) => {
-    if ((!value.isAdmin && !value.IsCentralStockAdmin) || value.IsCentralStockAdmin) setMenu(MENU_LIST[5]);
+    if (
+      (!value.isAdmin && !value.IsCentralStockAdmin) ||
+      value.IsCentralStockAdmin
+    )
+      setMenu(MENU_LIST[5]);
     setUserConfig(value);
     setLoading(false);
     handleChangeState(value);

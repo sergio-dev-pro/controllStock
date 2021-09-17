@@ -123,13 +123,7 @@ export default function CentralStock() {
         .get(`/products/central-stock/available`)
         .then((response) => {
           setAvailable(
-            response.data.map((e) => ({
-              ...e,
-              total: e.total.toLocaleString("pt-br", {
-                style: "currency",
-                currency: "BRL",
-              }),
-            }))
+            response.data
           );
         })
         .catch((err) => console.log("@@@ err", err))

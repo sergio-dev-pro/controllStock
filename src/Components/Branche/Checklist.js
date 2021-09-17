@@ -68,12 +68,12 @@ export default function Checklist({ handleBrancheList }) {
     switch (value) {
       case "list":
         component = (
-          <div style={{ marginBottom: "8px" }}>
+          <Container component="main" maxWidth="lg" >
             <SimpleList
               list={checklistList}
               handleChangeContentDelete={handleChangeContentDelete}
             />
-          </div>
+          </Container>
         );
         break;
       case "create":
@@ -186,7 +186,7 @@ export default function Checklist({ handleBrancheList }) {
           width: "100%",
           display: "flex",
           flexDirection: "column",
-          padding: "24px",
+          // padding: "24px",
           margin: "24px",
         }}
       >
@@ -197,9 +197,10 @@ export default function Checklist({ handleBrancheList }) {
               style={{
                 display: "flex",
                 width: "100%",
-                justifyContent: "space-between",
+                justifyContent: "flex-end",
                 alignItems: "center",
                 height: "50px",
+                paddingRight: '8px'
               }}
             >
               {content === "list" ? (

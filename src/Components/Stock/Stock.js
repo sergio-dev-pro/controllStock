@@ -10,6 +10,7 @@ import {
   Select,
   Switch,
   Typography,
+  Checkbox,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
@@ -23,6 +24,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
 import Grid from "@material-ui/core/Grid";
 import TextField from "@material-ui/core/TextField";
+import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
 
 import { ErrorContext } from "../../Context/Error/context";
 
@@ -55,6 +57,7 @@ export default function Stock({
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState("list");
   const [colunms, setColunms] = useState([]);
+  const [checklist, setChecklist] = useState([]);
 
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
@@ -158,13 +161,20 @@ export default function Stock({
           error: false,
         }))
       );
-    }
-
-    if (value === "list") {
+    } else if (value === "list") {
       setLoading(true);
       api
         .get(`products/stock-daily?day=${todayDate()}&branchId=${branchId}`)
         .then(({ data }) => setItems(data))
+        .catch((err) => console.log("@@@", err))
+        .finally(() => setLoading(false));
+    } else if (value === "checklist") {
+      setLoading(true);
+      api
+        .get("/branchs/checklist")
+        .then(({ data }) =>
+          setChecklist(data.map((e) => ({ ...e, confirmed: false })))
+        )
         .catch((err) => console.log("@@@", err))
         .finally(() => setLoading(false));
     }
@@ -256,7 +266,10 @@ export default function Stock({
     console.log("@@@ validedatafinalstock items", items);
     const listOfValidatedItems = items.map((item) => {
       let error = false;
-      if (!item.finalQuantity.toString().length || parseInt(item.finalQuantity) < 0)
+      if (
+        !item.finalQuantity.toString().length ||
+        parseInt(item.finalQuantity) < 0
+      )
         error = true;
       return { ...item, error };
     });
@@ -268,7 +281,7 @@ export default function Stock({
       const firstItemOnTheListInError = listOfValidatedItems.find(
         (item) => item.error
       );
-      
+
       let messageError = "";
       if (!firstItemOnTheListInError.finalQuantity.length)
         messageError =
@@ -321,6 +334,16 @@ export default function Stock({
         .Permissions.includes("UpdateFinalQuantity")
     )
       return false;
+  };
+
+  const handleChangeChecklist = (id) => {
+    setChecklist((prevState) =>
+      prevState.map((state) => {
+        if (state.id == id) return { ...state, confirmed: !state.confirmed };
+
+        return state;
+      })
+    );
   };
 
   console.log(
@@ -579,8 +602,8 @@ export default function Stock({
                     variant="contained"
                     color="primary"
                     style={{ marginLeft: "8px" }}
-                    startIcon={<SaveIcon />}
-                    onClick={handleSaveFinalStock}
+                    endIcon={<SaveIcon />}
+                    onClick={() => getContent("checklist")}
                   >
                     Salvar
                   </Button>
@@ -676,6 +699,63 @@ export default function Stock({
               </div>
             </Container>
           ) : null;
+        break;
+      case "checklist":
+        component = (
+          <Container maxWidth="md" style={{ overflowY: "auto" }}>
+            <Typography style={{ width: "100%" }} variant="h6">
+              Confirme e certifique-se de ter cumprido as tarefas
+            </Typography>
+            <Divider style={{ margin: "16px 0" }} />
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                position: "static",
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
+                style={{ marginRight: "8px" }}
+                startIcon={<KeyboardReturnIcon />}
+                onClick={() => getContent("list")}
+              >
+                Cancelar
+              </Button>
+              <Button
+                disabled={checklist.map((e) => e.confirmed).includes(false)}
+                variant="contained"
+                color="primary"
+                style={{ marginLeft: "8px" }}
+                endIcon={<DoubleArrowIcon />}
+                onClick={handleSaveFinalStock}
+              >
+                Pronto
+              </Button>
+            </div>
+            <div style={{ overflowY: "auto" }}>
+              <DenseTable
+                colunms={[
+                  { name: "Tarefas", key: "name" },
+                  { name: "Concluído", key: "checkbox" },
+                ]}
+                rows={checklist.map((e) => ({
+                  ...e,
+                  checkbox: (
+                    <Checkbox
+                      color="primary"
+                      inputProps={{ "aria-label": "Checkbox demo" }}
+                      onChange={() => handleChangeChecklist(e.id)}
+                    />
+                  ),
+                }))}
+              />
+            </div>
+          </Container>
+        );
         break;
       default:
         break;

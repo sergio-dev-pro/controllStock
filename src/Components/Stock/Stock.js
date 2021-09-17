@@ -156,7 +156,6 @@ export default function Stock({
         prevState.map((e) => ({
           ...e,
           error: false,
-          confirmEntryQuantity: false,
         }))
       );
     }
@@ -220,13 +219,6 @@ export default function Stock({
       finalQuantity: product.finalQuantity,
       previusQuantity: product.previusQuantity,
     };
-    // if (isAdmin) {
-    //   data = {
-    //     ...data,
-    //     finalQuantity: product.finalQuantity,
-    //     previusQuantity: product.previusQuantity,
-    //   };
-    // }
 
     const requestOptions = {
       method: "PUT",
@@ -264,7 +256,7 @@ export default function Stock({
     console.log("@@@ validedatafinalstock items", items);
     const listOfValidatedItems = items.map((item) => {
       let error = false;
-      if (!item.finalQuantity || parseInt(item.finalQuantity) <= 0)
+      if (!item.finalQuantity.toString().length || parseInt(item.finalQuantity) < 0)
         error = true;
       return { ...item, error };
     });
@@ -276,11 +268,12 @@ export default function Stock({
       const firstItemOnTheListInError = listOfValidatedItems.find(
         (item) => item.error
       );
+      
       let messageError = "";
       if (!firstItemOnTheListInError.finalQuantity.length)
         messageError =
           "ATENÇÂO: O campo de quantidade final nao pode estar vazio";
-      else if (parseInt(firstItemOnTheListInError.finalQuantity) <= 0)
+      else if (parseInt(firstItemOnTheListInError.finalQuantity) < 0)
         messageError =
           "ATENÇÂO: A campo de quantidade final deve ser maior que zero(0)";
 
@@ -635,7 +628,7 @@ export default function Stock({
                               let error = true;
                               if (
                                 e.target.value.length &&
-                                parseInt(e.target.value) > 0
+                                parseInt(e.target.value) >= 0
                               )
                                 error = !error;
 

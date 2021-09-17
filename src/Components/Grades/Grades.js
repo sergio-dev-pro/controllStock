@@ -222,6 +222,19 @@ export default function Grades() {
     setContent(value);
   };
 
+  const handleDeleteNote = (index) => {
+    setLoading(true);
+    api
+      .delete(`/notes/${notesList.find((_, i) => i == index).id}`)
+      .then(() => {
+        handleChangeContent("list");
+      })
+      .catch(() => {
+        handleChangeContent("list");
+      })
+      .finally(() => setLoading(false));
+  };
+
   const loadNotes = () => {
     api
       .get(
@@ -285,6 +298,8 @@ export default function Grades() {
                   }))
                 : []
             }
+            hasDeletebutton
+            handleOnClickButtonDelete={handleDeleteNote}
           />
         );
         break;

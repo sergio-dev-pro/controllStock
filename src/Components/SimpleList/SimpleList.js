@@ -8,6 +8,7 @@ import ListItemText from "@material-ui/core/ListItemText";
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/IconButton";
 import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import { Divider } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -34,40 +35,45 @@ export default function SimpleList({
         const labelId = `checkbox-list-label-${id}`;
 
         return (
-          <ListItem
-            key={id}
-            role={undefined}
-            style={{ width: "100%", paddingLeft: "0px" }}
-          >
-            <Typography
-              variant="h5"
-              style={{
-                display: "flex",
-                width: "100%",
-                justifyContent: "space-between",
-                alignItems: "center",
-                height: "50px",
-              }}
+          <>
+            <Divider />
+
+            <ListItem
+              key={id}
+              role={undefined}
+              style={{ width: "100%", paddingLeft: "0px"}}
             >
-              <Typography variant="h6">{name}</Typography>
-            </Typography>
-            <ListItemSecondaryAction>
-              <IconButton
-                edge="end"
-                aria-label="comments"
-                onClick={() => handleChangeContentEdit(id)}
+              <Typography
+                variant="h5"
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  height: "50px",
+                  marginRight: "56px",
+                }}
               >
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                onClick={() => handleChangeContentDelete(id)}
-                edge="end"
-                aria-label="comments"
-              >
-                <DeleteOutlineIcon />
-              </IconButton>
-            </ListItemSecondaryAction>
-          </ListItem>
+                <Typography variant="h6">{name}</Typography>
+              </Typography>
+              <ListItemSecondaryAction>
+                <IconButton
+                  edge="end"
+                  aria-label="comments"
+                  onClick={() => handleChangeContentEdit(id)}
+                >
+                  <EditIcon />
+                </IconButton>
+                <IconButton
+                  onClick={() => handleChangeContentDelete(id)}
+                  edge="end"
+                  aria-label="comments"
+                >
+                  <DeleteOutlineIcon />
+                </IconButton>
+              </ListItemSecondaryAction>
+            </ListItem>
+          </>
         );
       })}
     </List>

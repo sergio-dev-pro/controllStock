@@ -12,6 +12,8 @@ import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
 import Select from "@material-ui/core/Select";
+import DeleteOutlineIcon from "@material-ui/icons/DeleteOutline";
+import IconButton from "@material-ui/core/IconButton";
 
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
@@ -119,7 +121,11 @@ export default function SignUp({
     setBranchId("");
   };
 
-  console.log("@@@produto", branchListSelected);
+  const handleDeleteBranch = (branchId) => {
+    setBranchListSelected((prevState) =>
+      prevState.filter((e) => e.branchId != branchId)
+    );
+  };
 
   return (
     <Container component="main" maxWidth="sm">
@@ -180,7 +186,7 @@ export default function SignUp({
             </Grid>
             <Grid item xs={12} sm={6}>
               <TextField
-              type="number"
+                type="number"
                 value={unitValue}
                 onChange={(e) => {
                   setUnitValue(e.target.value);
@@ -309,6 +315,14 @@ export default function SignUp({
                           label={e.minQuantity}
                           color={"primary"}
                         />
+                        <IconButton
+                          onClick={() => handleDeleteBranch(e.branchId)}
+                          edge="end"
+                          aria-label="comments"
+                          style={{ marginBottom: "8px", zindex: "9999999999" }}
+                        >
+                          <DeleteOutlineIcon />
+                        </IconButton>
                       </div>
                     </ListItem>
                   ))}

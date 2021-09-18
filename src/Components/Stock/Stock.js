@@ -77,7 +77,7 @@ export default function Stock({
             .get(
               `products/stock-daily?day=${todayDate()}&branchId=${data[0].id}`
             )
-            .then(({ data }) => setItems(data))
+            .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
             .catch((err) => console.log("@@@", err))
             .finally(() => setLoading(false));
         })
@@ -98,7 +98,7 @@ export default function Stock({
             branchsPermissions[0].CompanyBranchId
           }`
         )
-        .then(({ data }) => setItems(data))
+        .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
         .catch((err) => console.log("@@@", err))
         .finally(() => setLoading(false));
     }
@@ -166,7 +166,7 @@ export default function Stock({
       setLoading(true);
       api
         .get(`products/stock-daily?day=${todayDate()}&branchId=${branchId}`)
-        .then(({ data }) => setItems(data))
+        .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
         .catch((err) => console.log("@@@", err))
         .finally(() => setLoading(false));
     } else if (value === "checklist") {
@@ -210,7 +210,7 @@ export default function Stock({
     setLoading(true);
     api
       .get(`products/stock-daily?day=${todayDate()}&branchId=${value}`)
-      .then(({ data }) => setItems(data))
+      .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
       .catch((err) => console.log("@@@", err))
       .finally(() => setLoading(false));
     setBranchId(value);
@@ -419,7 +419,7 @@ export default function Stock({
                         .get(
                           `products/stock-daily?day=${e.target.value}&branchId=${branchId}`
                         )
-                        .then(({ data }) => setItems(data))
+                        .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
                         .catch((err) => console.log("@@@", err))
                         .finally(() => setLoading(false));
                       setDate(e.target.value);
@@ -635,6 +635,7 @@ export default function Stock({
                     Voltar
                   </Button>
                   <Button
+                  disabled={items.map(e => e.confirmEntryQuantity).includes(false)}
                     variant="contained"
                     color="primary"
                     style={{ marginLeft: "8px" }}
@@ -805,7 +806,6 @@ export default function Stock({
 
     return component;
   };
-  console.log("@@@ acaboou");
 
   const setRowSelected = (id) => {
     console.log("@@@ id", id);

@@ -411,29 +411,31 @@ export default function Stock({
                   </Select>
                 </FormControl>
 
-                <TextField
-                  value={date}
-                  onChange={(e) => {
-                    api
-                      .get(
-                        `products/stock-daily?day=${e.target.value}&branchId=${branchId}`
-                      )
-                      .then(({ data }) => setItems(data))
-                      .catch((err) => console.log("@@@", err))
-                      .finally(() => setLoading(false));
-                    setDate(e.target.value);
-                  }}
-                  variant="outlined"
-                  required
-                  id="date"
-                  label="Data"
-                  type="date"
-                  // className={classes.textField}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  style={{ padding: "9px" }}
-                />
+                {isAdmin && (
+                  <TextField
+                    value={date}
+                    onChange={(e) => {
+                      api
+                        .get(
+                          `products/stock-daily?day=${e.target.value}&branchId=${branchId}`
+                        )
+                        .then(({ data }) => setItems(data))
+                        .catch((err) => console.log("@@@", err))
+                        .finally(() => setLoading(false));
+                      setDate(e.target.value);
+                    }}
+                    variant="outlined"
+                    required
+                    id="date" 
+                    label="Data"
+                    type="date"
+                    // className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    style={{ padding: "9px" }}
+                  />
+                )}
               </div>
               {/* branchsPermissions
                     .find((e) => e.CompanyBranchId == branchId)

@@ -869,7 +869,7 @@ function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
   const classes = useStyles();
   console.log("@@@ columns items", colunms, rows);
   return (
-    <Container masWidth="lg" style={{ padding: "0", marginTop: "24px" }}>
+    <Container masWidth="lg" style={{ padding: "0", marginTop: "24px", width: "100%", overflowX: 'auto'}}>
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>

@@ -25,6 +25,8 @@ import FormControl from "@material-ui/core/FormControl";
 import { VisibilityOutlined } from "@material-ui/icons";
 import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 
+import { ErrorContext } from "../../Context/Error/context";
+
 import api from "../../services/api";
 
 function todayDate() {
@@ -136,7 +138,7 @@ function SimpleTable({
   );
 }
 
-export default function Grades({isAdmin}) {
+export default function Grades({ isAdmin }) {
   const [loading, setLoading] = useState(false);
   const [productsList, setProductsList] = useState([]);
   const [noteProductsList, setNoteProductsList] = useState([]);
@@ -150,7 +152,7 @@ export default function Grades({isAdmin}) {
   const [noteDescription, setNoteDescription] = useState("");
   const [content, setContent] = useState("list");
   const [noteId, setNoteId] = useState("list");
-
+  const { handleChangeErrorState } = React.useContext(ErrorContext);
   const [note, setNote] = useState({
     products: [],
   });
@@ -226,7 +228,15 @@ export default function Grades({isAdmin}) {
     setLoading(true);
     api
       .delete(`/notes/${notesList.find((_, i) => i == index).id}`)
-      .then(() => {
+      .then(async (res) => {
+        if (res.status && res.status === 400) {
+          const { errors: message } = await res.json();
+          return handleChangeErrorState({
+            error: true,
+            message,
+            type: "error",
+          });
+        }
         handleChangeContent("list");
       })
       .catch(() => {

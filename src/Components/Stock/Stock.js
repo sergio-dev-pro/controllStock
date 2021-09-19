@@ -73,6 +73,7 @@ export default function Stock({
         .then(({ data }) => {
           setBranchList(data);
           setBranchId(data[0].id);
+          setLoading(true);
           api
             .get(
               `products/stock-daily?day=${todayDate()}&branchId=${data[0].id}`
@@ -268,7 +269,7 @@ export default function Stock({
     const listOfValidatedItems = items.map((item) => {
       let error = false;
       if (
-        (!item.finalQuantity && item.finalQuantity != 0) ||
+        (item.finalQuantity != 0 && !item.finalQuantity) ||
         parseInt(item.finalQuantity) < 0
       )
         error = true;

@@ -246,9 +246,7 @@ export default function Grades({ isAdmin }) {
 
   const loadNotes = () => {
     api
-      .get(
-        `notes?StartDate=${startDate}&EndDate=${endDate}`
-      )
+      .get(`notes?StartDate=${startDate}&EndDate=${endDate}`)
       .then(({ data }) => {
         setNotesList(data);
       })
@@ -283,13 +281,22 @@ export default function Grades({ isAdmin }) {
                 }}
               >
                 TOTAL:{" "}
-                {notesList
-                  .map((e) => e.total)
-                  .reduce((a, b) => a + b)
-                  .toLocaleString("pt-br", {
-                    style: "currency",
-                    currency: "BRL",
-                  })}
+                {notesList.length
+                  ? notesList
+                      .map((note) =>
+                        JSON.parse(note.items)
+                          .map((item) => parseFloat(item.ValueSpended))
+                          .reduce(
+                            (previusValue, currentValue) =>
+                              previusValue + currentValue
+                          )
+                      )
+                      .reduce((a, b) => a + b)
+                      .toLocaleString("pt-br", {
+                        style: "currency",
+                        currency: "BRL",
+                      })
+                  : ""}
               </Typography>
               <Divider />
             </div>

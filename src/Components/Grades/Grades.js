@@ -17,7 +17,6 @@ import { AddBox, Search } from "@material-ui/icons";
 import TextField from "@material-ui/core/TextField";
 import Grid from "@material-ui/core/Grid";
 import Box from "@material-ui/core/Box";
-import CssBaseline from "@material-ui/core/CssBaseline";
 import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
@@ -274,43 +273,66 @@ export default function Grades({ isAdmin }) {
     switch (value) {
       case "list":
         component = (
-          <SimpleTable
-            colunmList={[
-              { name: "Descrição", key: "description" },
-              { name: "Itens", key: "viewItems" },
-              { name: "Total", key: "total" },
-            ]}
-            list={
-              notesList.length
-                ? notesList.map((note) => ({
-                    ...note,
-                    total: JSON.parse(note.items)
-                      .map((item) => parseFloat(item.ValueSpended))
-                      .reduce(
-                        (previusValue, currentValue) =>
-                          previusValue + currentValue
-                      )
-                      .toLocaleString("pt-br", {
-                        style: "currency",
-                        currency: "BRL",
-                      }),
-                    viewItems: (
-                      <IconButton
-                        onClick={() => {
-                          setNoteId(note.id);
-                          setContent("view_items");
-                        }}
-                      >
-                        {" "}
-                        <VisibilityOutlined />{" "}
-                      </IconButton>
-                    ),
-                  }))
-                : []
-            }
-            hasDeletebutton={isAdmin}
-            handleOnClickButtonDelete={handleDeleteNote}
-          />
+          <>
+            <div style={{ width: "100%", marginTop: "16px" }}>
+              <Divider />
+              <Typography
+                variant="subtitle2"
+                style={{
+                  color: "rgba(0, 0, 0, 0.77)",
+                  padding: "8px 0",
+                  marginLeft: "8px",
+                }}
+              >
+                TOTAL:{" "}
+                {notesList
+                  .map((e) => e.total)
+                  .reduce((a, b) => a + b)
+                  .toLocaleString("pt-br", {
+                    style: "currency",
+                    currency: "BRL",
+                  })}
+              </Typography>
+              <Divider />
+            </div>
+            <SimpleTable
+              colunmList={[
+                { name: "Descrição", key: "description" },
+                { name: "Itens", key: "viewItems" },
+                { name: "Total", key: "total" },
+              ]}
+              list={
+                notesList.length
+                  ? notesList.map((note) => ({
+                      ...note,
+                      total: JSON.parse(note.items)
+                        .map((item) => parseFloat(item.ValueSpended))
+                        .reduce(
+                          (previusValue, currentValue) =>
+                            previusValue + currentValue
+                        )
+                        .toLocaleString("pt-br", {
+                          style: "currency",
+                          currency: "BRL",
+                        }),
+                      viewItems: (
+                        <IconButton
+                          onClick={() => {
+                            setNoteId(note.id);
+                            setContent("view_items");
+                          }}
+                        >
+                          {" "}
+                          <VisibilityOutlined />{" "}
+                        </IconButton>
+                      ),
+                    }))
+                  : []
+              }
+              hasDeletebutton={isAdmin}
+              handleOnClickButtonDelete={handleDeleteNote}
+            />
+          </>
         );
         break;
       case "create":

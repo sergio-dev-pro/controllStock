@@ -63,8 +63,6 @@ export default function Stock({
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
-    // console.log("@@@ branchsPermissions", branchsPermissions);
-    // console.log("@@@ isAdmin", isAdmin);
 
     if (isAdmin) {
       setLoading(true);
@@ -116,15 +114,18 @@ export default function Stock({
       { name: "Quantidade Minima", key: "productMinQuantity" },
     ];
     // const existingPermissions = ['ShowProductsToDelivery', 'UpdateFinalQuantity', 'UpdateEntryQuantity']
-    if (isAdmin) return setColunms(colunmsAdmin);
-    else if (IsCentralStockAdmin) {
-      const colunms = [
-        { name: "Produto", key: "productName" },
-        { name: "Quantidade de Entrada", key: "entryQuantity" },
-        { name: "Quantidade Final", key: "finalQuantity" },
-      ];
-      setColunms(colunms);
-    } else {
+    if (isAdmin || IsCentralStockAdmin) return setColunms(colunmsAdmin);
+    // else if (IsCentralStockAdmin) {
+    //   const colunms = [
+    //     { name: "Produto", key: "productName" },
+    //     { name: "Quantidade de Entrada", key: "entryQuantity" },
+    //     { name: "Quantidade Final", key: "finalQuantity" },
+    //     { name: "Quantidade Faltando", key: "missingQuantity" },
+    //   { name: "Quantidade Anterior", key: "previousQuantity" },
+    //   ];
+    //   setColunms(colunms);
+    // } 
+    else {
       const colunms = [
         { name: "Produto", key: "productName" },
         { name: "Quantidade Final", key: "finalQuantity" },
@@ -143,17 +144,7 @@ export default function Stock({
       else setColunms(colunmsMin);
     }
 
-    console.log("@@@ branchsPermissions", branchsPermissions);
   }, [isAdmin, branchsPermissions]);
-
-  //   const handleChangeItems = (e) => {
-  //     const itemsState  = items;
-  //     itemsState[e.target.id].finalQuantity = e.target.value;
-  //     console.log("@@@ onChange", itemsState)
-  //     // itemsState.splice(i, 1, {...itemsState[i], finalQuantity: e.target.value})
-  //     setItems(itemsState);
-  //     setContent('end_stock');
-  // };
 
   const getContent = (value) => {
     if (value === "end_stock") {

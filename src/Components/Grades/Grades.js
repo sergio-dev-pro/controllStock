@@ -247,9 +247,7 @@ export default function Grades({ isAdmin }) {
   const loadNotes = () => {
     api
       .get(
-        `notes?StartDate=${todayDate()}&EndDate=${todayDateSumeOne(
-          todayDate()
-        )}`
+        `notes?StartDate=${startDate}&EndDate=${endDate}`
       )
       .then(({ data }) => {
         setNotesList(data);

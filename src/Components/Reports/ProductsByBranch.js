@@ -16,6 +16,8 @@ import Select from "@material-ui/core/Select";
 import InputLabel from "@material-ui/core/InputLabel";
 import MenuItem from "@material-ui/core/MenuItem";
 import FormControl from "@material-ui/core/FormControl";
+import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
+import { ErrorContext } from "../../Context/Error/context";
 
 import api from "../../services/api";
 
@@ -117,6 +119,9 @@ export default function ProductsByBranch() {
   const [startDate, setStartDate] = useState(todayDate());
   const [endDate, setEndDate] = useState(todayDateSumeOne(todayDate()));
   const [content, setContent] = useState("list");
+  const [replacementList, setReplacementList] = useState([]);
+
+  const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
     setContent("list");
@@ -183,6 +188,23 @@ export default function ProductsByBranch() {
     setEndDate(e.target.value);
   };
 
+  const handleReplacementContent = (e) => {
+    setLoading(true);
+    api
+      .get(`products/missing/summary?day${todayDate()}`)
+      .then(({ data }) => {
+        setReplacementList(data);
+        if(!data.length)
+        return handleChangeErrorState({
+          error: true,
+          message: "Lista de reposição vazia.",
+          type: "error",
+        });
+        setContent("replacement");
+      })
+      .finally(() => setLoading(false));
+  };
+
   const searchProductsBybranch = (_) => {
     setLoading(true);
     loadProductsByBranch();
@@ -193,16 +215,51 @@ export default function ProductsByBranch() {
     switch (value) {
       case "list":
         component = (
-          <SimpleTable
-            colunmList={[
-              { name: "Data", key: "day" },
-              { name: "Nome", key: "productName" },
-              { name: "Quantidade que entrou", key: "entryQuantity" },
-              { name: "Quantidade que saiu", key: "outQuantity" },
-              { name: "Valor Gasto", key: "valueSpended" },
-            ]}
-            list={productsByBranch}
-          />
+          <>
+            <SimpleTable
+              colunmList={[
+                { name: "Data", key: "day" },
+                { name: "Nome", key: "productName" },
+                { name: "Quantidade que entrou", key: "entryQuantity" },
+                { name: "Quantidade que saiu", key: "outQuantity" },
+                { name: "Valor Gasto", key: "valueSpended" },
+              ]}
+              list={productsByBranch}
+            />
+          </>
+        );
+        break;
+      case "replacement":
+        component = (
+          <>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                alignItems: "center",
+                position: "static",
+              }}
+            >
+              <Button
+                variant="outlined"
+                color="primary"
+                style={{ marginRight: "8px" }}
+                startIcon={<KeyboardReturnIcon />}
+                onClick={() => setContent("list")}
+              >
+                Voltar
+              </Button>
+            </div>
+            <SimpleTable
+              colunmList={[
+                { name: "Name", key: "productName" },
+                { name: "Quantidade Faltando", key: "missingQuantity" },
+                { name: "Valor Gasto", key: "valueSpended" },
+              ]}
+              list={replacementList}
+            />
+          </>
         );
         break;
 
@@ -234,85 +291,98 @@ export default function ProductsByBranch() {
                   justifyContent: "space-between",
                   alignItems: "center",
                   // marginBottom: '8px',
+                  width: "100%",
                   flexWrap: "wrap",
                 }}
               >
-                <FormControl
-                  variant="outlined"
-                  style={{
-                    minWidth: "250px",
-                    marginRight: "8px",
-                    paddingBottom: "16px",
-                  }}
-                >
-                  <InputLabel id="demo-simple-select-outlined-label">
-                    Filial
-                  </InputLabel>
-                  <Select
-                    value={branchId}
-                    name="branchId"
-                    label="Filial"
-                    value={branchId}
-                    onChange={handleChangeBranchId}
-                    name="branch"
+                <div>
+                  <FormControl
+                    variant="outlined"
+                    style={{
+                      minWidth: "250px",
+                      marginRight: "8px",
+                      paddingBottom: "16px",
+                    }}
+                  >
+                    <InputLabel id="demo-simple-select-outlined-label">
+                      Filial
+                    </InputLabel>
+                    <Select
+                      value={branchId}
+                      name="branchId"
+                      label="Filial"
+                      value={branchId}
+                      onChange={handleChangeBranchId}
+                      name="branch"
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="branchId"
+                      autoFocus
+                    >
+                      {branchList.map((e) => (
+                        <MenuItem key={e.id} value={e.id}>
+                          {e.name}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
+
+                  <TextField
+                    value={startDate}
+                    onChange={handleChangeStartDate}
                     variant="outlined"
                     required
-                    fullWidth
-                    id="branchId"
-                    autoFocus
+                    id="date"
+                    label="Data Inicial"
+                    type="date"
+                    defaultValue="2017-05-24"
+                    // className={classes.textField}
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    style={{ marginRight: "8px", paddingBottom: "16px" }}
+                  />
+                  <TextField
+                    value={endDate}
+                    onChange={handleChangeEndDate}
+                    variant="outlined"
+                    required
+                    id="date"
+                    label="Data Final"
+                    type="date"
+                    defaultValue="2017-05-24"
+                    format="dd/MM/yyyy"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    style={{ marginRight: "8px", paddingBottom: "16px" }}
+                  />
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    style={{ marginBottom: "16px" }}
+                    onClick={searchProductsBybranch}
+                    startIcon={<Search />}
                   >
-                    {branchList.map((e) => (
-                      <MenuItem key={e.id} value={e.id}>
-                        {e.name}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
+                    Buscar
+                  </Button>
+                </div>
 
-                <TextField
-                  value={startDate}
-                  onChange={handleChangeStartDate}
-                  variant="outlined"
-                  required
-                  id="date"
-                  label="Data Inicial"
-                  type="date"
-                  defaultValue="2017-05-24"
-                  // className={classes.textField}
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  style={{ marginRight: "8px", paddingBottom: "16px" }}
-                />
-                <TextField
-                  value={endDate}
-                  onChange={handleChangeEndDate}
-                  variant="outlined"
-                  required
-                  id="date"
-                  label="Data Final"
-                  type="date"
-                  defaultValue="2017-05-24"
-                  format="dd/MM/yyyy"
-                  InputLabelProps={{
-                    shrink: true,
-                  }}
-                  style={{ marginRight: "8px", paddingBottom: "16px" }}
-                />
-                <Button
-                  type="button"
-                  variant="contained"
-                  color="primary"
-                  style={{ marginBottom: "16px" }}
-                  onClick={searchProductsBybranch}
-                  startIcon={<Search />}
-                >
-                  Buscar
-                </Button>
+                <div>
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary"
+                    style={{ marginBottom: "16px" }}
+                    onClick={handleReplacementContent}
+                  >
+                    Reposição
+                  </Button>
+                </div>
               </div>
-            </>
-          ) : null}
-          <div style={{ width: "100%", marginTop: "16px" }}>
+              <div style={{ width: "100%", marginTop: "16px" }}>
             <Divider />
             <Typography
               variant="subtitle2"
@@ -340,6 +410,8 @@ export default function ProductsByBranch() {
             </Typography>
             <Divider />
           </div>
+            </>
+          ) : null}
           {getContentComponent(content)}
         </>
       ) : (

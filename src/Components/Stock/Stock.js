@@ -112,6 +112,7 @@ export default function Stock({
       { name: "Quantidade Faltando", key: "missingQuantity" },
       { name: "Quantidade Anterior", key: "previousQuantity" },
       { name: "Quantidade Minima", key: "productMinQuantity" },
+      { name: "Quantidade de Saída", key: "quantitySold" },
     ];
     // const existingPermissions = ['ShowProductsToDelivery', 'UpdateFinalQuantity', 'UpdateEntryQuantity']
     if (isAdmin || IsCentralStockAdmin) return setColunms(colunmsAdmin);

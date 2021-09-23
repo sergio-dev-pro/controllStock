@@ -229,10 +229,10 @@ export default function Grades({ isAdmin }) {
       .delete(`/notes/${notesList.find((_, i) => i == index).id}`)
       .then(async (res) => {
         if (res.status && res.status === 400) {
-          const { errors: message } = await res.json();
+          const { errors } = await res.json();
           return handleChangeErrorState({
             error: true,
-            message,
+            message: errors,
             type: "error",
           });
         }

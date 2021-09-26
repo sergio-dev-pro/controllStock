@@ -107,6 +107,7 @@ export default function Stock({
   useEffect(() => {
     const colunmsAdmin = [
       { name: "Produto", key: "productName" },
+      { name: "Última atualização", key: "userNameLastUpdate" },
       { name: "Quantidade de Entrada", key: "entryQuantity" },
       { name: "Quantidade Final", key: "finalQuantity" },
       { name: "Quantidade Faltando", key: "missingQuantity" },

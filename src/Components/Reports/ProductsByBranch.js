@@ -191,7 +191,7 @@ export default function ProductsByBranch() {
   const handleReplacementContent = (e) => {
     setLoading(true);
     api
-      .get(`products/missing/summary?day${todayDate()}`)
+      .get(`products/missing/summary?day=${todayDate()}`)
       .then(({ data }) => {
         setReplacementList(data);
         if(!data.length)

@@ -37,6 +37,10 @@ function todayDate() {
   return (today = yyyy + "-" + mm + "-" + dd);
 }
 
+function formatDate(date) {
+  return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}/${date.split("-")[0]}`;
+}
+
 function todayDateSumeOne(value, operation) {
   var date = new Date(value);
   if (operation && operation === "sub") date.setDate(date.getDate() - 2);
@@ -205,8 +209,9 @@ export default function CentralStock() {
               { name: "Quantidade", key: "quantity" },
               { name: "Preço unitário", key: "unitValue" },
               { name: "Descrição", key: "description" },
+              { name: "Dia", key: "day" },
             ]}
-            list={merchandiseList}
+            list={merchandiseList.map(merchandise => ({...merchandise, day: formatDate(merchandise.day)}))}
           />
         );
         break;

@@ -27,6 +27,7 @@ import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
 import { ErrorContext } from "../../Context/Error/context";
 
 import api from "../../services/api";
+import { setDate } from "date-fns";
 
 function todayDate() {
   var today = new Date();
@@ -151,6 +152,7 @@ export default function Grades({ isAdmin }) {
   const [noteDescription, setNoteDescription] = useState("");
   const [content, setContent] = useState("list");
   const [noteId, setNoteId] = useState("list");
+  const [noteDate, setNotDate] = useState("list");
   const { handleChangeErrorState } = React.useContext(ErrorContext);
   const [note, setNote] = useState({
     products: [],
@@ -193,10 +195,16 @@ export default function Grades({ isAdmin }) {
 
   const handleCreateNote = () => {
     setLoading(true);
+
+    if (!noteDescription || !noteProductsList || !noteDate)
+      return setLoading(false);
+
     api
       .post("/notes", {
         description: noteDescription,
         items: noteProductsList,
+        date: noteProductsList,
+        day: noteDate,
       })
       .then(() => {
         handleChangeContent("list");
@@ -284,12 +292,14 @@ export default function Grades({ isAdmin }) {
                 {notesList.length
                   ? notesList
                       .map((note) =>
-                        JSON.parse(note.items)
-                          .map((item) => parseFloat(item.ValueSpended))
-                          .reduce(
-                            (previusValue, currentValue) =>
-                              previusValue + currentValue
-                          )
+                        JSON.parse(note.items).length
+                          ? JSON.parse(note.items)
+                              .map((item) => parseFloat(item.ValueSpended))
+                              .reduce(
+                                (previusValue, currentValue) =>
+                                  previusValue + currentValue
+                              )
+                          : 0
                       )
                       .reduce((a, b) => a + b)
                       .toLocaleString("pt-br", {
@@ -310,16 +320,21 @@ export default function Grades({ isAdmin }) {
                 notesList.length
                   ? notesList.map((note) => ({
                       ...note,
-                      total: JSON.parse(note.items)
-                        .map((item) => parseFloat(item.ValueSpended))
-                        .reduce(
-                          (previusValue, currentValue) =>
-                            previusValue + currentValue
-                        )
-                        .toLocaleString("pt-br", {
-                          style: "currency",
-                          currency: "BRL",
-                        }),
+                      total: JSON.parse(note.items).length
+                        ? JSON.parse(note.items)
+                            .map((item) => parseFloat(item.ValueSpended))
+                            .reduce(
+                              (previusValue, currentValue) =>
+                                previusValue + currentValue
+                            )
+                            .toLocaleString("pt-br", {
+                              style: "currency",
+                              currency: "BRL",
+                            })
+                        : "0".toLocaleString("pt-br", {
+                            style: "currency",
+                            currency: "BRL",
+                          }),
                       viewItems: (
                         <IconButton
                           onClick={() => {
@@ -376,6 +391,33 @@ export default function Grades({ isAdmin }) {
                           fullWidth
                           id="description"
                           label="Descrição"
+                          autoFocus
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          value={noteDate}
+                          onChange={(e) => {
+                            console.log(
+                              "@@@ e.target.value",
+                              Date.parse(e.target.value),
+                              Date.parse(todayDate())
+                            );
+                            if (
+                              Date.parse(e.target.value) >
+                              Date.parse(todayDate())
+                            )
+                              return setNotDate(todayDate());
+                            setNotDate(e.target.value);
+                          }}
+                          autoComplete="fname"
+                          name="noteDate"
+                          variant="outlined"
+                          type="date"
+                          required
+                          fullWidth
+                          id="setNotDate"
+                          label="Data da Nota:"
                           autoFocus
                         />
                       </Grid>

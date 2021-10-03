@@ -218,7 +218,6 @@ export default function ProductsByBranch() {
           <>
             <SimpleTable
               colunmList={[
-                { name: "Data", key: "day" },
                 { name: "Nome", key: "productName" },
                 { name: "Quantidade que entrou", key: "entryQuantity" },
                 { name: "Quantidade que saiu", key: "outQuantity" },

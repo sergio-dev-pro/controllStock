@@ -152,7 +152,7 @@ export default function Grades({ isAdmin }) {
   const [noteDescription, setNoteDescription] = useState("");
   const [content, setContent] = useState("list");
   const [noteId, setNoteId] = useState("list");
-  const [noteDate, setNotDate] = useState("list");
+  const [noteDate, setNotDate] = useState(todayDate());
   const { handleChangeErrorState } = React.useContext(ErrorContext);
   const [note, setNote] = useState({
     products: [],

@@ -63,7 +63,6 @@ export default function Stock({
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
-
     if (isAdmin) {
       setLoading(true);
       api
@@ -76,7 +75,9 @@ export default function Stock({
             .get(
               `products/stock-daily?day=${todayDate()}&branchId=${data[0].id}`
             )
-            .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
+            .then(({ data }) =>
+              setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
+            )
             .catch((err) => console.log("@@@", err))
             .finally(() => setLoading(false));
         })
@@ -97,7 +98,9 @@ export default function Stock({
             branchsPermissions[0].CompanyBranchId
           }`
         )
-        .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
+        .then(({ data }) =>
+          setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
+        )
         .catch((err) => console.log("@@@", err))
         .finally(() => setLoading(false));
     }
@@ -111,41 +114,31 @@ export default function Stock({
       { name: "Quantidade de Entrada", key: "entryQuantity" },
       { name: "Quantidade Final", key: "finalQuantity" },
       { name: "Quantidade Faltando", key: "missingQuantity" },
+      { name: "Quantidade do PDV", key: " pdvQuantity" },
+      { name: "Diferença de quantidade", key: " differenceQuantity" },
       { name: "Quantidade Anterior", key: "previousQuantity" },
       { name: "Quantidade Minima", key: "productMinQuantity" },
       { name: "Quantidade de Saída", key: "quantitySold" },
     ];
-    // const existingPermissions = ['ShowProductsToDelivery', 'UpdateFinalQuantity', 'UpdateEntryQuantity']
+
     if (isAdmin || IsCentralStockAdmin) return setColunms(colunmsAdmin);
-    // else if (IsCentralStockAdmin) {
-    //   const colunms = [
-    //     { name: "Produto", key: "productName" },
-    //     { name: "Quantidade de Entrada", key: "entryQuantity" },
-    //     { name: "Quantidade Final", key: "finalQuantity" },
-    //     { name: "Quantidade Faltando", key: "missingQuantity" },
-    //   { name: "Quantidade Anterior", key: "previousQuantity" },
-    //   ];
-    //   setColunms(colunms);
-    // } 
     else {
-      const colunms = [
-        { name: "Produto", key: "productName" },
-        { name: "Quantidade Final", key: "finalQuantity" },
-        { name: "Quantidade de Entrada", key: "entryQuantity" },
-      ];
-      const colunmsMin = [
-        { name: "Produto", key: "productName" },
-        { name: "Quantidade de Entrada", key: "entryQuantity" },
-      ];
+      const columns = [{ name: "Produto", key: "productName" }];
 
-      if (
-        branchsPermissions[0].Permissions &&
-        branchsPermissions[0].Permissions.includes("ShowProductsToDelivery")
-      )
-        setColunms(colunms);
-      else setColunms(colunmsMin);
+      if (branchsPermissions[0].Permissions.includes("UpdateFinalQuantity"))
+        columns.push(
+          { name: "Quantidade Final", key: "finalQuantity" },
+          { name: "Quantidade de Entrada", key: "entryQuantity" }
+        );
+
+      if (branchsPermissions[0].Permissions.includes("ShowProductsToDelivery"))
+        columns.push({ name: "Quantidade Faltando", key: "missingQuantity" });
+
+      if (branchsPermissions[0].Permissions.includes("UpdatePdvQuantity"))
+        columns.push({ name: "Quantidade do PDV", key: "pdvQuantity" });
+
+      setColunms(columns);
     }
-
   }, [isAdmin, branchsPermissions]);
 
   const getContent = (value) => {
@@ -160,7 +153,9 @@ export default function Stock({
       setLoading(true);
       api
         .get(`products/stock-daily?day=${todayDate()}&branchId=${branchId}`)
-        .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
+        .then(({ data }) =>
+          setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
+        )
         .catch((err) => console.log("@@@", err))
         .finally(() => setLoading(false));
     } else if (value === "checklist") {
@@ -204,7 +199,9 @@ export default function Stock({
     setLoading(true);
     api
       .get(`products/stock-daily?day=${todayDate()}&branchId=${value}`)
-      .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
+      .then(({ data }) =>
+        setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
+      )
       .catch((err) => console.log("@@@", err))
       .finally(() => setLoading(false));
     setBranchId(value);
@@ -223,6 +220,7 @@ export default function Stock({
       entryQuantity: product.entryQuantity,
       finalQuantity: product.finalQuantity,
       previusQuantity: product.previusQuantity,
+      pdvQuantity: product.pdvQuantity,
     };
 
     const requestOptions = {
@@ -332,6 +330,12 @@ export default function Stock({
         .Permissions.includes("UpdateFinalQuantity")
     )
       return false;
+    else if (
+      branchsPermissions
+        .find((e) => e.CompanyBranchId == branchId)
+        .Permissions.includes("UpdatePdvQuantity")
+    )
+      return true;
   };
 
   const handleChangeChecklist = (id) => {
@@ -413,14 +417,21 @@ export default function Stock({
                         .get(
                           `products/stock-daily?day=${e.target.value}&branchId=${branchId}`
                         )
-                        .then(({ data }) => setItems(data.map(e => ({...e, confirmEntryQuantity: false }))))
+                        .then(({ data }) =>
+                          setItems(
+                            data.map((e) => ({
+                              ...e,
+                              confirmEntryQuantity: false,
+                            }))
+                          )
+                        )
                         .catch((err) => console.log("@@@", err))
                         .finally(() => setLoading(false));
                       setDate(e.target.value);
                     }}
                     variant="outlined"
                     required
-                    id="date" 
+                    id="date"
                     label="Data"
                     type="date"
                     // className={classes.textField}
@@ -431,9 +442,6 @@ export default function Stock({
                   />
                 )}
               </div>
-              {/* branchsPermissions
-                    .find((e) => e.CompanyBranchId == branchId)
-                    .Permissions.includes("UpdateFinalQuantity") */}
               {(isAdmin ||
                 (!IsCentralStockAdmin &&
                   branchsPermissions.length &&
@@ -546,28 +554,57 @@ export default function Stock({
                   </Grid>
                 </>
               ) : (
-                <Grid item xs={12}>
-                  <TextField
-                    autoFocus
-                    style={{ marginBottom: "16px" }}
-                    type="number"
-                    value={product.entryQuantity}
-                    onChange={(e) =>
-                      setProduct((prevState) => ({
-                        ...prevState,
-                        entryQuantity: e.target.value,
-                      }))
-                    }
-                    autoComplete="fname"
-                    name="entryQuantity"
-                    variant="outlined"
-                    required
-                    fullWidth
-                    id="entryQuantity"
-                    label="Quantidade de Entrada"
-                    autoFocus
-                  />
-                </Grid>
+                <>
+                  {IsCentralStockAdmin && (
+                    <Grid item xs={12}>
+                      <TextField
+                        autoFocus
+                        style={{ marginBottom: "16px" }}
+                        type="number"
+                        value={product.entryQuantity}
+                        onChange={(e) =>
+                          setProduct((prevState) => ({
+                            ...prevState,
+                            entryQuantity: e.target.value,
+                          }))
+                        }
+                        autoComplete="fname"
+                        name="entryQuantity"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="entryQuantity"
+                        label="Quantidade de Entrada"
+                        autoFocus
+                      />
+                    </Grid>
+                  )}
+                  {branchsPermissions
+                    .find((e) => e.CompanyBranchId == branchId)
+                    .Permissions.includes("UpdatePdvQuantity") && (
+                    <Grid item xs={12}>
+                      <TextField
+                        autoFocus
+                        style={{ marginBottom: "16px" }}
+                        type="number"
+                        value={product.pdvQuantity}
+                        onChange={(e) =>
+                          setProduct((prevState) => ({
+                            ...prevState,
+                            pdvQuantity: e.target.value,
+                          }))
+                        }
+                        autoComplete="fUpdatePdvQuantity"
+                        name="pdvQuantity"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="pdvQuantity"
+                        label="Quantidade do PDV"
+                      />
+                    </Grid>
+                  )}
+                </>
               )}
 
               <Grid item xs={12} sm={6}>
@@ -629,7 +666,9 @@ export default function Stock({
                     Voltar
                   </Button>
                   <Button
-                  disabled={items.map(e => e.confirmEntryQuantity).includes(false)}
+                    disabled={items
+                      .map((e) => e.confirmEntryQuantity)
+                      .includes(false)}
                     variant="contained"
                     color="primary"
                     style={{ marginLeft: "8px" }}
@@ -863,7 +902,15 @@ function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
   const classes = useStyles();
   console.log("@@@ columns items", colunms, rows);
   return (
-    <Container masWidth="lg" style={{ padding: "0", marginTop: "24px", width: "100%", overflowX: 'auto'}}>
+    <Container
+      masWidth="lg"
+      style={{
+        padding: "0",
+        marginTop: "24px",
+        width: "100%",
+        overflowX: "auto",
+      }}
+    >
       <Table className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>

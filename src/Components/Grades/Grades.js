@@ -38,6 +38,10 @@ function todayDate() {
   return (today = yyyy + "-" + mm + "-" + dd);
 }
 
+function formatDate(date) {
+  return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}/${date.split("-")[0]}`;
+}
+
 function todayDateSumeOne(value, operation) {
   var date = new Date(value);
   if (operation && operation === "sub") date.setDate(date.getDate() - 2);
@@ -153,6 +157,10 @@ export default function Grades({ isAdmin }) {
   const [content, setContent] = useState("list");
   const [noteId, setNoteId] = useState("list");
   const [noteDate, setNotDate] = useState(todayDate());
+  const [totalCreditCardValue, setTotalCreditCardValue] = useState("");
+  const [totalDebitCardValue, setTotalDebitCardValue] = useState("");
+  const [totalMoneyValue, setTotalMoneyValue] = useState("");
+  const [totalPixValue, setTotalPixValue] = useState("");
   const { handleChangeErrorState } = React.useContext(ErrorContext);
   const [note, setNote] = useState({
     products: [],
@@ -205,6 +213,10 @@ export default function Grades({ isAdmin }) {
         items: noteProductsList,
         date: noteProductsList,
         day: noteDate,
+        totalCreditCardValue,
+        totalDebitCardValue,
+        totalMoneyValue,
+        totalPixValue 
       })
       .then(() => {
         handleChangeContent("list");
@@ -313,6 +325,11 @@ export default function Grades({ isAdmin }) {
             <SimpleTable
               colunmList={[
                 { name: "Descrição", key: "description" },
+                { name: "Pago em Credito", key: "totalCreditCardValue" },
+                { name: "Pago em Debito", key: "totalDebitCardValue" },
+                { name: "Pago em dinheiro", key: "totalMoneyValue" },
+                { name: "Pago em pix", key: "totalPixValue" },
+                { name: "Dia", key: "day" },
                 { name: "Itens", key: "viewItems" },
                 { name: "Total", key: "total" },
               ]}
@@ -320,6 +337,7 @@ export default function Grades({ isAdmin }) {
                 notesList.length
                   ? notesList.map((note) => ({
                       ...note,
+                      day: formatDate(note.day),
                       total: JSON.parse(note.items).length
                         ? JSON.parse(note.items)
                             .map((item) => parseFloat(item.ValueSpended))
@@ -367,7 +385,7 @@ export default function Grades({ isAdmin }) {
               }}
             >
               <Typography component="h1" variant="h5" style={{ width: "100%" }}>
-                Criar Nota
+                {showAddNoteProductForm ? "Adicionar mercadoria" : "Criar Nota"}
               </Typography>
               <form
                 style={{ width: "100%", marginTop: "24px" }}
@@ -422,7 +440,7 @@ export default function Grades({ isAdmin }) {
                         />
                       </Grid>
                       <Grid item xs={6}>
-                        <h4>Produtos:</h4>
+                        <h3>Mercadorias da nota:</h3>
                       </Grid>
                       <Grid
                         item
@@ -444,7 +462,7 @@ export default function Grades({ isAdmin }) {
                             width: "fit-content",
                           }}
                         >
-                          Add Mercadoria
+                          Adicionar Mercadoria
                         </Button>
                       </Grid>
                       <SimpleTable
@@ -461,6 +479,104 @@ export default function Grades({ isAdmin }) {
                           )
                         }
                       />
+                      <Grid item xs={12}>
+                        <Divider style={{ width: "100%" }} />
+                      </Grid>
+                      <Grid item xs={6}>
+                        <h3>Total da nota:</h3>
+                      </Grid>
+                      <Grid
+                        item
+                        xs={6}
+                        style={{
+                          display: "flex",
+                          justifyContent: "flex-end",
+                          padding: "8px",
+                        }}
+                      >
+                        <h3>
+                          {noteProductsList.length
+                            ? noteProductsList
+                                .map((e) => e.valueSpended)
+                                .reduce((x, y) => x + y)
+                                .toLocaleString("pt-br", {
+                                  style: "currency",
+                                  currency: "BRL",
+                                })
+                            : "0".toLocaleString("pt-br", {
+                                style: "currency",
+                                currency: "BRL",
+                              })}
+                        </h3>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Divider style={{ width: "100%" }} />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          value={totalCreditCardValue}
+                          type="numeric"
+                          onChange={(e) => {
+                            setTotalCreditCardValue(e.target.value);
+                          }}
+                          autoComplete="ftotalCreditCardValue"
+                          name="totalCreditCardValue"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="totalCreditCardValue"
+                          label="Valor pago em credito:"
+                          autoFocus
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          value={totalDebitCardValue}
+                          type="numeric"
+                          onChange={(e) => {
+                            setTotalDebitCardValue(e.target.value);
+                          }}
+                          autoComplete="ftotalDebitCardValue"
+                          name="totalDebitCardValue"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="totalDebitCardValue"
+                          label="Valor pago em debito:"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          value={totalMoneyValue}
+                          type="numeric"
+                          onChange={(e) => {
+                            setTotalMoneyValue(e.target.value);
+                          }}
+                          autoComplete="ftotalMoneyValue"
+                          name="totalMoneyValue"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="totalMoneyValue"
+                          label="Valor pago em dinheiro:"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <TextField
+                          value={totalPixValue}
+                          type="numeric"
+                          onChange={(e) => {
+                            setTotalPixValue(e.target.value);
+                          }}
+                          autoComplete="ftotalPixValue"
+                          name="totalPixValue"
+                          variant="outlined"
+                          required
+                          fullWidth
+                          id="totalPixValue"
+                          label="Valor pago em PIX:"
+                        />
+                      </Grid>
                     </>
                   ) : (
                     <>
@@ -617,9 +733,24 @@ export default function Grades({ isAdmin }) {
               colunmList={[
                 { name: "Nome", key: "ProductName" },
                 { name: "Quantidade", key: "Quantity" },
+                { name: "Valor Unitário", key: "unitaryValue" },
                 { name: "Valor gasto", key: "ValueSpended" },
               ]}
-              list={JSON.parse(notesList.find((e) => e.id === noteId).items)}
+              list={JSON.parse(
+                notesList.find((e) => e.id === noteId).items
+              ).map((item) => ({
+                ...item,
+                ValueSpended: item.ValueSpended.toLocaleString("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                }),
+                unitaryValue: (
+                  item.ValueSpended / item.Quantity
+                ).toLocaleString("pt-br", {
+                  style: "currency",
+                  currency: "BRL",
+                }),
+              }))}
             />
           </div>
         );
@@ -635,7 +766,16 @@ export default function Grades({ isAdmin }) {
 
   const addNoteProduct = () => {
     const productName = productsList.find((p) => p.id === productId).name;
-    noteProductsList.push({ productId, valueSpended, quantity, productName });
+    noteProductsList.push({
+      productId,
+      valueSpended,
+      quantity,
+      productName,
+      totalPixValue,
+      totalMoneyValue,
+      totalDebitCardValue,
+      totalCreditCardValue,
+    });
     setNoteProductsList(noteProductsList);
   };
 

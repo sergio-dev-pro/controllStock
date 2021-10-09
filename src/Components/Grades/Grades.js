@@ -498,7 +498,7 @@ export default function Grades({ isAdmin }) {
                           {noteProductsList.length
                             ? noteProductsList
                                 .map((e) => e.valueSpended)
-                                .reduce((x, y) => x + y)
+                                .reduce((x, y) => parseFloat(x) + parseFloat(y))
                                 .toLocaleString("pt-br", {
                                   style: "currency",
                                   currency: "BRL",

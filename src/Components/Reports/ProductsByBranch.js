@@ -116,6 +116,7 @@ export default function ProductsByBranch() {
   const [productsByBranch, setProductsByBranch] = useState([]);
   const [totalEntryQuantity, setTotalEntryQuantity] = useState("");
   const [totalOutQuantity, setTotalOutQuantity] = useState("");
+  const [totalValueSpended, setTotalValueSpended] = useState("");
   const [startDate, setStartDate] = useState(todayDate());
   const [endDate, setEndDate] = useState(todayDateSumeOne(todayDate()));
   const [content, setContent] = useState("list");
@@ -171,9 +172,19 @@ export default function ProductsByBranch() {
           }
           setTotalEntryQuantity(currentTotalEntryQuantity);
           setTotalOutQuantity(currentTotalOutQuantity);
+          setTotalValueSpended(
+            data
+              .map((e) => parseFloat(e.valueSpended))
+              .reduce((a, b) => a + b)
+              .toLocaleString("pt-br", {
+                style: "currency",
+                currency: "BRL",
+              })
+          );
           return;
         }
         setTotalEntryQuantity("");
+        setTotalValueSpended("");
         setTotalOutQuantity("");
         setContent("list");
       })
@@ -194,12 +205,12 @@ export default function ProductsByBranch() {
       .get(`products/missing/summary?day=${todayDate()}`)
       .then(({ data }) => {
         setReplacementList(data);
-        if(!data.length)
-        return handleChangeErrorState({
-          error: true,
-          message: "Lista de reposição vazia.",
-          type: "error",
-        });
+        if (!data.length)
+          return handleChangeErrorState({
+            error: true,
+            message: "Lista de reposição vazia.",
+            type: "error",
+          });
         setContent("replacement");
       })
       .finally(() => setLoading(false));
@@ -382,33 +393,63 @@ export default function ProductsByBranch() {
                 </div>
               </div>
               <div style={{ width: "100%", marginTop: "16px" }}>
-            <Divider />
-            <Typography
-              variant="subtitle2"
-              style={{
-                color: "rgba(0, 0, 0, 0.77)",
-                padding: "8px 0",
-                marginLeft: "8px",
-              }}
-            >
-              TOTAL DE ENTRADAS: {totalEntryQuantity}
-            </Typography>
-            <Divider />
-          </div>
-          <div style={{ width: "100%", marginTop: "16px" }}>
-            <Divider />
-            <Typography
-              variant="subtitle2"
-              style={{
-                color: "rgba(0, 0, 0, 0.77)",
-                padding: "8px 0",
-                marginLeft: "8px",
-              }}
-            >
-              TOTAL DE SAÍDAS: {totalOutQuantity}
-            </Typography>
-            <Divider />
-          </div>
+                <Divider />
+                <div
+                  style={{
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    alignItems: "center",
+                  }}
+                >
+                  <Typography
+                    variant="subtitle2"
+                    style={{
+                      color: "rgba(0, 0, 0, 0.77)",
+                      padding: "8px 0",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    TOTAL DE ENTRADAS: {totalEntryQuantity}
+                  </Typography>
+                  &nbsp;&nbsp;&nbsp;
+                  <Typography
+                    variant="subtitle2"
+                    style={{
+                      color: "rgba(0, 0, 0, 0.77)",
+                      padding: "8px 0",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    TOTAL DE SAÍDAS: {totalOutQuantity}
+                  </Typography>
+                  &nbsp;&nbsp;&nbsp;
+                  <Typography
+                    variant="subtitle2"
+                    style={{
+                      color: "rgba(0, 0, 0, 0.77)",
+                      padding: "8px 0",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    TOTAL GASTO:&nbsp;{totalValueSpended}
+                  </Typography>
+                </div>
+                <Divider />
+              </div>
+              {/* <div style={{ width: "100%", marginTop: "16px" }}>
+                <Divider />
+                <Typography
+                  variant="subtitle2"
+                  style={{
+                    color: "rgba(0, 0, 0, 0.77)",
+                    padding: "8px 0",
+                    marginLeft: "8px",
+                  }}
+                >
+                  TOTAL DE SAÍDAS: {totalOutQuantity}
+                </Typography>
+                <Divider />
+              </div> */}
             </>
           ) : null}
           {getContentComponent(content)}

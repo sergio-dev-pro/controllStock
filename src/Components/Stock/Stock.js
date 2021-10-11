@@ -552,6 +552,27 @@ export default function Stock({
                       label="Quantidade Anterior"
                     />
                   </Grid>
+                  <Grid item xs={12}>
+                    <TextField
+                      autoFocus
+                      style={{ marginBottom: "16px" }}
+                      type="number"
+                      value={product.pdvQuantity}
+                      onChange={(e) =>
+                        setProduct((prevState) => ({
+                          ...prevState,
+                          pdvQuantity: e.target.value,
+                        }))
+                      }
+                      autoComplete="fUpdatePdvQuantity"
+                      name="pdvQuantity"
+                      variant="outlined"
+                      required
+                      fullWidth
+                      id="pdvQuantity"
+                      label="Quantidade do PDV"
+                    />
+                  </Grid>
                 </>
               ) : (
                 <>

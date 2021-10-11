@@ -515,7 +515,7 @@ export default function Grades({ isAdmin }) {
                       <Grid item xs={12}>
                         <TextField
                           value={totalCreditCardValue}
-                          type="numeric"
+                          type="number"
                           onChange={(e) => {
                             setTotalCreditCardValue(e.target.value);
                           }}
@@ -532,7 +532,7 @@ export default function Grades({ isAdmin }) {
                       <Grid item xs={12}>
                         <TextField
                           value={totalDebitCardValue}
-                          type="numeric"
+                          type="number"
                           onChange={(e) => {
                             setTotalDebitCardValue(e.target.value);
                           }}
@@ -548,7 +548,7 @@ export default function Grades({ isAdmin }) {
                       <Grid item xs={12}>
                         <TextField
                           value={totalMoneyValue}
-                          type="numeric"
+                          type="number"
                           onChange={(e) => {
                             setTotalMoneyValue(e.target.value);
                           }}
@@ -564,7 +564,7 @@ export default function Grades({ isAdmin }) {
                       <Grid item xs={12}>
                         <TextField
                           value={totalPixValue}
-                          type="numeric"
+                          type="number"
                           onChange={(e) => {
                             setTotalPixValue(e.target.value);
                           }}

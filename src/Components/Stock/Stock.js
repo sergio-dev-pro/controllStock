@@ -152,7 +152,7 @@ export default function Stock({
     } else if (value === "list") {
       setLoading(true);
       api
-        .get(`products/stock-daily?day=${todayDate()}&branchId=${branchId}`)
+        .get(`products/stock-daily?day=${date}&branchId=${branchId}`)
         .then(({ data }) =>
           setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
         )
@@ -536,6 +536,7 @@ export default function Stock({
                   <Grid item xs={12}>
                     <TextField
                       type="number"
+                      style={{ marginBottom: "16px" }}
                       value={product.previusQuantity}
                       onChange={(e) =>
                         setProduct((prevState) => ({

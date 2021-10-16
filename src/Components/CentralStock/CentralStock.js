@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { Container, Divider, Typography } from "@material-ui/core";
 import { CircularProgress } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
+import Checkbox from "@material-ui/core/Checkbox";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { makeStyles } from "@material-ui/core/styles";
 import EditIcon from "@material-ui/icons/Edit";
 import IconButton from "@material-ui/core/IconButton";
@@ -38,7 +40,9 @@ function todayDate() {
 }
 
 function formatDate(date) {
-  return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}/${date.split("-")[0]}`;
+  return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}/${
+    date.split("-")[0]
+  }`;
 }
 
 function todayDateSumeOne(value, operation) {
@@ -65,6 +69,8 @@ export default function CentralStock() {
   const [description, setDescription] = useState("");
   const [available, setAvailable] = useState("");
   const [total, setTotal] = useState("");
+  const [hide, setHide] = useState(true);
+  const [showHide, setShowHide] = useState(false);
   const [merchandise, setMerchandise] = useState({
     productId: "",
     quantity: 0,
@@ -82,7 +88,7 @@ export default function CentralStock() {
             .get(
               `/products/central-stock?StartDate=${todayDate()}&EndDate=${todayDateSumeOne(
                 todayDate()
-              )}&ProductId=${data[0].id}`
+              )}&ProductId=${data[0].id}&showHide=${showHide}`
             )
             .then((response) => {
               setMerchandiseList(response.data.items);
@@ -113,7 +119,7 @@ export default function CentralStock() {
       setLoading(true);
       api
         .get(
-          `/products/central-stock?StartDate=${startDate}&EndDate=${endDate}&ProductId=${productId}`
+          `/products/central-stock?StartDate=${startDate}&EndDate=${endDate}&ProductId=${productId}&showHide=${showHide}`
         )
         .then((response) => {
           setMerchandiseList(response.data.items);
@@ -126,9 +132,7 @@ export default function CentralStock() {
       api
         .get(`/products/central-stock/available`)
         .then((response) => {
-          setAvailable(
-            response.data
-          );
+          setAvailable(response.data);
         })
         .catch((err) => console.log("@@@ err", err))
         .finally(() => setLoading(false));
@@ -141,7 +145,7 @@ export default function CentralStock() {
     setLoading(true);
     api
       .get(
-        `/products/central-stock?StartDate=${startDate}&EndDate=${endDate}&ProductId=${value}`
+        `/products/central-stock?StartDate=${startDate}&EndDate=${endDate}&ProductId=${value}&showHide=${showHide}`
       )
       .then((response) => {
         setMerchandiseList(response.data.items);
@@ -170,7 +174,7 @@ export default function CentralStock() {
     setLoading(true);
     api
       .get(
-        `/products/central-stock?StartDate=${startDate}&EndDate=${endDate}&ProductId=${productId}`
+        `/products/central-stock?StartDate=${startDate}&EndDate=${endDate}&ProductId=${productId}&showHide=${showHide}`
       )
       .then((response) => {
         setMerchandiseList(response.data.items);
@@ -188,6 +192,7 @@ export default function CentralStock() {
         quantity,
         valueSpended,
         description,
+        hide,
       })
       .then(() => {
         handleChangeContent("list");
@@ -211,7 +216,10 @@ export default function CentralStock() {
               { name: "Descrição", key: "description" },
               { name: "Dia", key: "day" },
             ]}
-            list={merchandiseList.map(merchandise => ({...merchandise, day: formatDate(merchandise.day)}))}
+            list={merchandiseList.map((merchandise) => ({
+              ...merchandise,
+              day: formatDate(merchandise.day),
+            }))}
           />
         );
         break;
@@ -308,6 +316,20 @@ export default function CentralStock() {
                       label="Valor gasto"
                       name="valueSpended"
                       autoComplete="lname"
+                    />
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={hide}
+                          onChange={(e) => {
+                            setHide((x) => !x);
+                          }}
+                        />
+                      }
+                      label="Ocultar lançamento"
                     />
                   </Grid>
                 </Grid>
@@ -517,6 +539,21 @@ export default function CentralStock() {
                 >
                   Add Mercadoria
                 </Button>
+              </div>
+
+              <div style={{width: '100%'}}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={showHide}
+                      onChange={(e) => {
+                        setShowHide((x) => !x);
+                      }}
+                    />
+                  }
+                  label="Mostrar lançamentos ocultos"
+                />
               </div>
 
               <div style={{ width: "100%", marginTop: "16px" }}>

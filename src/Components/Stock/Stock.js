@@ -29,6 +29,7 @@ import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
 import { ErrorContext } from "../../Context/Error/context";
 
 import { getToken } from "../../services/auth";
+import { Search } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   table: {
@@ -410,12 +411,30 @@ export default function Stock({
                 </FormControl>
 
                 {isAdmin && (
+                  <>
                   <TextField
                     value={date}
                     onChange={(e) => {
+                      setDate(e.target.value);
+                    }}
+                    variant="outlined"
+                    required
+                    id="date"
+                    label="Data"
+                    type="date"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                    style={{ padding: "9px" }}
+                  />
+                  <Button
+                    type="button"
+                    variant="contained"
+                    color="primary" 
+                    onClick={() => {
                       api
                         .get(
-                          `products/stock-daily?day=${e.target.value}&branchId=${branchId}`
+                          `products/stock-daily?day=${date}&branchId=${branchId}`
                         )
                         .then(({ data }) =>
                           setItems(
@@ -427,19 +446,12 @@ export default function Stock({
                         )
                         .catch((err) => console.log("@@@", err))
                         .finally(() => setLoading(false));
-                      setDate(e.target.value);
                     }}
-                    variant="outlined"
-                    required
-                    id="date"
-                    label="Data"
-                    type="date"
-                    // className={classes.textField}
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    style={{ padding: "9px" }}
-                  />
+                    startIcon={<Search />}
+                  >
+                    Buscar
+                  </Button>
+                  </>
                 )}
               </div>
               {(isAdmin ||

@@ -437,6 +437,7 @@ export default function CentralStock() {
                   }}
                 >
                   <FormControl
+                    size='small'
                     variant="outlined"
                     style={{
                       minWidth: "250px",
@@ -471,6 +472,7 @@ export default function CentralStock() {
                     </Select>
                   </FormControl>
                   <TextField
+                  size='small'
                     value={startDate}
                     onChange={handleChangeStartDate}
                     variant="outlined"
@@ -478,7 +480,6 @@ export default function CentralStock() {
                     id="date"
                     label="Data Inicial"
                     type="date"
-                    defaultValue="2017-05-24"
                     // className={classes.textField}
                     InputLabelProps={{
                       shrink: true,
@@ -486,6 +487,7 @@ export default function CentralStock() {
                     style={{ marginRight: "8px", paddingBottom: "16px" }}
                   />
                   <TextField
+                  size='small'
                     value={endDate}
                     onChange={handleChangeEndDate}
                     variant="outlined"
@@ -493,13 +495,26 @@ export default function CentralStock() {
                     id="date"
                     label="Data Final"
                     type="date"
-                    defaultValue="2017-05-24"
                     // className={classes.textField}
                     InputLabelProps={{
                       shrink: true,
                     }}
                     style={{ marginRight: "8px", paddingBottom: "16px" }}
                   />
+                  <div>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      color="primary"
+                      checked={showHide}
+                      onChange={(e) => {
+                        setShowHide((x) => !x);
+                      }}
+                    />
+                  }
+                  label="Mostrar lançamentos ocultos"
+                />
+              </div>
                   <Button
                     type="button"
                     variant="contained"
@@ -511,9 +526,9 @@ export default function CentralStock() {
                     Buscar
                   </Button>
                 </div>
-                {/* )} */}
 
-                <Button
+               <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
+               <Button
                   variant="contained"
                   color="primary"
                   href="#contained-buttons"
@@ -539,21 +554,7 @@ export default function CentralStock() {
                 >
                   Add Mercadoria
                 </Button>
-              </div>
-
-              <div style={{width: '100%'}}>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      color="primary"
-                      checked={showHide}
-                      onChange={(e) => {
-                        setShowHide((x) => !x);
-                      }}
-                    />
-                  }
-                  label="Mostrar lançamentos ocultos"
-                />
+               </div>
               </div>
 
               <div style={{ width: "100%", marginTop: "16px" }}>

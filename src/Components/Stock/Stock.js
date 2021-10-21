@@ -412,45 +412,49 @@ export default function Stock({
 
                 {isAdmin && (
                   <>
-                  <TextField
-                    value={date}
-                    onChange={(e) => {
-                      setDate(e.target.value);
-                    }}
-                    variant="outlined"
-                    required
-                    id="date"
-                    label="Data"
-                    type="date"
-                    InputLabelProps={{
-                      shrink: true,
-                    }}
-                    style={{ padding: "9px" }}
-                  />
-                  <Button
-                    type="button"
-                    variant="contained"
-                    color="primary" 
-                    onClick={() => {
-                      api
-                        .get(
-                          `products/stock-daily?day=${date}&branchId=${branchId}`
+                    <TextField
+                      value={date}
+                      onChange={(e) => {
+                        if (
+                          Date.parse(e.target.value) > Date.parse(todayDate())
                         )
-                        .then(({ data }) =>
-                          setItems(
-                            data.map((e) => ({
-                              ...e,
-                              confirmEntryQuantity: false,
-                            }))
+                          return setDate(todayDate());
+                        setDate(e.target.value);
+                      }}
+                      variant="outlined"
+                      required
+                      id="date"
+                      label="Data"
+                      type="date"
+                      InputLabelProps={{
+                        shrink: true,
+                      }}
+                      style={{ padding: "9px" }}
+                    />
+                    <Button
+                      type="button"
+                      variant="contained"
+                      color="primary"
+                      onClick={() => {
+                        api
+                          .get(
+                            `products/stock-daily?day=${date}&branchId=${branchId}`
                           )
-                        )
-                        .catch((err) => console.log("@@@", err))
-                        .finally(() => setLoading(false));
-                    }}
-                    startIcon={<Search />}
-                  >
-                    Buscar
-                  </Button>
+                          .then(({ data }) =>
+                            setItems(
+                              data.map((e) => ({
+                                ...e,
+                                confirmEntryQuantity: false,
+                              }))
+                            )
+                          )
+                          .catch((err) => console.log("@@@", err))
+                          .finally(() => setLoading(false));
+                      }}
+                      startIcon={<Search />}
+                    >
+                      Buscar
+                    </Button>
                   </>
                 )}
               </div>

@@ -157,16 +157,20 @@ export default function CentralStock() {
   };
 
   const handleChangeStartDate = (e) => {
+    if(Date.parse(e.target.value) > Date.parse(todayDate())) 
+     return setStartDate(todayDate());
     setStartDate(e.target.value);
-
-    if (endDate && Date.parse(e.target.value) >= Date.parse(endDate))
+    
+    if (endDate && Date.parse(e.target.value) > Date.parse(endDate))
       return setEndDate(todayDateSumeOne(e.target.value));
   };
 
   const handleChangeEndDate = (e) => {
+    if(Date.parse(e.target.value) > Date.parse(todayDate()))
+    return setEndDate(todayDate());
     setEndDate(e.target.value);
 
-    if (startDate && Date.parse(e.target.value) <= Date.parse(startDate))
+    if (startDate && Date.parse(e.target.value) < Date.parse(startDate))
       return setStartDate(todayDateSumeOne(e.target.value, "sub"));
   };
 

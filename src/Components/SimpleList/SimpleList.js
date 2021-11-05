@@ -13,7 +13,6 @@ import { Divider } from "@material-ui/core";
 const useStyles = makeStyles((theme) => ({
   root: {
     width: "100%",
-    // maxWidth: 360,
     backgroundColor: theme.palette.background.paper,
   },
 }));
@@ -50,7 +49,6 @@ export default function SimpleList({
                   width: "100%",
                   justifyContent: "space-between",
                   alignItems: "center",
-                  height: "50px",
                   marginRight: "56px",
                 }}
               >

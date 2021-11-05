@@ -951,10 +951,10 @@ function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
         padding: "0",
         marginTop: "24px",
         width: "100%",
-        overflowX: "auto",
+        overflowX: "auto", padding: '0px', maxHeight: '440px'
       }}
     >
-      <Table className={classes.table} size="small" aria-label="a dense table">
+      <Table stickyHeader className={classes.table} size="small" aria-label="a dense table">
         <TableHead>
           <TableRow>
             {colunms.map((e, i) => (

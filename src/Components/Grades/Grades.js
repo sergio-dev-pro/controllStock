@@ -80,9 +80,9 @@ function SimpleTable({
   return (
     <TableContainer
       component={Paper}
-      style={{ width: "100%", paddingLeft: "0px", margin: "10px 0px" }}
+      style={{ width: "100%", paddingLeft: "0px", margin: "10px 0px", padding: '0px', maxHeight: '440px' }}
     >
-      <Table className={classes.table} aria-label="simple table">
+      <Table stickyHeader className={classes.table} aria-label="simple table">
         <TableHead>
           <TableRow>
             {colunmList.map((e, i) => (

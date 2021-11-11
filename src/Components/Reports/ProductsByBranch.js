@@ -63,7 +63,13 @@ function SimpleTable({ list, colunmList }) {
   return (
     <TableContainer
       component={Paper}
-      style={{ width: "100%", paddingLeft: "0px", margin: "10px 0px", padding: '0px', maxHeight: '440px' }}
+      style={{
+        width: "100%",
+        paddingLeft: "0px",
+        margin: "10px 0px",
+        padding: "0px",
+        maxHeight: "440px",
+      }}
     >
       <Table stickyHeader className={classes.table} aria-label="simple table">
         <TableHead>
@@ -109,7 +115,7 @@ function SimpleTable({ list, colunmList }) {
   );
 }
 
-export default function ProductsByBranch() {
+export default function ProductsByBranch({ branchs, isAdmin }) {
   const [loading, setLoading] = useState(false);
   const [branchList, setBranchList] = useState([]);
   const [branchId, setBranchId] = useState("");
@@ -127,15 +133,25 @@ export default function ProductsByBranch() {
   useEffect(() => {
     setContent("list");
     setLoading(true);
-    api
-      .get("/branchs")
-      .then(({ data }) => {
-        setBranchList(data);
-        setBranchId(data[0].id);
-      })
-      .then(() => searchProductsBybranch())
-      .finally(() => setLoading(false));
-    setLoading(true);
+    if(isAdmin) {
+      api
+        .get("/branchs")
+        .then(({ data }) => {
+          setBranchList(data);
+          setBranchId(data[0].id);
+        })
+        .then(() => searchProductsBybranch())
+        .finally(() => setLoading(false));
+    } else {
+      setBranchList(
+        branchs.map((e) => ({
+          name: e.CompanyBranchName,
+          id: e.CompanyBranchId,
+        }))
+      );
+      setBranchId(branchs[0].CompanyBranchId);
+    }
+    setLoading(false);
     return () => {};
   }, []);
 
@@ -399,7 +415,7 @@ export default function ProductsByBranch() {
                     display: "flex",
                     justifyContent: "flex-start",
                     alignItems: "center",
-                    flexWrap: 'wrap'
+                    flexWrap: "wrap",
                   }}
                 >
                   <Typography

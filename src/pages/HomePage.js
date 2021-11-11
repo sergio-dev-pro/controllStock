@@ -204,7 +204,7 @@ function AppBarBranche({
             // style={{ width: "100%" }}
             variant="outlined"
             onClick={() => {
-              setOpenModal(true)
+              setOpenModal(true);
             }}
             color="primary"
           >
@@ -219,30 +219,59 @@ function AppBarBranche({
             ></MenuOpenIcon>
           </IconButton>
         )}
-
       </Container>
-        <BasicModal
-          open={openModal}
-          handleClose={() => setOpenModal(false)}
-          handleOnClickAction={() => {
-            logout();
-            window.location = "/login";
-          }}
-        />
+      <BasicModal
+        open={openModal}
+        handleClose={() => setOpenModal(false)}
+        handleOnClickAction={() => {
+          logout();
+          window.location = "/login";
+        }}
+      />
     </AppBar>
   );
 }
 
-const MENU_LIST = [
-  "branches",
-  "products",
-  "users",
-  "categorys",
-  "central_stock",
-  "stock",
-  "reports",
-  "checklist",
+const MODULES = [
+  { value: "central_stock", name: "Estoque Central", icon: <ShopTwoIcon /> },
+  { value: "stock", name: "Estoque", icon: <ShopIcon /> },
+  { value: "branches", name: "Filiais", icon: <BusinessIcon /> },
+  { value: "products", name: "Produtos", icon: <ShoppingCartIcon /> },
+  { value: "users", name: "Usuarios", icon: <PeopleIcon /> },
+  { value: "category", name: "Categorias", icon: <CategoryIcon /> },
+  { value: "invoices", name: "Notas", icon: <PostAddIcon /> },
+  { value: "reports", name: "Relatórios", icon: <Assessment /> },
+  { value: "checklist", name: "Checklist", icon: <CheckBox /> },
 ];
+const MENU_LIST = MODULES.map((e) => e.value);
+
+const getUserModuleList = (userConfig) => {
+  console.log(
+    "@@@, userConfig",
+    userConfig.branches.map((e) => ({
+      permissions: e.Permissions,
+      branchName: e.CompanyBranchName,
+    }))
+  );
+  let modules = MODULES;
+  if (userConfig.isAdmin) {
+    return modules;
+  } else if (userConfig.IsCentralStockAdmin) {
+    return modules.filter((mod) => ["stock", "invoices"].includes(mod.value));
+  } else {
+    const permissions = [].concat(
+      ...userConfig.branches.map((branch) =>
+        branch.Permissions ? branch.Permissions : []
+      )
+    );
+    const allowedModules = [];
+    if (permissions.includes("UpdateFinalQuantity"))
+      allowedModules.push("stock");
+    if (permissions.includes("ReadReports")) allowedModules.push("reports");
+
+    return modules.filter((mod) => allowedModules.includes(mod.value));
+  }
+};
 
 export default function HomePage() {
   const classes = useStyles();
@@ -252,6 +281,7 @@ export default function HomePage() {
   const [loading, setLoading] = React.useState(true);
   const [openDrawerMobile, setOpenDrawerMobile] = React.useState(true);
   const [userConfig, setUserConfig] = React.useState(false);
+  const [moduleList, setModuleList] = React.useState([]);
   const { state, handleChangeErrorState, onClose } =
     React.useContext(ErrorContext);
   const {
@@ -286,17 +316,15 @@ export default function HomePage() {
   };
 
   const handleChangeUserConfig = (value) => {
-    if (
-      (!value.isAdmin && !value.IsCentralStockAdmin) ||
-      value.IsCentralStockAdmin
-    )
-      setMenu(MENU_LIST[5]);
+    const userModuleList = getUserModuleList(value);
+    setMenu(userModuleList[0].value);
+    setModuleList(userModuleList);
     setUserConfig(value);
     setLoading(false);
     handleChangeState(value);
   };
 
-  const list = (anchor) => (
+  const list = (anchor, items) => (
     <div
       className={clsx(classes.list, {
         [classes.fullList]: anchor === "top" || anchor === "bottom",
@@ -306,53 +334,146 @@ export default function HomePage() {
       onKeyDown={() => setOpenDrawerMobile(false)}
     >
       <List>
-        <MainListItems
-          isAdmin={userConfig.isAdmin}
-          IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
-          selected={menu}
-          setSelected={setMenu}
-        />
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+            height: "100%",
+          }}
+        >
+          <div>
+            {items.length > 1
+              ? items.map((module) => (
+                  <>
+                    <ListItem
+                      button
+                      selected={menu === module.value}
+                      onClick={() => setMenu(module.value)}
+                    >
+                      <ListItemIcon>{module.icon}</ListItemIcon>
+                      <ListItemText primary={module.name} />
+                    </ListItem>
+                  </>
+                ))
+              : null}
+          </div>
+          <Button
+            style={{ width: "100%" }}
+            variant="outlined"
+            onClick={() => {
+              logout();
+              window.location = "/login";
+            }}
+            color="primary"
+          >
+            Sair
+          </Button>
+        </div>
       </List>
     </div>
   );
 
-  const getContentComponent = () => {
-    console.log("@@@ userConfig", userConfig);
-    if (menu === MENU_LIST[0]) {
-      return <Branches handleBrancheList={handleChangeBranches} />;
-    } else if (menu === MENU_LIST[3]) {
-      return <Category handleCategory={handleChangeCategory} />;
-    } else if (menu === MENU_LIST[1]) {
-      return <Products />;
-    } else if (menu === MENU_LIST[2]) {
-      return <Users />;
-    } else if (menu === MENU_LIST[4]) {
-      return <CentralStock />;
-    } else if (menu === MENU_LIST[5]) {
-      console.log("@@@ menu === MENU_LIST[5]");
-      return (
-        <Stock
-          isAdmin={userConfig.isAdmin}
-          IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
-          branchs={userConfig.branches}
-        />
-      );
-    } else if (menu === MENU_LIST[6]) {
-      console.log("@@@ menu === MENU_LIST[6]");
-      return <Grades isAdmin={userConfig.isAdmin} />;
-    } else if (menu === MENU_LIST[7]) {
-      return <ProductsByBranch />;
-    } else if (menu === MENU_LIST[8]) {
-      return <Checklist />;
+  const getContentComponent = (selected) => {
+    console.log("@@@ selected", selected);
+    const module = selected;
+    switch (module) {
+      case "central_stock":
+        return <CentralStock />;
+        break;
+      case "stock":
+        return (
+          <Stock
+            isAdmin={userConfig.isAdmin}
+            IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
+            branchs={userConfig.branches.filter(
+              (e) =>
+                e.Permissions.includes("UpdateFinalQuantity") ||
+                e.Permissions.includes("UpdatePdvQuantity")
+            )}
+          />
+        );
+        break;
+      case "branches":
+        return <Branches handleBrancheList={handleChangeBranches} />;
+        break;
+      case "category":
+        return <Category handleCategory={handleChangeCategory} />;
+        break;
+      case "products":
+        return <Products />;
+        break;
+      case "users":
+        return <Users />;
+        break;
+      case "invoices":
+        return <Grades isAdmin={userConfig.isAdmin} />;
+        break;
+      case "reports":
+        return (
+          <ProductsByBranch
+            branchs={userConfig.branches}
+            isAdmin={userConfig.isAdmin}
+          />
+        );
+        break;
+      case "checklist":
+        return <Checklist />;
+        break;
     }
+    // if (selected === MENU_LIST[0]) {
+    //   return <Branches handleBrancheList={handleChangeBranches} />;
+    // } else if (selected === MENU_LIST[3]) {
+    //   return <Category handleCategory={handleChangeCategory} />;
+    // } else if (selected === MENU_LIST[1]) {
+    //   return <Products />;
+    // } else if (selected === MENU_LIST[2]) {
+    //   return <Users />;
+    // } else if (selected === MENU_LIST[4]) {
+    //   return <CentralStock />;
+    // } else if (selected === MENU_LIST[5]) {
+    //   return (
+    //     <Stock
+    //       isAdmin={userConfig.isAdmin}
+    //       IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
+    //       branchs={userConfig.branches}
+    //     />
+    //   );
+    // } else if (selected === MENU_LIST[6]) {
+    //   console.log("@@@ selected === MENU_LIST[6]");
+    //   return <Grades isAdmin={userConfig.isAdmin} />;
+    // } else if (selected === MENU_LIST[7]) {
+    //   return <ProductsByBranch />;
+    // } else if (selected === MENU_LIST[8]) {
+    //   return <Checklist />;
+    // }
   };
 
-  // if (!userConfig.isAdmin) return <div>User is not admin</div>;
-  // console.log("@@@ userConfig", userConfig)
+  // const getMainList = (selected) => {
+  //   const moduleList = getModuleList();
+  //   if (moduleList.length) return null;
+
+  //   return moduleList.map((module) => (
+  //     <>
+  //       <ListItem
+  //         button
+  //         selected={selected === module.value}
+  //         onClick={() => setSelected(module.value)}
+  //       >
+  //         <ListItemIcon>
+  //           <ShopTwoIcon />
+  //         </ListItemIcon>
+  //         <ListItemText primary={module.name} />
+  //       </ListItem>
+  //     </>
+  //   ));
+
+  //   return <></>;
+  // };
 
   return (
     <div className={classes.root}>
-      {userConfig.isAdmin || userConfig.IsCentralStockAdmin ? (
+      {moduleList.length > 1 ? (
         <>
           {matches ? (
             <Drawer
@@ -369,12 +490,45 @@ export default function HomePage() {
               <div className={classes.toolbarIcon}></div>
               <Divider />
               <List style={{ marginTop: "32px", height: "100%" }}>
-                <MainListItems
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "space-between",
+                    height: "100%",
+                  }}
+                >
+                  <div>
+                    {moduleList.map((module) => (
+                      <ListItem
+                        button
+                        selected={menu === module.value}
+                        onClick={() => setMenu(module.value)}
+                      >
+                        <ListItemIcon>{module.icon}</ListItemIcon>
+                        <ListItemText primary={module.name} />
+                      </ListItem>
+                    ))}
+                  </div>
+
+                  <Button
+                    style={{ width: "100%" }}
+                    variant="outlined"
+                    onClick={() => {
+                      logout();
+                      window.location = "/login";
+                    }}
+                    color="primary"
+                  >
+                    Sair
+                  </Button>
+                </div>
+                {/* <MainListItems
                   selected={menu}
                   setSelected={setMenu}
                   isAdmin={userConfig.isAdmin}
                   IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
-                />
+                /> */}
               </List>
             </Drawer>
           ) : null}
@@ -384,11 +538,12 @@ export default function HomePage() {
               open={openDrawerMobile}
               onClose={() => setOpenDrawerMobile(false)}
             >
-              {list("right")}
+              {list("right", moduleList)}
             </Drawer>
           ) : null}
         </>
       ) : null}
+
       <div
         style={{
           display: "flex",
@@ -422,7 +577,7 @@ export default function HomePage() {
               className={classes.container}
               style={{ padding: "8px", height: "calc(100% - 85px)" }}
             >
-              {getContentComponent()}
+              {getContentComponent(menu)}
             </Container>
           </main>
         )}

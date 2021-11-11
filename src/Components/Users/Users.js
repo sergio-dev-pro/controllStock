@@ -27,7 +27,7 @@ export default function Users() {
   const { state } = useContext(UserContext);
   const [content, setContent] = useState("list");
 
-  console.log("@@@ state.currentBranche", state.currentBranche)
+  console.log("@@@ state.currentBranche", state.currentBranche);
   const pathApi = getPathApi(state.currentBranche.CompanyBranchId);
 
   useEffect(() => {
@@ -248,7 +248,7 @@ export default function Users() {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            padding: "24px",
+            // padding: "24px",
             margin: "24px",
             overflow: "hidden",
           }}

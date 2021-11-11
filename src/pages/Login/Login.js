@@ -235,6 +235,7 @@ export default function Login() {
               autoComplete="current-accessCode"
               onChange={handleChangeAccessCode}
               value={accessCode}
+              style={{ textTransform: "uppercase" }}
             />
           )}
 

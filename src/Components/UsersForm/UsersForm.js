@@ -29,7 +29,7 @@ const PERMISSIONS = [
   { id: "ShowProductsToDelivery", name: "Mostrar produtos para entrega" },
   { id: "UpdateFinalQuantity", name: "Atualizar a quantidade final" },
   { id: "UpdatePdvQuantity", name: "Atualizar a quantidade do PDV" },
-  { id: "readReports", name: "Ler relatório" },
+  { id: "ReadReports", name: "Ler relatório" },
 ];
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -259,7 +259,7 @@ export default function UsersForm({
     setPermissions([]);
     setBranche("0");
   };
-
+  console.log("@@@ data.branchs", data.branchs);
   return (
     <Container component="main" maxWidth="sm">
       <CssBaseline />

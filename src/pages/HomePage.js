@@ -386,11 +386,7 @@ export default function HomePage() {
           <Stock
             isAdmin={userConfig.isAdmin}
             IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
-            branchs={userConfig.branches.filter(
-              (e) =>
-                e.Permissions.includes("UpdateFinalQuantity") ||
-                e.Permissions.includes("UpdatePdvQuantity")
-            )}
+            branchs={userConfig.branches}
           />
         );
         break;

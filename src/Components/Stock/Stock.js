@@ -64,32 +64,37 @@ export default function Stock({
   const { handleChangeErrorState } = React.useContext(ErrorContext);
 
   useEffect(() => {
-    if (isAdmin) {
-      setLoading(true);
-      api
-        .get("/branchs")
-        .then(({ data }) => {
-          setBranchList(data);
-          setBranchId(data[0].id);
-          setLoading(true);
-          api
-            .get(
-              `products/stock-daily?day=${todayDate()}&branchId=${data[0].id}`
-            )
-            .then(({ data }) =>
-              setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
-            )
-            .catch((err) => console.log("@@@", err))
-            .finally(() => setLoading(false));
-        })
-        .finally(() => setLoading(false));
-    } else {
-      console.log("@@@ ***", branchsPermissions);
+    if (isAdmin || IsCentralStockAdmin) {
       setBranchList(
         branchsPermissions.map((e) => ({
           name: e.CompanyBranchName,
           id: e.CompanyBranchId,
         }))
+      );
+      const CompanyBranchId = branchsPermissions[0].CompanyBranchId;
+      setBranchId(CompanyBranchId);
+      setLoading(true);
+      api
+        .get(
+          `products/stock-daily?day=${todayDate()}&branchId=${CompanyBranchId}`
+        )
+        .then(({ data }) =>
+          setItems(data.map((e) => ({ ...e, confirmEntryQuantity: false })))
+        )
+        .catch((err) => console.log("@@@", err))
+        .finally(() => setLoading(false));
+    } else {
+      setBranchList(
+        branchsPermissions
+          .filter(
+            (e) =>
+              e.Permissions.includes("UpdateFinalQuantity") ||
+              e.Permissions.includes("UpdatePdvQuantity")
+          )
+          .map((e) => ({
+            name: e.CompanyBranchName,
+            id: e.CompanyBranchId,
+          }))
       );
       setBranchId(branchsPermissions[0].CompanyBranchId);
       setLoading(true);
@@ -619,34 +624,33 @@ export default function Stock({
                   )}
                   {branchsPermissions.find((e) => e.CompanyBranchId == branchId)
                     .Permissions &&
-                    branchsPermissions.find(
-                      (e) => e.CompanyBranchId == branchId
-                    ).Permissions.length &&
-                    branchsPermissions
-                      .find((e) => e.CompanyBranchId == branchId)
-                      .Permissions.includes("UpdatePdvQuantity") && (
-                      <Grid item xs={12}>
-                        <TextField
-                          autoFocus
-                          style={{ marginBottom: "16px" }}
-                          type="number"
-                          value={product.pdvQuantity}
-                          onChange={(e) =>
-                            setProduct((prevState) => ({
-                              ...prevState,
-                              pdvQuantity: e.target.value,
-                            }))
-                          }
-                          autoComplete="fUpdatePdvQuantity"
-                          name="pdvQuantity"
-                          variant="outlined"
-                          required
-                          fullWidth
-                          id="pdvQuantity"
-                          label="Quantidade do PDV"
-                        />
-                      </Grid>
-                    )}
+                  branchsPermissions.find((e) => e.CompanyBranchId == branchId)
+                    .Permissions.length &&
+                  branchsPermissions
+                    .find((e) => e.CompanyBranchId == branchId)
+                    .Permissions.includes("UpdatePdvQuantity") ? (
+                    <Grid item xs={12}>
+                      <TextField
+                        autoFocus
+                        style={{ marginBottom: "16px" }}
+                        type="number"
+                        value={product.pdvQuantity}
+                        onChange={(e) =>
+                          setProduct((prevState) => ({
+                            ...prevState,
+                            pdvQuantity: e.target.value,
+                          }))
+                        }
+                        autoComplete="fUpdatePdvQuantity"
+                        name="pdvQuantity"
+                        variant="outlined"
+                        required
+                        fullWidth
+                        id="pdvQuantity"
+                        label="Quantidade do PDV"
+                      />
+                    </Grid>
+                  ) : null}
                 </>
               )}
 
@@ -951,10 +955,17 @@ function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
         padding: "0",
         marginTop: "24px",
         width: "100%",
-        overflowX: "auto", padding: '0px', maxHeight: '440px'
+        overflowX: "auto",
+        padding: "0px",
+        maxHeight: "440px",
       }}
     >
-      <Table stickyHeader className={classes.table} size="small" aria-label="a dense table">
+      <Table
+        stickyHeader
+        className={classes.table}
+        size="small"
+        aria-label="a dense table"
+      >
         <TableHead>
           <TableRow>
             {colunms.map((e, i) => (

@@ -246,13 +246,6 @@ const MODULES = [
 const MENU_LIST = MODULES.map((e) => e.value);
 
 const getUserModuleList = (userConfig) => {
-  console.log(
-    "@@@, userConfig",
-    userConfig.branches.map((e) => ({
-      permissions: e.Permissions,
-      branchName: e.CompanyBranchName,
-    }))
-  );
   let modules = MODULES;
   if (userConfig.isAdmin) {
     return modules;
@@ -267,8 +260,7 @@ const getUserModuleList = (userConfig) => {
     const allowedModules = [];
     if (permissions.includes("UpdateFinalQuantity"))
       allowedModules.push("stock");
-    if (permissions.includes("ReadNotes"))
-      allowedModules.push("invoices");
+    if (permissions.includes("ReadNotes")) allowedModules.push("invoices");
     if (permissions.includes("ReadReports")) allowedModules.push("reports");
 
     return modules.filter((mod) => allowedModules.includes(mod.value));
@@ -562,7 +554,9 @@ export default function HomePage() {
           setBranche={handleChangeBranche}
           buttonMenu={!openDrawerMobile && !matches}
           buttonMenuAction={() => setOpenDrawerMobile(true)}
-          showLogoutButton={getUserModuleList(userConfig).length < 2}
+          showLogoutButton={
+            userConfig ? getUserModuleList(userConfig).length < 2 : false
+          }
         />
         {loading ? (
           <LinearProgress />

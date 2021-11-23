@@ -39,7 +39,9 @@ function todayDate() {
 }
 
 function formatDate(date) {
-  return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}/${date.split("-")[0]}`;
+  return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}/${
+    date.split("-")[0]
+  }`;
 }
 
 function todayDateSumeOne(value, operation) {
@@ -80,7 +82,13 @@ function SimpleTable({
   return (
     <TableContainer
       component={Paper}
-      style={{ width: "100%", paddingLeft: "0px", margin: "10px 0px", padding: '0px', maxHeight: '440px' }}
+      style={{
+        width: "100%",
+        paddingLeft: "0px",
+        margin: "10px 0px",
+        padding: "0px",
+        maxHeight: "440px",
+      }}
     >
       <Table stickyHeader className={classes.table} aria-label="simple table">
         <TableHead>
@@ -216,7 +224,7 @@ export default function Grades({ isAdmin }) {
         totalCreditCardValue,
         totalDebitCardValue,
         totalMoneyValue,
-        totalPixValue 
+        totalPixValue,
       })
       .then(() => {
         handleChangeContent("list");
@@ -857,19 +865,21 @@ export default function Grades({ isAdmin }) {
                 </div>
                 {/* )} */}
 
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href="#contained-buttons"
-                  size="medium"
-                  startIcon={<AddBox />}
-                  onClick={() => handleChangeContent("create")}
-                  style={{
-                    width: "fit-content",
-                  }}
-                >
-                  Add Nota
-                </Button>
+                {isAdmin && (
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
+                    startIcon={<AddBox />}
+                    onClick={() => handleChangeContent("create")}
+                    style={{
+                      width: "fit-content",
+                    }}
+                  >
+                    Add Nota
+                  </Button>
+                )}
               </div>
               {/* {!merchandiseList.length && (
                     <Typography

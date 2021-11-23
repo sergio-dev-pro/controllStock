@@ -30,6 +30,7 @@ const PERMISSIONS = [
   { id: "UpdateFinalQuantity", name: "Atualizar a quantidade final" },
   { id: "UpdatePdvQuantity", name: "Atualizar a quantidade do PDV" },
   { id: "ReadReports", name: "Ler relatório" },
+  { id: "ReadNotes", name: "Ler notas" },
 ];
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;

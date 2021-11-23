@@ -267,6 +267,8 @@ const getUserModuleList = (userConfig) => {
     const allowedModules = [];
     if (permissions.includes("UpdateFinalQuantity"))
       allowedModules.push("stock");
+    if (permissions.includes("ReadNotes"))
+      allowedModules.push("invoices");
     if (permissions.includes("ReadReports")) allowedModules.push("reports");
 
     return modules.filter((mod) => allowedModules.includes(mod.value));
@@ -560,9 +562,7 @@ export default function HomePage() {
           setBranche={handleChangeBranche}
           buttonMenu={!openDrawerMobile && !matches}
           buttonMenuAction={() => setOpenDrawerMobile(true)}
-          showLogoutButton={
-            !userConfig.isAdmin && !userConfig.IsCentralStockAdmin
-          }
+          showLogoutButton={getUserModuleList(userConfig).length < 2}
         />
         {loading ? (
           <LinearProgress />

@@ -97,7 +97,7 @@ export default function Login() {
       }));
     }
 
-    setAccessCode(e.target.value);
+    setAccessCode(e.target.value.toUpperCase());
   };
 
   const handleChangePassword = (e) => {
@@ -239,10 +239,6 @@ export default function Login() {
             />
           )}
 
-          {/* <FormControlLabel
-            control={<Checkbox value="remember" color="primary" />}
-            label="Remember me"
-          /> */}
           {!isLoading ? (
             <div
               style={{

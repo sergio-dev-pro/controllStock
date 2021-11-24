@@ -865,7 +865,7 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                 </div>
                 {/* )} */}
 
-                {isAdmin || isCentralStockAdmin && (
+                {isAdmin || isCentralStockAdmin ? (
                   <Button
                     variant="contained"
                     color="primary"
@@ -879,7 +879,7 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                   >
                     Add Nota
                   </Button>
-                )}
+                ): null}
               </div>
               {/* {!merchandiseList.length && (
                     <Typography

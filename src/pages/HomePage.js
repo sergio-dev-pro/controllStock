@@ -397,7 +397,7 @@ export default function HomePage() {
         return <Users />;
         break;
       case "invoices":
-        return <Grades isAdmin={userConfig.isAdmin} />;
+        return <Grades isAdmin={userConfig.isAdmin} isCentralStockAdmin={userConfig.IsCentralStockAdmin} />;
         break;
       case "reports":
         return (

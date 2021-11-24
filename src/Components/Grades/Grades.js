@@ -150,7 +150,7 @@ function SimpleTable({
   );
 }
 
-export default function Grades({ isAdmin }) {
+export default function Grades({ isAdmin, isCentralStockAdmin }) {
   const [loading, setLoading] = useState(false);
   const [productsList, setProductsList] = useState([]);
   const [noteProductsList, setNoteProductsList] = useState([]);
@@ -865,7 +865,7 @@ export default function Grades({ isAdmin }) {
                 </div>
                 {/* )} */}
 
-                {isAdmin && (
+                {isAdmin || isCentralStockAdmin && (
                   <Button
                     variant="contained"
                     color="primary"

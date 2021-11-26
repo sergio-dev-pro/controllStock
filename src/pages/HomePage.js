@@ -258,7 +258,7 @@ const getUserModuleList = (userConfig) => {
       )
     );
     const allowedModules = [];
-    if (permissions.includes("UpdateFinalQuantity"))
+    if (permissions.includes("UpdateFinalQuantity") || permissions.includes("UpdatePdvQuantity"))
       allowedModules.push("stock");
     if (permissions.includes("ReadNotes")) allowedModules.push("invoices");
     if (permissions.includes("ReadReports")) allowedModules.push("reports");

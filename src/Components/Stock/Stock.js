@@ -11,25 +11,25 @@ import {
   Switch,
   Typography,
   Checkbox,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Grid,
+  TextField,
 } from "@material-ui/core";
 import React, { useEffect, useState } from "react";
 import api from "../../services/api";
 import { makeStyles } from "@material-ui/core/styles";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
 import SaveIcon from "@material-ui/icons/Save";
 import KeyboardReturnIcon from "@material-ui/icons/KeyboardReturn";
-import TableHead from "@material-ui/core/TableHead";
-import TableRow from "@material-ui/core/TableRow";
-import Grid from "@material-ui/core/Grid";
-import TextField from "@material-ui/core/TextField";
 import DoubleArrowIcon from "@material-ui/icons/DoubleArrow";
+import { Search } from "@material-ui/icons";
 
 import { ErrorContext } from "../../Context/Error/context";
 
 import { getToken } from "../../services/auth";
-import { Search } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   table: {
@@ -45,6 +45,32 @@ function todayDate() {
 
   return (today = yyyy + "-" + mm + "-" + dd);
 }
+
+const COLUMNS_DEFAULT = [{ name: "Produto", key: "productName" }];
+
+const COLUMNS_ADMIN = [
+  { name: "Produto", key: "productName" },
+  { name: "Última atualização", key: "userNameLastUpdate" },
+  { name: "Quantidade de Entrada", key: "entryQuantity" },
+  { name: "Quantidade Final", key: "finalQuantity" },
+  { name: "Quantidade Faltando", key: "missingQuantity" },
+  { name: "Quantidade do PDV", key: "pdvQuantity" },
+  { name: "Diferença de quantidade", key: "differenceQuantity" },
+  { name: "Quantidade Anterior", key: "previousQuantity" },
+  { name: "Quantidade Minima", key: "productMinQuantity" },
+  { name: "Quantidade de Saída", key: "quantitySold" },
+];
+
+const COLUMNS_PERMISSION_UPDATE_FINAL_QUANTITY = [
+  { name: "Quantidade Final", key: "finalQuantity" },
+  { name: "Quantidade de Entrada", key: "entryQuantity" },
+];
+const COLUMNS_PERMISSION_SHOW_PRODUCTS_TO_DELIVERY = [
+  { name: "Quantidade Faltando", key: "missingQuantity" },
+];
+const COLUMNS_PERMISSION_UPDATE_PDV_QUANTITY = [
+  { name: "Quantidade do PDV", key: "pdvQuantity" },
+];
 
 export default function Stock({
   isAdmin,
@@ -114,37 +140,36 @@ export default function Stock({
   }, []);
 
   useEffect(() => {
-    const colunmsAdmin = [
-      { name: "Produto", key: "productName" },
-      { name: "Última atualização", key: "userNameLastUpdate" },
-      { name: "Quantidade de Entrada", key: "entryQuantity" },
-      { name: "Quantidade Final", key: "finalQuantity" },
-      { name: "Quantidade Faltando", key: "missingQuantity" },
-      { name: "Quantidade do PDV", key: "pdvQuantity" },
-      { name: "Diferença de quantidade", key: "differenceQuantity" },
-      { name: "Quantidade Anterior", key: "previousQuantity" },
-      { name: "Quantidade Minima", key: "productMinQuantity" },
-      { name: "Quantidade de Saída", key: "quantitySold" },
-    ];
+    // const colunmsAdmin = [
+    //   { name: "Produto", key: "productName" },
+    //   { name: "Última atualização", key: "userNameLastUpdate" },
+    //   { name: "Quantidade de Entrada", key: "entryQuantity" },
+    //   { name: "Quantidade Final", key: "finalQuantity" },
+    //   { name: "Quantidade Faltando", key: "missingQuantity" },
+    //   { name: "Quantidade do PDV", key: "pdvQuantity" },
+    //   { name: "Diferença de quantidade", key: "differenceQuantity" },
+    //   { name: "Quantidade Anterior", key: "previousQuantity" },
+    //   { name: "Quantidade Minima", key: "productMinQuantity" },
+    //   { name: "Quantidade de Saída", key: "quantitySold" },
+    // ];
 
-    if (isAdmin || IsCentralStockAdmin) return setColunms(colunmsAdmin);
-    else {
-      const columns = [{ name: "Produto", key: "productName" }];
+    if (isAdmin || IsCentralStockAdmin) setColunms(COLUMNS_ADMIN);
+    else setColunms(getColumnsByPermissions(branchsPermissions[0].Permissions));
+    // const columns = [{ name: "Produto", key: "productName" }];
 
-      if (branchsPermissions[0].Permissions.includes("UpdateFinalQuantity"))
-        columns.push(
-          { name: "Quantidade Final", key: "finalQuantity" },
-          { name: "Quantidade de Entrada", key: "entryQuantity" }
-        );
+    // if (branchsPermissions[0].Permissions.includes("UpdateFinalQuantity"))
+    //   columns.push(
+    //     { name: "Quantidade Final", key: "finalQuantity" },
+    //     { name: "Quantidade de Entrada", key: "entryQuantity" }
+    //   );
 
-      if (branchsPermissions[0].Permissions.includes("ShowProductsToDelivery"))
-        columns.push({ name: "Quantidade Faltando", key: "missingQuantity" });
+    // if (branchsPermissions[0].Permissions.includes("ShowProductsToDelivery"))
+    //   columns.push({ name: "Quantidade Faltando", key: "missingQuantity" });
 
-      if (branchsPermissions[0].Permissions.includes("UpdatePdvQuantity"))
-        columns.push({ name: "Quantidade do PDV", key: "pdvQuantity" });
+    // if (branchsPermissions[0].Permissions.includes("UpdatePdvQuantity"))
+    //   columns.push({ name: "Quantidade do PDV", key: "pdvQuantity" });
 
-      setColunms(columns);
-    }
+    // setColunms(columns);
   }, [isAdmin, branchsPermissions]);
 
   const getContent = (value) => {
@@ -178,28 +203,47 @@ export default function Stock({
     setContent(value);
   };
 
+  const getColumnsByPermissions = (permissions) => {
+    const columns = [...COLUMNS_DEFAULT];
+
+    permissions.includes("UpdateFinalQuantity") &&
+      columns.push(...COLUMNS_PERMISSION_UPDATE_FINAL_QUANTITY);
+
+    permissions.includes("ShowProductsToDelivery") &&
+      columns.push(...COLUMNS_PERMISSION_SHOW_PRODUCTS_TO_DELIVERY);
+
+    permissions.includes("UpdatePdvQuantity") &&
+      columns.push(...COLUMNS_PERMISSION_UPDATE_PDV_QUANTITY);
+
+    return columns;
+  };
+
   const handleChangeBranchId = (e) => {
     const { value } = e.target;
 
     if (!isAdmin && !IsCentralStockAdmin) {
-      const colunms = [
-        { name: "Produto", key: "productName" },
-        { name: "Quantidade Final", key: "finalQuantity" },
-        { name: "Quantidade de Entrada", key: "entryQuantity" },
-      ];
-      const colunmsMin = [
-        { name: "Produto", key: "productName" },
-        { name: "Quantidade de Entrada", key: "entryQuantity" },
-      ];
-      if (
-        branchsPermissions.find((e) => e.CompanyBranchId == value)
-          .Permissions &&
-        branchsPermissions
-          .find((e) => e.CompanyBranchId == value)
-          .Permissions.includes("ShowProductsToDelivery")
-      )
-        setColunms(colunms);
-      else setColunms(colunmsMin);
+      const permissions = branchsPermissions.find(
+        ({ CompanyBranchId }) => CompanyBranchId === value
+      ).Permissions;
+      setColunms(getColumnsByPermissions(permissions));
+      // const colunms = [
+      //   { name: "Produto", key: "productName" },
+      //   { name: "Quantidade Final", key: "finalQuantity" },
+      //   { name: "Quantidade de Entrada", key: "entryQuantity" },
+      // ];
+      // const colunmsMin = [
+      //   { name: "Produto", key: "productName" },
+      //   { name: "Quantidade de Entrada", key: "entryQuantity" },
+      // ];
+      // if (
+      //   branchsPermissions.find((e) => e.CompanyBranchId == value)
+      //     .Permissions &&
+      //   branchsPermissions
+      //     .find((e) => e.CompanyBranchId == value)
+      //     .Permissions.includes("ShowProductsToDelivery")
+      // )
+      //   setColunms(colunms);
+      // else setColunms(colunmsMin);
     }
 
     setLoading(true);
@@ -262,7 +306,6 @@ export default function Stock({
   const validDataFinalSock = () => {
     // const errorList = items.map((e) => e.error);
 
-    console.log("@@@ validedatafinalstock items", items);
     const listOfValidatedItems = items.map((item) => {
       let error = false;
       if (
@@ -354,14 +397,7 @@ export default function Stock({
     );
   };
 
-  console.log(
-    "@@@ branchsPermissions",
-    branchsPermissions,
-    "branchId",
-    branchId
-  );
   const getContentComponent = (value) => {
-    console.log("@@@ isAdmin", isAdmin);
     let component;
     switch (value) {
       case "list":
@@ -888,7 +924,6 @@ export default function Stock({
   };
 
   const setRowSelected = (id) => {
-    console.log("@@@ id", id);
     const format = (value) => (value == 0 ? "" : value);
     if (isAdmin) {
       setLoading(true);
@@ -910,8 +945,6 @@ export default function Stock({
 
     getContent("edit");
   };
-
-  console.log("@@@ items", items);
 
   return (
     <div
@@ -947,7 +980,7 @@ export default function Stock({
 
 function DenseTable({ colunms, rows, setRowSelected, lineButton }) {
   const classes = useStyles();
-  console.log("@@@ columns items", colunms, rows);
+
   return (
     <Container
       masWidth="lg"

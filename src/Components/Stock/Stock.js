@@ -50,15 +50,15 @@ const COLUMNS_DEFAULT = [{ name: "Produto", key: "productName" }];
 
 const COLUMNS_ADMIN = [
   { name: "Produto", key: "productName" },
-  { name: "Última atualização", key: "userNameLastUpdate" },
   { name: "Quantidade de Entrada", key: "entryQuantity" },
-  { name: "Quantidade Final", key: "finalQuantity" },
+  { name: "Quantidade de Saída", key: "quantitySold" },
   { name: "O que comprar", key: "missingQuantity" },
+  { name: "Quantidade Final", key: "finalQuantity" },
+  { name: "Última atualização", key: "userNameLastUpdate" },
   { name: "Quantidade do PDV", key: "pdvQuantity" },
   { name: "Diferença de quantidade", key: "differenceQuantity" },
   { name: "Quantidade Anterior", key: "previousQuantity" },
   // { name: "Quantidade Minima", key: "productMinQuantity" },
-  { name: "Quantidade de Saída", key: "quantitySold" },
 ];
 
 const COLUMNS_PERMISSION_UPDATE_FINAL_QUANTITY = [

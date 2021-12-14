@@ -53,11 +53,11 @@ const COLUMNS_ADMIN = [
   { name: "Última atualização", key: "userNameLastUpdate" },
   { name: "Quantidade de Entrada", key: "entryQuantity" },
   { name: "Quantidade Final", key: "finalQuantity" },
-  { name: "Quantidade Faltando", key: "missingQuantity" },
+  { name: "O que comprar", key: "missingQuantity" },
   { name: "Quantidade do PDV", key: "pdvQuantity" },
   { name: "Diferença de quantidade", key: "differenceQuantity" },
   { name: "Quantidade Anterior", key: "previousQuantity" },
-  { name: "Quantidade Minima", key: "productMinQuantity" },
+  // { name: "Quantidade Minima", key: "productMinQuantity" },
   { name: "Quantidade de Saída", key: "quantitySold" },
 ];
 
@@ -66,7 +66,7 @@ const COLUMNS_PERMISSION_UPDATE_FINAL_QUANTITY = [
   { name: "Quantidade de Entrada", key: "entryQuantity" },
 ];
 const COLUMNS_PERMISSION_SHOW_PRODUCTS_TO_DELIVERY = [
-  { name: "Quantidade Faltando", key: "missingQuantity" },
+  { name: "O que comprar", key: "missingQuantity" },
 ];
 const COLUMNS_PERMISSION_UPDATE_PDV_QUANTITY = [
   { name: "Quantidade do PDV", key: "pdvQuantity" },

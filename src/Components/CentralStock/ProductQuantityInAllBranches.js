@@ -43,7 +43,7 @@ export const ProductQuantityInAllBranches = (props) => {
         {data.map((v) => (
           <>
             <li style={{padding: '4px 0'}} key={v.branchId}>
-              {v.branchName}: {v.quantity}
+              Loja {v.branchName}: {v.quantity}
             </li>
             <Divider />
           </>

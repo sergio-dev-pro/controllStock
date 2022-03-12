@@ -28,6 +28,8 @@ import FormControl from "@material-ui/core/FormControl";
 
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
+import ProductQuantityInAllBranches from './ProductQuantityInAllBranches'
+
 import api from "../../services/api";
 
 function todayDate() {
@@ -575,6 +577,8 @@ export default function CentralStock() {
                 </Typography>
                 <Divider />
               </div>
+
+              <ProductQuantityInAllBranches productId={productId} />
               {/* {!merchandiseList.length && (
                 <Typography
                   variant="subtitle1"

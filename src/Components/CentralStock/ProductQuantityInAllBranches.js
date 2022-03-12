@@ -22,13 +22,6 @@ export const ProductQuantityInAllBranches = (props) => {
         width: "100%",
       }}
     >
-      <h4
-        style={{
-          marginBottom: "8px",
-        }}
-      >
-        Estoque Central:
-      </h4>
       <ul
         style={{
           width: "100%",
@@ -42,7 +35,7 @@ export const ProductQuantityInAllBranches = (props) => {
       >
         {data.map((v) => (
           <>
-            <li style={{padding: '3.5px 0'}} key={v.branchId}>
+            <li style={{padding: '3.5px 0', marginLeft: '8px'}} key={v.branchId}>
               Loja {v.branchName}: {v.quantity}
             </li>
             <Divider />

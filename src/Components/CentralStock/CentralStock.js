@@ -573,7 +573,7 @@ export default function CentralStock() {
                     marginLeft: "8px",
                   }}
                 >
-                  TOTAL DISPONIVEL: {total}
+                  Estoque Central: {total}
                 </Typography>
                 <Divider />
               </div>

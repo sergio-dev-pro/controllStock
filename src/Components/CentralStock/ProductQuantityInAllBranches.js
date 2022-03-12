@@ -1,5 +1,6 @@
 import React from "react";
 import api from "../../services/api";
+import { Divider } from "@material-ui/core";
 
 export const ProductQuantityInAllBranches = (props) => {
   const { productId } = props;
@@ -26,45 +27,26 @@ export const ProductQuantityInAllBranches = (props) => {
           marginBottom: "8px",
         }}
       >
-        Quantidade em cada filial
+        Estoque Central:
       </h4>
       <ul
         style={{
           width: "100%",
           display: "flex",
-          alignItems: "center",
-          overflowX: "scroll",
+          flexDirection: "column",
+          justifyContent: "center",
           listStyle: "none",
           padding: "8px 0",
-          margin: "none",
+          margin: "0",
         }}
       >
         {data.map((v) => (
-          <li
-            style={{
-              display: "flex",
-              marginRight: "24px",
-              alignItems: "center",
-              border: "0.8px solid lightgrey",
-              borderRadius: "8px",
-            }}
-            key={v.branchId}
-          >
-            <span style={{ width: "max-content", marginLeft: "8px" }}>
-              {v.branchName}
-            </span>{" "}
-            <span
-              style={{
-                marginLeft: "16px",
-                height: "100%",
-                background: "lightgrey",
-                padding: "8px 16px",
-                borderRadius: "0px 4px 4px 0",
-              }}
-            >
-              {v.quantity}
-            </span>
-          </li>
+          <>
+            <li style={{padding: '4px 0'}} key={v.branchId}>
+              {v.branchName}: {v.quantity}
+            </li>
+            <Divider />
+          </>
         ))}
       </ul>
     </div>

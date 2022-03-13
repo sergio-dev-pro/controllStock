@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Container, Divider, Typography } from "@material-ui/core";
 import { CircularProgress } from "@material-ui/core";
 import Button from "@material-ui/core/Button";
@@ -28,7 +28,9 @@ import FormControl from "@material-ui/core/FormControl";
 
 import VisibilityIcon from "@material-ui/icons/Visibility";
 
-import ProductQuantityInAllBranches from './ProductQuantityInAllBranches'
+import UserContext from "../../Context/User/context";
+
+import ProductQuantityInAllBranches from "./ProductQuantityInAllBranches";
 
 import api from "../../services/api";
 
@@ -79,6 +81,8 @@ export default function CentralStock() {
     valueSpended: 0,
   });
   const [content, setContent] = useState("list");
+
+  const userContext = useContext(UserContext);
 
   useEffect(() => {
     setLoading(true);
@@ -159,17 +163,17 @@ export default function CentralStock() {
   };
 
   const handleChangeStartDate = (e) => {
-    if(Date.parse(e.target.value) > Date.parse(todayDate())) 
-     return setStartDate(todayDate());
+    if (Date.parse(e.target.value) > Date.parse(todayDate()))
+      return setStartDate(todayDate());
     setStartDate(e.target.value);
-    
+
     if (endDate && Date.parse(e.target.value) > Date.parse(endDate))
       return setEndDate(todayDateSumeOne(e.target.value));
   };
 
   const handleChangeEndDate = (e) => {
-    if(Date.parse(e.target.value) > Date.parse(todayDate()))
-    return setEndDate(todayDate());
+    if (Date.parse(e.target.value) > Date.parse(todayDate()))
+      return setEndDate(todayDate());
     setEndDate(e.target.value);
 
     if (startDate && Date.parse(e.target.value) < Date.parse(startDate))
@@ -443,7 +447,7 @@ export default function CentralStock() {
                   }}
                 >
                   <FormControl
-                    size='small'
+                    size="small"
                     variant="outlined"
                     style={{
                       minWidth: "250px",
@@ -478,7 +482,7 @@ export default function CentralStock() {
                     </Select>
                   </FormControl>
                   <TextField
-                  size='small'
+                    size="small"
                     value={startDate}
                     onChange={handleChangeStartDate}
                     variant="outlined"
@@ -493,7 +497,7 @@ export default function CentralStock() {
                     style={{ marginRight: "8px", paddingBottom: "16px" }}
                   />
                   <TextField
-                  size='small'
+                    size="small"
                     value={endDate}
                     onChange={handleChangeEndDate}
                     variant="outlined"
@@ -508,19 +512,19 @@ export default function CentralStock() {
                     style={{ marginRight: "8px", paddingBottom: "16px" }}
                   />
                   <div>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      color="primary"
-                      checked={showHide}
-                      onChange={(e) => {
-                        setShowHide((x) => !x);
-                      }}
+                    <FormControlLabel
+                      control={
+                        <Checkbox
+                          color="primary"
+                          checked={showHide}
+                          onChange={(e) => {
+                            setShowHide((x) => !x);
+                          }}
+                        />
+                      }
+                      label="Mostrar lançamentos ocultos"
                     />
-                  }
-                  label="Mostrar lançamentos ocultos"
-                />
-              </div>
+                  </div>
                   <Button
                     type="button"
                     variant="contained"
@@ -533,50 +537,58 @@ export default function CentralStock() {
                   </Button>
                 </div>
 
-               <div style={{display: 'flex', alignItems: 'center', flexWrap: 'wrap'}}>
-               <Button
-                  variant="contained"
-                  color="primary"
-                  href="#contained-buttons"
-                  size="medium"
-                  startIcon={<VisibilityIcon />}
-                  onClick={() => handleChangeContent("see_all")}
+                <div
                   style={{
-                    width: "fit-content",
+                    display: "flex",
+                    alignItems: "center",
+                    flexWrap: "wrap",
                   }}
                 >
-                  Ver todos
-                </Button>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  href="#contained-buttons"
-                  size="medium"
-                  startIcon={<AddBox />}
-                  onClick={() => handleChangeContent("create")}
-                  style={{
-                    width: "fit-content",
-                  }}
-                >
-                  Add Mercadoria
-                </Button>
-               </div>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
+                    startIcon={<VisibilityIcon />}
+                    onClick={() => handleChangeContent("see_all")}
+                    style={{
+                      width: "fit-content",
+                    }}
+                  >
+                    Ver todos
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    href="#contained-buttons"
+                    size="medium"
+                    startIcon={<AddBox />}
+                    onClick={() => handleChangeContent("create")}
+                    style={{
+                      width: "fit-content",
+                    }}
+                  >
+                    Add Mercadoria
+                  </Button>
+                </div>
               </div>
 
-              <div style={{ width: "100%", marginTop: "16px" }}>
-                <Divider />
-                <Typography
-                  variant="subtitle2"
-                  style={{
-                    color: "rgba(0, 0, 0, 0.77)",
-                    padding: "8px 0",
-                    marginLeft: "8px",
-                  }}
-                >
-                  Estoque Central: {total}
-                </Typography>
-                <Divider />
-              </div>
+              {userContext.state.isAdmin && (
+                <div style={{ width: "100%", marginTop: "16px" }}>
+                  <Divider />
+                  <Typography
+                    variant="subtitle2"
+                    style={{
+                      color: "rgba(0, 0, 0, 0.77)",
+                      padding: "8px 0",
+                      marginLeft: "8px",
+                    }}
+                  >
+                    Estoque Central: {total}
+                  </Typography>
+                  <Divider />
+                </div>
+              )}
 
               <ProductQuantityInAllBranches productId={productId} />
               {/* {!merchandiseList.length && (
@@ -637,7 +649,13 @@ function SimpleTable({ list, colunmList }) {
   return (
     <TableContainer
       component={Paper}
-      style={{ width: "100%", paddingLeft: "0px", margin: "10px 0px", padding: '0px', maxHeight: '440px' }}
+      style={{
+        width: "100%",
+        paddingLeft: "0px",
+        margin: "10px 0px",
+        padding: "0px",
+        maxHeight: "440px",
+      }}
     >
       <Table stickyHeader className={classes.table} aria-label="simple table">
         <TableHead>

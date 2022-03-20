@@ -478,38 +478,38 @@ export default function CentralStock() {
               </Select>
             </FormControl>
           </div>
-            <div>
-              <TextField
-                size="small"
-                value={startDate}
-                onChange={handleChangeStartDate}
-                variant="outlined"
-                required
-                id="date"
-                label="Data Inicial"
-                type="date"
-                // className={classes.textField}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                style={{ marginRight: "8px", paddingBottom: "16px" }}
-              />
-              <TextField
-                size="small"
-                value={endDate}
-                onChange={handleChangeEndDate}
-                variant="outlined"
-                required
-                id="date"
-                label="Data Final"
-                type="date"
-                // className={classes.textField}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                style={{ marginRight: "8px", paddingBottom: "16px" }}
-              />
-            </div>
+          <div>
+            <TextField
+              size="small"
+              value={startDate}
+              onChange={handleChangeStartDate}
+              variant="outlined"
+              required
+              id="date"
+              label="Data Inicial"
+              type="date"
+              // className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              style={{ marginRight: "8px", paddingBottom: "16px" }}
+            />
+            <TextField
+              size="small"
+              value={endDate}
+              onChange={handleChangeEndDate}
+              variant="outlined"
+              required
+              id="date"
+              label="Data Final"
+              type="date"
+              // className={classes.textField}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              style={{ marginRight: "8px", paddingBottom: "16px" }}
+            />
+          </div>
           <Button
             type="button"
             variant="contained"
@@ -523,17 +523,6 @@ export default function CentralStock() {
         </div>
 
         <div style={{ width: "100%", marginTop: "16px" }}>
-          <Divider />
-          <Typography
-            variant="subtitle2"
-            style={{
-              color: "rgba(0, 0, 0, 0.77)",
-              padding: "8px 0",
-              marginLeft: "8px",
-            }}
-          >
-            Estoque Central: {total}
-          </Typography>
           <Divider />
         </div>
 

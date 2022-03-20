@@ -250,7 +250,7 @@ const getUserModuleList = (userConfig) => {
   if (userConfig.isAdmin) {
     return modules;
   } else if (userConfig.IsCentralStockAdmin) {
-    return modules.filter((mod) => ["stock", "invoices"].includes(mod.value));
+    return modules.filter((mod) => ["stock", "invoices", "central_stock"].includes(mod.value));
   } else {
     const permissions = [].concat(
       ...userConfig.branches.map((branch) =>

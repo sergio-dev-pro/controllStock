@@ -411,6 +411,136 @@ export default function CentralStock() {
     return component;
   };
 
+  if (userContext.state.IsCentralStockAdmin)
+    return (
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          padding: "24px",
+          // margin: "24px 0",
+          overflow: "hidden",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            width: "100%",
+            justifyContent: "space-between",
+            flexWrap: "wrap",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              // marginBottom: '8px',
+              flexWrap: "wrap",
+            }}
+          >
+            <FormControl
+              size="small"
+              variant="outlined"
+              style={{
+                minWidth: "250px",
+                marginRight: "8px",
+                paddingBottom: "16px",
+              }}
+            >
+              <InputLabel id="demo-simple-select-outlined-label">
+                Produto
+              </InputLabel>
+              <Select
+                value={productId}
+                name="productId"
+                label="Produto"
+                value={productId}
+                onChange={(e) => {
+                  handleChangeProduct(e.target.value);
+                }}
+                name="product"
+                variant="outlined"
+                required
+                fullWidth
+                id="productId"
+                label="Produto"
+                autoFocus
+              >
+                {productsList.map((e) => (
+                  <MenuItem key={e.id} value={e.id}>
+                    {e.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </div>
+            <div>
+              <TextField
+                size="small"
+                value={startDate}
+                onChange={handleChangeStartDate}
+                variant="outlined"
+                required
+                id="date"
+                label="Data Inicial"
+                type="date"
+                // className={classes.textField}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                style={{ marginRight: "8px", paddingBottom: "16px" }}
+              />
+              <TextField
+                size="small"
+                value={endDate}
+                onChange={handleChangeEndDate}
+                variant="outlined"
+                required
+                id="date"
+                label="Data Final"
+                type="date"
+                // className={classes.textField}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                style={{ marginRight: "8px", paddingBottom: "16px" }}
+              />
+            </div>
+          <Button
+            type="button"
+            variant="contained"
+            color="primary"
+            style={{ marginBottom: "16px" }}
+            onClick={searchMerchandise}
+            startIcon={<Search />}
+          >
+            Buscar
+          </Button>
+        </div>
+
+        <div style={{ width: "100%", marginTop: "16px" }}>
+          <Divider />
+          <Typography
+            variant="subtitle2"
+            style={{
+              color: "rgba(0, 0, 0, 0.77)",
+              padding: "8px 0",
+              marginLeft: "8px",
+            }}
+          >
+            Estoque Central: {total}
+          </Typography>
+          <Divider />
+        </div>
+
+        <ProductQuantityInAllBranches productId={productId} />
+      </div>
+    );
+
   return (
     <div
       style={{
@@ -591,22 +721,6 @@ export default function CentralStock() {
               )}
 
               <ProductQuantityInAllBranches productId={productId} />
-              {/* {!merchandiseList.length && (
-                <Typography
-                  variant="subtitle1"
-                  style={{
-                    display: "flex",
-                    width: "100%",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "50px",
-                    marginBottom: "8px",
-                    color: "#ff844c",
-                  }}
-                >
-                  Adicione a primeira mercadoria
-                </Typography>
-              )} */}
             </>
           ) : null}
           {getContentComponent(content)}

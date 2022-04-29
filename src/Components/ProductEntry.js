@@ -163,6 +163,7 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
                   id="date"
                   label="Data Inicial"
                   type="date"
+                  disabled={isCentralStockAdmin}
                   defaultValue="2017-05-24"
                   InputLabelProps={{
                     shrink: true,

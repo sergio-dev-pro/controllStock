@@ -72,7 +72,8 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
     const data = await api.get(
       `/products/entries?branchId=${branchId}&day=${date}`
     );
-    data?.data.length && setEntrys(data.data);
+    data?.data.length >= 0 && setEntrys(data.data);
+
     setLoading(false);
   };
   console.log(entrys, !!entrys.length);

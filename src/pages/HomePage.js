@@ -21,6 +21,7 @@ import ShopTwoIcon from "@material-ui/icons/ShopTwo";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import Assessment from "@material-ui/icons/Assessment";
 import CheckBox from "@material-ui/icons/CheckBox";
+import Input from "@material-ui/icons/Input";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import UserContext from "../Context/User/context";
@@ -43,6 +44,7 @@ import { formatUserData } from "../services/format";
 import { ArrowRightRounded, ListAlt } from "@material-ui/icons";
 import { Button, IconButton, Typography } from "@material-ui/core";
 import { Alert } from "@material-ui/lab";
+import ProductEntry from "../Components/ProductEntry";
 
 const drawerWidth = 240;
 
@@ -242,6 +244,7 @@ const MODULES = [
   { value: "invoices", name: "Notas", icon: <PostAddIcon /> },
   { value: "reports", name: "Relatórios", icon: <Assessment /> },
   { value: "checklist", name: "Checklist", icon: <CheckBox /> },
+  { value: "product_entry", name: "Entrada de produtos", icon: <Input /> },
 ];
 const MENU_LIST = MODULES.map((e) => e.value);
 
@@ -250,7 +253,11 @@ const getUserModuleList = (userConfig) => {
   if (userConfig.isAdmin) {
     return modules;
   } else if (userConfig.IsCentralStockAdmin) {
-    return modules.filter((mod) => ["stock", "invoices", "central_stock"].includes(mod.value));
+    return modules.filter((mod) =>
+      ["stock", "invoices", "central_stock", "product_entry"].includes(
+        mod.value
+      )
+    );
   } else {
     const permissions = [].concat(
       ...userConfig.branches.map((branch) =>
@@ -258,7 +265,10 @@ const getUserModuleList = (userConfig) => {
       )
     );
     const allowedModules = [];
-    if (permissions.includes("UpdateFinalQuantity") || permissions.includes("UpdatePdvQuantity"))
+    if (
+      permissions.includes("UpdateFinalQuantity") ||
+      permissions.includes("UpdatePdvQuantity")
+    )
       allowedModules.push("stock");
     if (permissions.includes("ReadNotes")) allowedModules.push("invoices");
     if (permissions.includes("ReadReports")) allowedModules.push("reports");
@@ -397,7 +407,12 @@ export default function HomePage() {
         return <Users />;
         break;
       case "invoices":
-        return <Grades isAdmin={userConfig.isAdmin} isCentralStockAdmin={userConfig.IsCentralStockAdmin} />;
+        return (
+          <Grades
+            isAdmin={userConfig.isAdmin}
+            isCentralStockAdmin={userConfig.IsCentralStockAdmin}
+          />
+        );
         break;
       case "reports":
         return (
@@ -409,6 +424,14 @@ export default function HomePage() {
         break;
       case "checklist":
         return <Checklist />;
+      case "product_entry":
+        return (
+          <ProductEntry
+            branchs={userConfig.branches}
+            isAdmin={userConfig.isAdmin}
+            isCentralStockAdmin={userConfig.IsCentralStockAdmin}
+          />
+        );
         break;
     }
     // if (selected === MENU_LIST[0]) {

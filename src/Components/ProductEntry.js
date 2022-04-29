@@ -62,61 +62,10 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
     return () => {};
   }, []);
 
-  function PrintElem() {
-    const elem = tableRef.current;
-
-    var mywindow = window.open("", "PRINT", "height=1000,width=1000");
-
-    mywindow.document.write(
-      "<html><head><title>" + document.title + "</title>"
-    );
-
-    mywindow.document.write(
-      "</head><body style='margin-bottom: 40px; width: 100%; display: flex; flex-direction: column; align-items: center;'>"
-    );
-    mywindow.document.write("<h4 style=''>Entradas de produtos</h4>");
-
-    // Table
-    mywindow.document.write(elem.outerHTML);
-
-    // Assign field
-    mywindow.document.write(
-      "<div style='display: flex; width: 100%; margin-top: 4rem;'>"
-    );
-    mywindow.document.write("<span>Assinatura</span>");
-    mywindow.document.write(
-      "<div style='width: 50%; border-bottom: 1px solid black; margin-right: 2rem'/>"
-    );
-    mywindow.document.write("</div>");
-
-    mywindow.document.write(
-      "<div style='display: flex; width: 100%;'>"
-    );
-    mywindow.document.write("<span>Local</span>");
-    mywindow.document.write(
-      "<div style='width: 30%; border-bottom: 1px solid black; margin-right: 2rem'/>"
-    );
-    mywindow.document.write("</div>");
-
-    mywindow.document.write(
-      "<div style='display: flex; width: 100%;'>"
-    );
-    mywindow.document.write("<span>Data e hora</span>");
-    mywindow.document.write(
-      "<div style='width: 20%; border-bottom: 1px solid black; margin-right: 2rem'/>"
-    );
-    mywindow.document.write("</div>");
-
-    mywindow.document.write("</body></html>");
-
-    mywindow.document.close(); // necessary for IE >= 10
-    mywindow.focus(); // necessary for IE >= 10*/
-
-    mywindow.print();
-    mywindow.close();
-
-    return true;
-  }
+  const openPdf = (branchId, date) => {
+    
+    window.open(`http://mistock-ms.herokuapp.com/api/products/entries/print?branchId=${branchId}&day=${date}`);
+  };
 
   const getEntrys = async (branchId, date) => {
     setLoading(true);
@@ -165,7 +114,7 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
                 variant="outlined"
                 color="primary"
                 disabled={entrys.length === 0}
-                onClick={PrintElem}
+                onClick={() => openPdf(branchId, startDate)}
               >
                 <Print />
               </Button>

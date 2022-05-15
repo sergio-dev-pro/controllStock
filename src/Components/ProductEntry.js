@@ -63,8 +63,7 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
   }, []);
 
   const openPdf = (branchId, date) => {
-    
-    window.location.href=`https://mistock-ms.herokuapp.com/api/products/entries/print?branchId=${branchId}&day=${date}`;
+    window.location.href = `https://mistock-ms.herokuapp.com/api/products/entries/print?branchId=${branchId}&day=${date}`;
   };
 
   const getEntrys = async (branchId, date) => {
@@ -108,7 +107,7 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
                 alignItems: "center",
               }}
             >
-              <Typography variant="h5">Entrada de produtos</Typography>
+              <Typography variant="h6">Entrada de produtos</Typography>
 
               <Button
                 size="small"

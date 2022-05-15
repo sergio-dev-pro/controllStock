@@ -22,6 +22,7 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import Assessment from "@material-ui/icons/Assessment";
 import CheckBox from "@material-ui/icons/CheckBox";
 import Input from "@material-ui/icons/Input";
+import FindInPageOutlined from "@material-ui/icons/FindInPageOutlined";
 import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import UserContext from "../Context/User/context";
@@ -36,6 +37,7 @@ import Grades from "../Components/Grades/Grades";
 import ProductsByBranch from "../Components/Reports/ProductsByBranch";
 import BasicModal from "../Components/Modal/Modal";
 import Checklist from "../Components/Branche/Checklist";
+import Summary from "../Components/Summary";
 
 import "./HomePage.css";
 
@@ -245,6 +247,7 @@ const MODULES = [
   { value: "reports", name: "Relatórios", icon: <Assessment /> },
   { value: "checklist", name: "Checklist", icon: <CheckBox /> },
   { value: "product_entry", name: "Entrada de produtos", icon: <Input /> },
+  { value: "summary", name: "Resumo", icon: <FindInPageOutlined /> },
 ];
 const MENU_LIST = MODULES.map((e) => e.value);
 
@@ -432,57 +435,17 @@ export default function HomePage() {
             isCentralStockAdmin={userConfig.IsCentralStockAdmin}
           />
         );
+      case "summary":
+        return (
+          <Summary
+            branchs={userConfig.branches}
+            isAdmin={userConfig.isAdmin}
+            isCentralStockAdmin={userConfig.IsCentralStockAdmin}
+          />
+        );
         break;
     }
-    // if (selected === MENU_LIST[0]) {
-    //   return <Branches handleBrancheList={handleChangeBranches} />;
-    // } else if (selected === MENU_LIST[3]) {
-    //   return <Category handleCategory={handleChangeCategory} />;
-    // } else if (selected === MENU_LIST[1]) {
-    //   return <Products />;
-    // } else if (selected === MENU_LIST[2]) {
-    //   return <Users />;
-    // } else if (selected === MENU_LIST[4]) {
-    //   return <CentralStock />;
-    // } else if (selected === MENU_LIST[5]) {
-    //   return (
-    //     <Stock
-    //       isAdmin={userConfig.isAdmin}
-    //       IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
-    //       branchs={userConfig.branches}
-    //     />
-    //   );
-    // } else if (selected === MENU_LIST[6]) {
-    //   console.log("@@@ selected === MENU_LIST[6]");
-    //   return <Grades isAdmin={userConfig.isAdmin} />;
-    // } else if (selected === MENU_LIST[7]) {
-    //   return <ProductsByBranch />;
-    // } else if (selected === MENU_LIST[8]) {
-    //   return <Checklist />;
-    // }
   };
-
-  // const getMainList = (selected) => {
-  //   const moduleList = getModuleList();
-  //   if (moduleList.length) return null;
-
-  //   return moduleList.map((module) => (
-  //     <>
-  //       <ListItem
-  //         button
-  //         selected={selected === module.value}
-  //         onClick={() => setSelected(module.value)}
-  //       >
-  //         <ListItemIcon>
-  //           <ShopTwoIcon />
-  //         </ListItemIcon>
-  //         <ListItemText primary={module.name} />
-  //       </ListItem>
-  //     </>
-  //   ));
-
-  //   return <></>;
-  // };
 
   return (
     <div className={classes.root}>
@@ -536,12 +499,6 @@ export default function HomePage() {
                     Sair
                   </Button>
                 </div>
-                {/* <MainListItems
-                  selected={menu}
-                  setSelected={setMenu}
-                  isAdmin={userConfig.isAdmin}
-                  IsCentralStockAdmin={userConfig.IsCentralStockAdmin}
-                /> */}
               </List>
             </Drawer>
           ) : null}
@@ -599,158 +556,6 @@ export default function HomePage() {
     </div>
   );
 }
-
-export const MainListItems = ({
-  selected,
-  setSelected,
-  isAdmin,
-  IsCentralStockAdmin,
-}) => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "space-between",
-      height: "100%",
-    }}
-  >
-    {isAdmin && (
-      <div>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[4]}
-          onClick={() => setSelected(MENU_LIST[4])}
-        >
-          <ListItemIcon>
-            <ShopTwoIcon />
-          </ListItemIcon>
-          <ListItemText primary="Estoque Central" />
-        </ListItem>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[5]}
-          onClick={() => setSelected(MENU_LIST[5])}
-        >
-          <ListItemIcon>
-            <ShopIcon />
-          </ListItemIcon>
-          <ListItemText primary="Estoque" />
-        </ListItem>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[0]}
-          onClick={() => setSelected(MENU_LIST[0])}
-        >
-          <ListItemIcon>
-            <BusinessIcon />
-          </ListItemIcon>
-          <ListItemText primary="Filiais" />
-        </ListItem>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[1]}
-          onClick={() => setSelected(MENU_LIST[1])}
-        >
-          <ListItemIcon>
-            <ShoppingCartIcon />
-          </ListItemIcon>
-          <ListItemText primary="Produtos" />
-        </ListItem>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[2]}
-          onClick={() => setSelected(MENU_LIST[2])}
-        >
-          <ListItemIcon>
-            <PeopleIcon />
-          </ListItemIcon>
-          <ListItemText primary="Usuários" />
-        </ListItem>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[3]}
-          onClick={() => setSelected(MENU_LIST[3])}
-        >
-          <ListItemIcon>
-            <CategoryIcon />
-          </ListItemIcon>
-          <ListItemText primary="Categorias" />
-        </ListItem>
-
-        <ListItem
-          button
-          selected={selected === MENU_LIST[6]}
-          onClick={() => setSelected(MENU_LIST[6])}
-        >
-          <ListItemIcon>
-            <PostAddIcon />
-          </ListItemIcon>
-          <ListItemText primary="Notas" />
-        </ListItem>
-
-        <ListItem
-          button
-          selected={selected === MENU_LIST[7]}
-          onClick={() => setSelected(MENU_LIST[7])}
-        >
-          <ListItemIcon>
-            <Assessment />
-          </ListItemIcon>
-          <ListItemText primary="Reports" />
-        </ListItem>
-
-        <ListItem
-          button
-          selected={selected === MENU_LIST[8]}
-          onClick={() => setSelected(MENU_LIST[8])}
-        >
-          <ListItemIcon>
-            <CheckBox />
-          </ListItemIcon>
-          <ListItemText primary="Checklist" />
-        </ListItem>
-      </div>
-    )}
-
-    {IsCentralStockAdmin && (
-      <div>
-        <ListItem
-          button
-          selected={selected === MENU_LIST[5]}
-          onClick={() => setSelected(MENU_LIST[5])}
-        >
-          <ListItemIcon>
-            <ShopIcon />
-          </ListItemIcon>
-          <ListItemText primary="Estoque" />
-        </ListItem>
-
-        <ListItem
-          button
-          selected={selected === MENU_LIST[6]}
-          onClick={() => setSelected(MENU_LIST[6])}
-        >
-          <ListItemIcon>
-            <PostAddIcon />
-          </ListItemIcon>
-          <ListItemText primary="Notas" />
-        </ListItem>
-      </div>
-    )}
-
-    <Button
-      style={{ width: "100%" }}
-      variant="outlined"
-      onClick={() => {
-        logout();
-        window.location = "/login";
-      }}
-      color="primary"
-    >
-      Sair
-    </Button>
-  </div>
-);
 
 const useStylesAlert = makeStyles((theme) => ({
   root: {

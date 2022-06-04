@@ -4,6 +4,7 @@ import api from "../services/api";
 import { makeStyles } from "@material-ui/core/styles";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import {
+  Button,
   Container,
   FormControl,
   InputLabel,
@@ -16,10 +17,13 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TextField,
   Typography,
 } from "@material-ui/core";
 
 import searchImg from "../assets/search-in-list-96.png";
+import { setDate } from "date-fns";
+import { SearchOutlined } from "@material-ui/icons";
 
 const useStyles = makeStyles({
   root: {
@@ -58,22 +62,26 @@ function LinearDeterminate({ inProgress }) {
 }
 
 const searchTypes = {
-  ["ByOutQuantity"]: "Quantidade de entrada",
-  ["ByEntryQuantity"]: "Quantidade de saída",
+  ["ByEntryQuantity"]: "Quantidade de entrada",
+  ["ByOutQuantity"]: "Quantidade de saída",
   ["ByDifferenceQuantity"]: "Quantidade de diferença",
 };
+
+function todayDate() {
+  var today = new Date();
+  var dd = String(today.getDate()).padStart(2, "0");
+  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var yyyy = today.getFullYear();
+
+  return (today = yyyy + "-" + mm + "-" + dd);
+}
 
 const Summary = ({ branchs }) => {
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState(null);
   const [summary, setSummary] = useState([]);
+  const [date, setDate] = useState(todayDate());
   const [researchQuantity, setResearchQuantity] = useState(0);
-
-  useEffect(() => {
-    if (type) {
-      getSummary();
-    }
-  }, [type]);
 
   useEffect(() => {
     if (researchQuantity) {
@@ -96,7 +104,7 @@ const Summary = ({ branchs }) => {
   const getSummary = () => {
     setLoading(true);
     api
-      .get(`/products/reports/summary?type=${type}`)
+      .get(`/products/reports/summary?type=${type}&day=${date}`)
       .then(({ data }) => {
         if (!data.length) setResearchQuantity((prevState) => ++prevState);
         else {
@@ -109,14 +117,16 @@ const Summary = ({ branchs }) => {
 
   const fetchSummaryWhileEmpty = (myTimeout) => {
     setLoading(true);
-    api.get(`/products/reports/summary?type=${type}`).then(({ data }) => {
-      if (!data.length) setResearchQuantity((prevState) => ++prevState);
-      else {
-        setSummary(data);
-        clearTimeout(myTimeout);
-        setLoading(false);
-      }
-    });
+    api
+      .get(`/products/reports/summary?type=${type}&day=${date}`)
+      .then(({ data }) => {
+        if (!data.length) setResearchQuantity((prevState) => ++prevState);
+        else {
+          setSummary(data);
+          clearTimeout(myTimeout);
+          setLoading(false);
+        }
+      });
   };
 
   return (
@@ -129,38 +139,74 @@ const Summary = ({ branchs }) => {
             Resumo
           </Typography>
 
-          <FormControl
-            variant="outlined"
-            size="small"
+          <div
             style={{
-              minWidth: "10rem",
-              marginRight: "8px",
-              paddingBottom: "16px",
+              display: "flex",
+              marginBottom: "1rem",
+              flexWrap: "wrap",
             }}
-            fullWidth
           >
-            <InputLabel id="demo-simple-select-outlined-label">
-              Buscar por
-            </InputLabel>
-            <Select
-              value={type}
-              name="productId"
-              label="Buscar por"
-              onChange={(e) => {
-                setType(e.target.value);
+            <FormControl
+              variant="outlined"
+              size="small"
+              style={{
+                minWidth: "10rem",
+                maxWidth: "20rem",
+                marginRight: "8px",
+                paddingBottom: "16px",
               }}
-              placeholder="Selecione o tipo de busca"
+              fullWidth
+            >
+              <InputLabel id="demo-simple-select-outlined-label">
+                Buscar por
+              </InputLabel>
+              <Select
+                value={type}
+                name="productId"
+                label="Buscar por"
+                onChange={(e) => {
+                  setType(e.target.value);
+                }}
+                placeholder="Selecione o tipo de busca"
+                variant="outlined"
+                required
+              >
+                {Object.keys(searchTypes).map((key) => (
+                  <MenuItem key={key} value={key}>
+                    {searchTypes[key]}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              value={date}
+              size="small"
+              onChange={(e) => setDate(e.target.value)}
               variant="outlined"
               required
-            >
-              {Object.keys(searchTypes).map((key) => (
-                <MenuItem key={key} value={key}>
-                  {searchTypes[key]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              id="date"
+              label="Data"
+              type="date"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          </div>
 
+          <Button
+            style={{
+              marginBottom: "16px",
+            }}
+            variant="contained"
+            color="primary"
+            size="small"
+            onClick={() => getSummary()}
+            disabled={!type}
+          >
+            <SearchOutlined />
+            Buscar
+          </Button>
           {!type ? (
             <div
               style={{

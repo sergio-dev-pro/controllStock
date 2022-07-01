@@ -46,7 +46,10 @@ function todayDate() {
   return (today = yyyy + "-" + mm + "-" + dd);
 }
 
-const COLUMNS_DEFAULT = [{ name: "Produto", key: "productName" }];
+const COLUMNS_DEFAULT = [
+  { name: "Produto", key: "productName" },
+  { name: "Quantidade Anterior", key: "previousQuantity" },
+];
 
 const COLUMNS_ADMIN = [
   { name: "Produto", key: "productName" },

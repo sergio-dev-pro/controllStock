@@ -526,7 +526,7 @@ export default function CentralStock() {
           <Divider />
         </div>
 
-        <ProductQuantityInAllBranches productId={productId} />
+        <ProductQuantityInAllBranches productId={productId} startDate={startDate} endDate={endDate} />
       </div>
     );
 
@@ -709,7 +709,7 @@ export default function CentralStock() {
                 </div>
               )}
 
-              <ProductQuantityInAllBranches productId={productId} />
+              <ProductQuantityInAllBranches productId={productId} startDate={startDate} endDate={endDate} />
             </>
           ) : null}
           {getContentComponent(content)}

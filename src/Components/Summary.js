@@ -66,6 +66,7 @@ const searchTypes = {
   ["ByOutQuantity"]: "Quantidade de saída",
   ["ByDifferenceQuantity"]: "Quantidade de diferença",
   ["ByFinalQuantity"]: "Quantidade final",
+  ["ByMissingQuantity"]: "O que comprar"
 };
 
 function todayDate() {

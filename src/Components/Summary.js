@@ -66,19 +66,30 @@ const searchTypes = {
   ["ByOutQuantity"]: "Quantidade de saída",
   ["ByDifferenceQuantity"]: "Quantidade de diferença",
   ["ByFinalQuantity"]: "Quantidade final",
-  ["ByMissingQuantity"]: "O que comprar"
+  ["ByMissingQuantity"]: "O que comprar",
 };
+
+function getPreviousDay(date = new Date()) {
+  const previous = new Date(date.getTime());
+  previous.setDate(date.getDate() - 1);
+
+  var dd = String(previous.getDate()).padStart(2, "0");
+  var mm = String(previous.getMonth() + 1).padStart(2, "0");
+  var yyyy = previous.getFullYear();
+
+  return yyyy + "-" + mm + "-" + dd;
+}
 
 function todayDate() {
   var today = new Date();
   var dd = String(today.getDate()).padStart(2, "0");
-  var mm = String(today.getMonth() + 1).padStart(2, "0"); //January is 0!
+  var mm = String(today.getMonth() + 1).padStart(2, "0");
   var yyyy = today.getFullYear();
 
   return (today = yyyy + "-" + mm + "-" + dd);
 }
 
-const Summary = ({ branchs }) => {
+const Summary = ({ branchs, isCentralStockAdmin }) => {
   const [loading, setLoading] = useState(false);
   const [type, setType] = useState(null);
   const [summary, setSummary] = useState([]);
@@ -131,6 +142,18 @@ const Summary = ({ branchs }) => {
       });
   };
 
+  const searchTypeFilterOptions = ((searchTypeKeys) => {
+    const optionsKey = isCentralStockAdmin
+      ? searchTypeKeys.filter((key) => key !== "ByDifferenceQuantity")
+      : searchTypeKeys;
+
+    return optionsKey.map((key) => (
+      <MenuItem key={key} value={key}>
+        {searchTypes[key]}
+      </MenuItem>
+    ));
+  })(Object.keys(searchTypes));
+  console.log("getPreviousDay", getPreviousDay());
   return (
     <>
       {loading ? (
@@ -173,27 +196,53 @@ const Summary = ({ branchs }) => {
                 variant="outlined"
                 required
               >
-                {Object.keys(searchTypes).map((key) => (
-                  <MenuItem key={key} value={key}>
-                    {searchTypes[key]}
-                  </MenuItem>
-                ))}
+                {searchTypeFilterOptions}
               </Select>
             </FormControl>
 
-            <TextField
-              value={date}
-              size="small"
-              onChange={(e) => setDate(e.target.value)}
-              variant="outlined"
-              required
-              id="date"
-              label="Data"
-              type="date"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
+            {isCentralStockAdmin ? (
+              <FormControl
+                variant="outlined"
+                size="small"
+                style={{
+                  minWidth: "10rem",
+                  maxWidth: "20rem",
+                  marginRight: "8px",
+                  paddingBottom: "16px",
+                }}
+                fullWidth
+              >
+                <InputLabel id="demo-simple-select-outlined-label">
+                  Dia
+                </InputLabel>
+                <Select
+                  value={date}
+                  label="Dia"
+                  onChange={(e) => {
+                    setDate(e.target.value);
+                  }}
+                  variant="outlined"
+                  required
+                >
+                  <MenuItem value={todayDate()}>Hoje</MenuItem>
+                  <MenuItem value={getPreviousDay()}>Ontem</MenuItem>
+                </Select>
+              </FormControl>
+            ) : (
+              <TextField
+                value={date}
+                size="small"
+                onChange={(e) => setDate(e.target.value)}
+                variant="outlined"
+                required
+                id="date"
+                label="Data"
+                type="date"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            )}
           </div>
 
           <Button

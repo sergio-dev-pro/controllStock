@@ -257,9 +257,13 @@ const getUserModuleList = (userConfig) => {
     return modules;
   } else if (userConfig.IsCentralStockAdmin) {
     return modules.filter((mod) =>
-      ["stock", "invoices", "central_stock", "product_entry"].includes(
-        mod.value
-      )
+      [
+        "stock",
+        "invoices",
+        "central_stock",
+        "product_entry",
+        "summary",
+      ].includes(mod.value)
     );
   } else {
     const permissions = [].concat(

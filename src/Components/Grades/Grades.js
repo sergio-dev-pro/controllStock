@@ -392,9 +392,41 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                 width: "100%",
               }}
             >
-              <Typography component="h1" variant="h5" style={{ width: "100%" }}>
-                {showAddNoteProductForm ? "Adicionar mercadoria" : "Criar Nota"}
-              </Typography>
+              {showAddNoteProductForm ? (
+                <Typography
+                  component="h1"
+                  variant="h5"
+                  style={{ width: "100%" }}
+                >
+                  Adicionar mercadoria
+                </Typography>
+              ) : (
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
+                  }}
+                >
+                  <Typography
+                    component="h1"
+                    variant="h5"
+                    style={{ width: "100%" }}
+                  >
+                    Criar Nota
+                  </Typography>
+                  <Typography
+                    component="h6"
+                    align="right"
+                    variant="h6"
+                    style={{ width: "100%" }}
+                  >
+                    {new Date().toLocaleDateString('pt-BR')}
+                  </Typography>
+                </div>
+              )}
+
               <form
                 style={{ width: "100%", marginTop: "24px" }}
                 onSubmit={(e) => {
@@ -420,7 +452,7 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                           autoFocus
                         />
                       </Grid>
-                      <Grid item xs={12}>
+                      {/* <Grid item xs={12}>
                         <TextField
                           value={noteDate}
                           onChange={(e) => {
@@ -446,7 +478,7 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                           label="Data da Nota:"
                           autoFocus
                         />
-                      </Grid>
+                      </Grid> */}
                       <Grid item xs={6}>
                         <h3>Mercadorias da nota:</h3>
                       </Grid>
@@ -598,11 +630,9 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                               value={productId}
                               name="productId"
                               label="Produto"
-                              value={productId}
                               onChange={(e) => {
                                 setProductId(e.target.value);
                               }}
-                              name="product"
                               variant="outlined"
                               required
                               fullWidth
@@ -879,7 +909,7 @@ export default function Grades({ isAdmin, isCentralStockAdmin }) {
                   >
                     Add Nota
                   </Button>
-                ): null}
+                ) : null}
               </div>
               {/* {!merchandiseList.length && (
                     <Typography

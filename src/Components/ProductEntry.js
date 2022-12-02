@@ -63,7 +63,7 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
   }, []);
 
   const openPdf = (branchId, date) => {
-    window.location.href = `https://mistock-ms.herokuapp.com/api/products/entries/print?branchId=${branchId}&day=${date}`;
+    window.location.href = `https://brutos-api.azurewebsites.net/api/products/entries/print?branchId=${branchId}&day=${date}`;
   };
 
   const getEntrys = async (branchId, date) => {

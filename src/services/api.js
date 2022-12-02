@@ -2,7 +2,7 @@ import axios from "axios";
 import { getToken } from "./auth";
 
 const api = axios.create({
-  baseURL: "https://mistock-ms.herokuapp.com/api",
+  baseURL: "https://brutos-api.azurewebsites.net/api",
   headers: {
     "Content-type": "application/json",
     "Access-Control-Allow-Origin": "*",

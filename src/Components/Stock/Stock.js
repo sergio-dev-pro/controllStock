@@ -272,7 +272,7 @@ export default function Stock({
     let data = {
       entryQuantity: product.entryQuantity,
       finalQuantity: product.finalQuantity,
-      previusQuantity: product.previusQuantity,
+      previousQuantity: product.previusQuantity,
       pdvQuantity: product.pdvQuantity,
     };
 

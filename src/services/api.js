@@ -2,7 +2,7 @@ import axios from "axios";
 import { getToken } from "./auth";
 
 const api = axios.create({
-  baseURL: "https://brutos-api.azurewebsites.net/api",
+  baseURL: "https://danielbrutos-001-site1.ftempurl.com/api",
   headers: {
     "Content-type": "application/json",
     "Access-Control-Allow-Origin": "*",

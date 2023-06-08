@@ -287,7 +287,7 @@ export default function Stock({
     };
 
     fetch(
-      `https://brutos-api.azurewebsites.net/api/products/stock-daily/${product.id}?branchId=${branchId}`,
+      `https://danielbrutos-001-site1.ftempurl.com/api/products/stock-daily/${product.id}?branchId=${branchId}`,
       requestOptions
     )
       .then(async (response) => {

@@ -63,7 +63,7 @@ const ProductEntry = ({ branchs, isAdmin, isCentralStockAdmin }) => {
   }, []);
 
   const openPdf = (branchId, date) => {
-    window.location.href = `http://brutos-001-site1.ftempurl.com/api/products/entries/print?branchId=${branchId}&day=${date}`;
+    window.location.href = `https://danielbrutos-001-site1.ftempurl.com/api/products/entries/print?branchId=${branchId}&day=${date}`;
   };
 
   const getEntrys = async (branchId, date) => {
